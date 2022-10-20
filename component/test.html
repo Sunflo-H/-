@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Custom Right Click Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=89c94138aac3b434362c7179cb6bc993"></script>
+    <!-- 카카오 검색 api -->
+    <script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=89c94138aac3b434362c7179cb6bc993&libraries=services"></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="./rightClick.css"></style>
+    <style>
+        * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+body {
+  width: 100vw;
+  height: 100vh;
+  background: #f2f4f6;
+  overflow: hidden;
+}
+ul {
+  list-style: none;
+}
+.context-menu { 
+  position: absolute; 
+} 
+.menu {
+  /* display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgb(64 64 64 / 5%);
+  padding: 10px 0; */
+  border: 1px solid red;
+}
+
+
+li {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /* opacity: 0; */
+    transition: 0.5s;
+
+    border: 1px solid red;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    z-index: 99999;
+}
+
+a {
+    text-align: center;
+}
+
+li:nth-child(1) {
+    transform: rotate(0deg) translate(-110px);
+}
+li:nth-child(2) {
+    transform: rotate(60deg) translateX(-110px);
+}
+li:nth-child(3) {
+    transform: rotate(120deg) translateX(-110px);
+}
+li:nth-child(4) {
+    transform: rotate(180deg) translate(-110px);
+}
+li:nth-child(5) {
+    transform: rotate(240deg) translate(-110px);
+}
+li:nth-child(6) {
+    transform: rotate(300deg) translate(-110px);
+}
+
+
+li:nth-child(1) .cover {
+    transform: rotate(0deg);
+}
+li:nth-child(2) .cover {
+    transform: rotate(-60deg);
+}
+li:nth-child(3) .cover {
+    transform: rotate(-120deg);
+}
+li:nth-child(4) .cover {
+    transform: rotate(-180deg);
+}
+li:nth-child(5) .cover {
+    transform: rotate(-240deg);
+}
+li:nth-child(6) .cover {
+    transform: rotate(-300deg);
+}
+
+.cover {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1px solid blue;
+}
+
+.cover p {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid red;
+    /* transition: 0.5s; */
+}
+
+
+    </style>
+  </head>
+  <body>  
+    <div id="map" style="width:1000px;height:700px;"></div>
+    <div id="contextMenu" class="context-menu" style="display: none"> 
+        <ul class="menu"> 
+            <li class="share">
+                <div class="cover">
+                    <p>A</p>
+                </div>
+            </li> 
+            <li class="share">
+                <div class="cover">
+                    <p>B</p>
+                </div>
+            </li> 
+            <li class="share">
+                <div class="cover">
+                    <p>C</p>
+                </div>
+            </li> 
+            <li class="share">
+                <div class="cover">
+                    <p>D</p>
+                </div>
+            </li> 
+            <li class="share">
+                <div class="cover">
+                    <p>E</p>
+                </div>
+            </li> 
+            <li class="share">
+                <div class="cover">
+                    <p>F</p>
+                </div>
+            </li> 
+             
+             
+        </ul> 
+    </div> 
+
+    <script>
+       document.onclick = hideMenu; 
+       document.oncontextmenu = rightClick; 
+
+        function hideMenu() { 
+            document.getElementById("contextMenu") 
+                    .style.display = "none" 
+        } 
+
+        function rightClick(e) { 
+            e.preventDefault(); 
+
+            if (document.getElementById("contextMenu") .style.display == "block"){ 
+                hideMenu(); 
+            }else{ 
+                var menu = document.getElementById("contextMenu")      
+                menu.style.display = 'block'; 
+                menu.style.left = (e.pageX-25) + "px"; 
+                menu.style.top = (e.pageY-25) + "px"; 
+            } 
+        } 
+
+        document.addEventListener('click',e => {
+            console.log(e.target);
+        })
+
+        var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+        var options = { //지도를 생성할 때 필요한 기본 옵션
+            center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
+            level: 3 //지도의 레벨(확대, 축소 정도)
+        };
+
+        var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+
+        
+        // 지도를 클릭한 위치에 표출할 마커입니다
+        var marker = new kakao.maps.Marker({ 
+            // 지도 중심좌표에 마커를 생성합니다 
+            position: map.getCenter() 
+        }); 
+        // 지도에 마커를 표시합니다
+        marker.setMap(map);
+
+        // 지도에 클릭 이벤트를 등록합니다
+        // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+        kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
+            
+            
+            
+        });
+
+        kakao.maps.event.addListener(map, 'rightclick', function(mouseEvent) {
+            var latlng = mouseEvent.latLng;
+            // alert('right click! ' + latlng.toString());
+            // 클릭한 위도, 경도 정보를 가져옵니다 
+            var latlng = mouseEvent.latLng; 
+            
+            // 마커 위치를 클릭한 위치로 옮깁니다
+            marker.setPosition(latlng);
+        });    
+    </script>
+  </body>
+</html>

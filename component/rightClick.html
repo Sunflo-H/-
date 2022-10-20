@@ -12,162 +12,63 @@
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <style>
-        * {
-        padding: 0;
-        margin: 0;
-        box-sizing: border-box;
-        font-family: 'Montserrat', sans-serif;
-        }
-        body {
-        width: 100vw;
-        height: 100vh;
-        background: #f2f4f6;
-        overflow: hidden;
-        }
-        ul {
-        list-style: none;
-        }
-        .context-menu { 
-        position: absolute; 
-        z-index: 99999;
-        
-        /* border: 1px solid red; */
-        } 
-        .menu {
-        position: relative;
-        /* top: 50%;
-        left: 0%; */
-        /* width: 200px;
-        height: 200px; */
-        /* transform: translate(-50%, -50%); */
-        background-color: blue;
-        }
-        /* 오리지널 메뉴 */
-        /* .menu {
-        display: flex;
-        flex-direction: column;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 10px 20px rgb(64 64 64 / 5%);
-        padding: 10px 0;
-        border: 1px solid blue;
-        } */
-
-        .menu > li {
-            border: 1px solid red;
-            width: 50px;
-            height: 50px;
-        }
-        /* .menu > li > a {
-        font: inherit;
-        border: 0;
-        padding: 10px 30px 10px 15px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        position: relative;
-        text-decoration: unset;
-        color: #000;
-        font-weight: 500;
-        transition: 0.5s linear;
-        -webkit-transition: 0.5s linear;
-        -moz-transition: 0.5s linear;
-        -ms-transition: 0.5s linear;
-        -o-transition: 0.5s linear;
-        } */
-
-        .share {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .rename {
-            position: absolute;
-            top: 0;
-            left: 100px;
-        }
-        .link {
-            position: absolute;
-            top: 0;
-            left: 200px;
-        }
-        .copy {
-            position: absolute;
-            top: 100px;
-            left: 0;
-        }
-        .paste {
-            position: absolute;
-            top: 100px;
-            left: 100px;
-        }
-        .download {
-            position: absolute;
-            top: 100px;
-            left: 200px;
-        }
-        .trash {
-            position: absolute;
-            top: 200px;
-            left: 0;
-        }
-
-        .menu img {
-            width: 100%;
-            height: 100%;
-        }
-    </style>
+        <link rel="stylesheet" href="./rightClick.css"></style>
 </head>
 <body>
     <div id="map" style="width:1000px;height:700px;"></div>
-    <div id="contextMenu" class="context-menu" style="display: none"> 
-        <ul class="menu"> 
-            <li class="share">
-                <img src="../img/스타벅스.png">
-            </li> 
-            <li class="rename">
-                <p>숲세권</p>
-            </li> 
-            <li class="link">
-                <p>주세권</p>
-            </li> 
-            <li class="copy">
-                <p>도세권</p>
-            </li> 
-            <li class="paste">
-                <p>학세권</p>
-            </li> 
-            <li class="download">
-                <p>역세권</p>
-            </li> 
-            <li class="trash">
-                <p>맥세권</p>
-            </li> 
-        </ul> 
-    </div> 
+    <nav class="menu">
+        <input checked="checked" class="menu-toggler" type="checkbox">
+        <label for="menu-toggler"></label>
+        <ul>
+          <li class="menu-item">
+            <a class="fas fa-cat" href="">a</a>
+          </li>
+          <li class="menu-item">
+            <a class="fas fa-cookie-bite" href="#">b</a>
+          </li>
+          <li class="menu-item">
+            <a class="fab fa-earlybirds" href="#">c</a>
+          </li>
+          <li class="menu-item">
+            <a class="fab fa-fly"href="#">d</a>
+          </li>
+          <li class="menu-item">
+            <a class ="far fa-gem" href="#">e</a>
+          </li>
+          <li class="menu-item">
+            <a class="fas fa-glass-cheers" href="#">f</a>
+          </li>
+        </ul>
+      </nav>
     <script>
-         // document말고 좌측메뉴구역, 지도구역중에서 지도구역에 적용되게끔
-         document.onclick = hideMenu; 
-       document.oncontextmenu = rightClick; 
-
-        function hideMenu() { 
-            document.getElementById("contextMenu") 
-                    .style.display = "none" 
-        } 
-
-        function rightClick(e) { 
-            e.preventDefault(); 
-            console.log(e);
-            if (document.getElementById("contextMenu") .style.display == "block"){ 
-                hideMenu(); 
-            } else { 
-                var menu = document.getElementById("contextMenu")      
-                menu.style.display = 'block'; 
-                menu.style.left = (e.pageX - 100) + "px"; 
-                menu.style.top = (e.pageY - 100) + "px"; 
-            } 
-        } 
+      // Context Menu 생성
+      function handleCreateContextMenu(event){
+        // 기본 Context Menu가 나오지 않게 차단
+        event.preventDefault();
+        
+        const ctxMenu = document.getElementById('dochi_context_menu');
+        
+        // 노출 설정
+        ctxMenu.style.display = 'block';
+        
+        // 위치 설정
+        ctxMenu.style.top = event.pageY+'px';
+        ctxMenu.style.left = event.pageX+'px';
+      }
+      
+      // Context Menu 제거
+      function handleClearContextMenu(event){
+        const ctxMenu = document.getElementById('dochi_context_menu');
+        
+        // 노출 초기화
+        ctxMenu.style.display = 'none';   
+        ctxMenu.style.top = null;
+        ctxMenu.style.left = null;
+      }
+      
+      // 이벤트 바인딩
+      document.addEventListener('contextmenu', handleCreateContextMenu, false);
+      document.addEventListener('click', handleClearContextMenu, false);
 
         document.addEventListener('click',e => {
             console.log(e.target);
@@ -179,7 +80,7 @@
             level: 3 //지도의 레벨(확대, 축소 정도)
         };
 
-        var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+        // var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
 
         
         // 지도를 클릭한 위치에 표출할 마커입니다
