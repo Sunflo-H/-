@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="test.css" rel="stylesheet">
+    <link href="../../src/css/reset.css" rel="stylesheet">
+    
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=89c94138aac3b434362c7179cb6bc993"></script>
+
+</head>
+<!-- nav만 만들면 된다. -->
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo__cover">
+                <div class="logo__square">
+                    <div class="logo__circle1"></div>
+                    <div class="logo__circle2"></div>
+                </div>
+            </div>
+        </div>
+        <nav class="nav">
+            <ul class="nav__item-wrapper">
+                <li class="nav__item">
+                    <p>아파트</p>
+                </li>
+                <li class="nav__item">
+                    <p>빌라, 투룸</p>
+                </li>
+                <li class="nav__item">
+                    <p>원룸</p>
+                </li>
+                <li class="nav__item">
+                    <p>오피스텔</p>
+                </li>
+            </ul>
+        </nav>
+        <div class="login">
+
+        </div>
+    </header>
+    <main class="main">
+        
+
+        <div id="map">
+
+        </div>
+    </main>
+
+    <script>
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+            mapOption = { 
+                center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                level: 3 // 지도의 확대 레벨
+            };
+
+        // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+        var map = new kakao.maps.Map(mapContainer, mapOption); 
+    </script>
+</body>
+</html>
