@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="header.css" rel="stylesheet">
+    <!-- <link href="./reset.css" rel="stylesheet"> -->
+    <link href="../../src/css/reset.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/edda6de607.js" crossorigin="anonymous"></script>
+
+    
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=89c94138aac3b434362c7179cb6bc993"></script>
+
+</head>
+<!-- header만 만들면 된다. -->
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo__cover">
+                <div class="logo__square">
+                    <div class="logo__circle1"></div>
+                    <div class="logo__circle2"></div>
+                </div>
+            </div>
+        </div>
+        <nav class="nav">
+            <ul class="nav__item-wrapper">
+                <li class="nav__item">
+                    <p>아파트</p>
+                </li>
+                <li class="nav__item">
+                    <p>빌라 · 투룸</p>
+                </li>
+                <li class="nav__item">
+                    <p>원룸</p>
+                </li>
+                <li class="nav__item">
+                    <p>오피스텔</p>
+                </li>
+            </ul>
+        </nav>
+        <div class="user user--not-login">
+            <div class="user__login-btn">로그인</div>
+            <div class="user__sign-up-btn">가입</div>
+        </div>
+        <div class="user user--login">
+            <div class="user__name">
+                황병준
+            </div>
+            
+            <!-- 이미지를 바꾸지 않았을때 기본이미지를 보여준다. -->
+            <!-- 기본이미지 -->
+            <div class="user__img">
+                <img src="https://a5.behance.net/b30af4bb8b221c953db3e5940a5bceae7b07d62d/img/profile/no-image-115.png?cb=264615658">
+            </div>
+            <!-- 바꾼 이미지 -->
+            <!-- <div class="user__img">
+                <img src="../../img/header/99A1113359BA66E910.jfif">
+            </div> -->
+        </div>
+        <button style="opacity: 0; cursor:pointer; border: none;">c</button>
+        <!-- <button style="opacity: 1; border:1px solid red">c</button> -->
+    </header>
+
+    
+    <script>
+        // 로그인 전, 후 를 만들기위해 간단하게 change 버튼을 만듬
+        // 상단 우측에 투명하게 숨어있다.
+        const btn = document.querySelector('button');
+        btn.addEventListener('click', e => {
+            const loggedIn = document.querySelector('.user--login');
+            const notLoggedIn = document.querySelector('.user--not-login');
+            loggedIn.style.display = "flex";
+            notLoggedIn.style.display = "none"
+        })
+        console.log(btn);
+
+    </script>
+</body>
+</html>
