@@ -1,0 +1,58 @@
+:root {
+    --black: #07364e;
+    --secondary: #b3bfdb;
+    --disabled: #f2f5f6;
+    --primary: #3c5cff;
+    --accent1: #00bfb3;
+    --accent2: #ff8959;
+    --accent3: #ff5989;
+    --gr1_1: #4c3aff;
+    --gr1_2: #5c10ff;
+    --gr2_1: #00f2ff;
+    --gr2_2: #099df8;
+    --gr3_1: #d388ef;
+    --gr3_2: #f6639e;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+    background-color: var(--disabled);
+}
+
+main {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    /* overflow: hidden; */
+}
+
+.main-top {
+    width: 100%;
+    height: 100px;
+}
+
+.main-middle {
+    display: flex;
+    height: calc(100vh - 170px);
+    padding-left: 10px;
+}
+
+.map {
+    width: 80%;
+    height: 100%;
+    border-radius: 20px;
+}
+
+.card {
+    flex-grow: 1;
+    height: 100%;
+    overflow: scroll;
+}
+
+.card-item {
+    height: 150px;
+    background-color: red;
+    border-radius: 10px;
+    margin: 0 10px 10px 10px;
+}
