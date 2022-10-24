@@ -20,6 +20,14 @@ html {
     background-color: var(--disabled);
 }
 
+body{
+    -ms-overflow-style: none;
+    }
+    
+::-webkit-scrollbar {
+    display: none;
+}
+
 main {
     position: relative;
     width: 100%;
@@ -38,8 +46,16 @@ main {
     padding-left: 10px;
 }
 
-.map {
+.map-wrapper {
     width: 80%;
+    height: 100%;
+    border-radius: 20px;
+    box-sizing: border-box;
+    padding-bottom: 10px;
+}
+
+.map {
+    width: 100%;
     height: 100%;
     border-radius: 20px;
 }
@@ -48,7 +64,9 @@ main {
     flex-grow: 1;
     height: 100%;
     overflow: scroll;
+    /* overflow-y: hidden; */
 }
+
 
 .card-item {
     height: 150px;
