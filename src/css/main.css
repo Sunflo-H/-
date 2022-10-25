@@ -20,9 +20,9 @@ html {
     background-color: var(--disabled);
 }
 
-body{
+body {
     -ms-overflow-style: none;
-    }
+}
     
 ::-webkit-scrollbar {
     display: none;
@@ -41,7 +41,9 @@ main {
     border:1px solid #00bfb3;
 }
 
-.a{}
+.option {
+    border: 1px solid red;
+}
 
 .main-middle {
     display: flex;
