@@ -5,14 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link href="../../src/css/header.css" rel="stylesheet">
-    <!-- <link href="./reset.css" rel="stylesheet"> -->
+    <!-- <link href="../../src/css/header.css" rel="stylesheet"> -->
+    <link href="header.css" rel="stylesheet">
     <link href="../../src/css/reset.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/edda6de607.js" crossorigin="anonymous"></script>
 
     
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=89c94138aac3b434362c7179cb6bc993"></script>
 
+    <style>
+        body {
+            background-color: #f2f5f6;
+        }
+    </style>
 </head>
 <!-- header만 만들면 된다. -->
 <body>
@@ -41,6 +46,21 @@
                 </li>
             </ul>
         </nav>
+        <div class="empty-space"></div>
+        <div class="search">
+            <label for="search__input" class="search__label"><i class="fa-solid fa-magnifying-glass"></i></label>
+            <input type="text"
+                   name="search__input"
+                   id="search__input"
+                   class="search__input"
+                   placeholder="search...">
+            <div class="search__ex">
+                <div class="search__ex__item">구의동</div>
+                <div class="search__ex__item">구의동구의동구의동구의동구의동</div>
+                <div class="search__ex__item">구의동구의동구의동구의동구의동구의동구의동구의동</div>
+                <div class="search__ex__item">구의동구의동구의동구의동구의동구의동구의동구의동구의동구의동</div>
+            </div>
+        </div>
         <div class="user user--not-login">
             <div class="user__login-btn">로그인</div>
             <div class="user__sign-up-btn">가입</div>
@@ -76,6 +96,37 @@
             notLoggedIn.style.display = "none"
         })
         console.log(btn);
+        
+
+        const search = document.querySelector('.search');
+        const searchInput = search.querySelector('.search__input');
+        const searchEx = search.querySelector('.search__ex');
+        const searchExItem = searchEx.querySelectorAll('.search__ex__item')
+        const nav = document.querySelector('.nav');
+        const navWrapper = document.querySelector('.nav__item-wrapper')
+        const navItems = nav.querySelectorAll('.nav__item');
+
+        const searchIcon = search.querySelector('.search__label');
+
+        searchInput.addEventListener('click', e => {
+            search.classList.add('active');
+            if(searchInput.value !== '') searchEx.classList.add('active');
+        })
+
+        searchInput.addEventListener('keyup', e => {
+            searchEx.classList.add('active');
+
+        })
+
+        document.addEventListener('click', e => {
+            if(e.target !== search 
+                && e.target !== searchInput 
+                && e.target !== searchEx) {
+                search.classList.remove('active');
+                searchEx.classList.remove('active');
+            }
+        })
+
 
     </script>
 </body>
