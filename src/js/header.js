@@ -1,7 +1,7 @@
 const search = document.querySelector('.search');
         const searchInput = search.querySelector('.search__input');
-        const searchEx = search.querySelector('.search__ex');
-        const searchExItem = searchEx.querySelectorAll('.search__ex__item')
+        const searchEx = search.querySelector('.search__expand');
+        const searchExItem = searchEx.querySelectorAll('.search__expand__item')
         const nav = document.querySelector('.nav');
         const navWrapper = document.querySelector('.nav__item-wrapper')
         const navItems = nav.querySelectorAll('.nav__item');
