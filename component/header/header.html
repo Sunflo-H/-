@@ -9,7 +9,7 @@
     <link href="header.css" rel="stylesheet">
     <link href="../../src/css/reset.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/edda6de607.js" crossorigin="anonymous"></script>
-
+    <script src="header.js" type="module"></script>
     
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=89c94138aac3b434362c7179cb6bc993"></script>
 
@@ -22,66 +22,63 @@
 <!-- header만 만들면 된다. -->
 <body>
     <header class="header">
-        <div class="logo">
-            <div class="logo__cover">
-                <div class="logo__square">
-                    <div class="logo__circle1"></div>
-                    <div class="logo__circle2"></div>
+        <header class="header">
+            <div class="logo">
+                <div class="logo__cover">
+                    <div class="logo__square">
+                        <div class="logo__circle1"></div>
+                        <div class="logo__circle2"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <nav class="nav">
-            <ul class="nav__item-wrapper">
-                <li class="nav__item">
-                    <p>아파트</p>
-                </li>
-                <li class="nav__item">
-                    <p>빌라 · 투룸</p>
-                </li>
-                <li class="nav__item">
-                    <p>원룸</p>
-                </li>
-                <li class="nav__item">
-                    <p>오피스텔</p>
-                </li>
-            </ul>
-        </nav>
-        <div class="empty-space"></div>
-        <div class="search">
-            <label for="search__input" class="search__label"><i class="fa-solid fa-magnifying-glass"></i></label>
-            <input type="text"
-                   name="search__input"
-                   id="search__input"
-                   class="search__input"
-                   placeholder="search...">
-            <div class="search__ex">
-                <div class="search__ex__item">구의동</div>
-                <div class="search__ex__item">구의동구의동구의동구의동구의동</div>
-                <div class="search__ex__item">구의동구의동구의동구의동구의동구의동구의동구의동</div>
-                <div class="search__ex__item">구의동구의동구의동구의동구의동구의동구의동구의동구의동구의동</div>
+            <nav class="nav">
+                <ul class="nav__item-wrapper">
+                    <a href="../../src/html/apartment.html">
+                        <li class="nav__item active">아파트</li>
+                    </a>
+                    <a href="../../src/html/villa.html">
+                        <li class="nav__item">빌라 · 투룸</li>
+                    </a>
+                    <a href="../../src/html/oneRoom.html">
+                        <li class="nav__item">원룸</li>
+                    </a>
+                    <a href="../../src/html/apartment.html">
+                        <li class="nav__item">오피스텔</li>
+                    </a>
+                </ul>
+            </nav>
+            <div class="empty-space"></div>
+            <div class="search">
+                <label for="search__input" class="search__label"><i class="fa-solid fa-magnifying-glass"></i></label>
+                <input type="text"
+                       name="search__input"
+                       id="search__input"
+                       class="search__input"
+                       placeholder="search...">
+                <div class="search__expand">
+                    <div class="search__expand__item">구의동</div>
+                    <div class="search__expand__item">구의동구의동구의동구의동구의동</div>
+                    <div class="search__expand__item">구의동구의동구의동구의동구의동구의동구의동구의동</div>
+                    <div class="search__expand__item">구의동구의동구의동구의동구의동구의동구의동구의동구의동구의동</div>
+                    <div class="search__expand__item">구의동구의동구의동구의동구의동구의동구의동구의동구의동구의동</div>
+                    <div class="search__expand__item">구의동구의동구의동구의동구의동구의동구의동구의동구의동구의동</div>
+                </div>
             </div>
-        </div>
-        <div class="user user--not-login">
-            <div class="user__login-btn">로그인</div>
-            <div class="user__sign-up-btn">가입</div>
-        </div>
-        <div class="user user--login">
-            <div class="user__name">
-                황병준
+            <div class="user user--not-login">
+                <div class="user__login-btn">로그인</div>
+                <div class="user__sign-up-btn">가입</div>
             </div>
+            <div class="user user--login">
+                <div class="user__name">
+                    황병준
+                </div>
             
-            <!-- 이미지를 바꾸지 않았을때 기본이미지를 보여준다. -->
-            <!-- 기본이미지 -->
-            <div class="user__img">
-                <img src="https://a5.behance.net/b30af4bb8b221c953db3e5940a5bceae7b07d62d/img/profile/no-image-115.png?cb=264615658">
+                <div class="user__img">
+                    <img src="https://a5.behance.net/b30af4bb8b221c953db3e5940a5bceae7b07d62d/img/profile/no-image-115.png?cb=264615658">
+                </div>
             </div>
-            <!-- 바꾼 이미지 -->
-            <!-- <div class="user__img">
-                <img src="../../img/header/99A1113359BA66E910.jfif">
-            </div> -->
-        </div>
-        <button style="opacity: 0; cursor:pointer; border: none;">c</button>
-        <!-- <button style="opacity: 1; border:1px solid red">c</button> -->
+            <button style="opacity: 0; cursor:pointer; border: none;">c</button>
+        </header>
     </header>
 
     
@@ -94,40 +91,7 @@
             const notLoggedIn = document.querySelector('.user--not-login');
             loggedIn.style.display = "flex";
             notLoggedIn.style.display = "none"
-        })
-        console.log(btn);
-        
-
-        const search = document.querySelector('.search');
-        const searchInput = search.querySelector('.search__input');
-        const searchEx = search.querySelector('.search__ex');
-        const searchExItem = searchEx.querySelectorAll('.search__ex__item')
-        const nav = document.querySelector('.nav');
-        const navWrapper = document.querySelector('.nav__item-wrapper')
-        const navItems = nav.querySelectorAll('.nav__item');
-
-        const searchIcon = search.querySelector('.search__label');
-
-        searchInput.addEventListener('click', e => {
-            search.classList.add('active');
-            if(searchInput.value !== '') searchEx.classList.add('active');
-        })
-
-        searchInput.addEventListener('keyup', e => {
-            searchEx.classList.add('active');
-
-        })
-
-        document.addEventListener('click', e => {
-            if(e.target !== search 
-                && e.target !== searchInput 
-                && e.target !== searchEx) {
-                search.classList.remove('active');
-                searchEx.classList.remove('active');
-            }
-        })
-
-
+        });
     </script>
 </body>
 </html>

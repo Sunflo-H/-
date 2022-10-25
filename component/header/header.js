@@ -22,24 +22,7 @@ document.addEventListener('click', e => {
     if (e.target !== search
         && e.target !== searchInput
         && e.target !== searchEx) {
-
         search.classList.remove('active');
         searchEx.classList.remove('active');
     }
-})
-
-console.log(navItems);
-
-navItems.forEach((item, index) => {
-    item.addEventListener('click', e => {
-        for(let i = 0; i < navItems.length; i++) {
-            if(index === i) navItems[i].classList.add('active');
-            else navItems[i].classList.remove('active');
-
-            /**
-             * 클릭한 item의 인덱스랑 값이 같은 navItem[i]에는 active 추가
-             * 나머지는 active 제거
-             */
-        }
-    })
 })
