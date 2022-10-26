@@ -34,32 +34,12 @@ main {
     box-sizing: border-box;
     /* overflow: hidden; */
 }
-
-select {
-    /* height: 30px; */
-    border: none;
-    box-shadow: 1px 1px 1px 1px #e9eaf3;
-    border-radius: 5px;
-    outline: none;
-    padding: 10px;
-    /* font-size: .8rem; */
+ 
+select::-ms-expand{
+    display:none;/*for IE10,11*/
 }
 
-select {
 
-    -webkit-appearance:none; /* for chrome */
- 
-    -moz-appearance:none; /*for firefox*/
- 
-    appearance:none;
- 
- }
- 
- select::-ms-expand{
- 
-    display:none;/*for IE10,11*/
- 
- }
 
 .main-top {
     width: 100%;
@@ -67,11 +47,54 @@ select {
     border:1px solid #00bfb3;
 }
 
-.option {
+.filter {
+    display: flex;
     height: 100%;
     border: 1px solid red;
+    box-sizing: border-box;
 }
 
+.filter__item {
+    position: relative;
+    display: flex;
+    /* width: 100px; */
+    height: 40px;
+    /* border: 1px solid red; */
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px 1px #e9eaf3;
+    overflow: hidden;
+    margin: 40px 10px;
+}
+
+.filter__select {
+    border: none;
+    width: 100%;
+    border-radius: 5px;
+    outline: none;
+    padding: 10px;
+    -webkit-appearance:none; 
+    -moz-appearance:none; 
+    appearance:none;
+    padding-right: 35px;
+    font-weight: bold;
+}
+
+.filter__select option {
+    background: black;
+    color: #fff;
+    padding: 3px 0;
+    border-radius: 5px;
+}
+
+.filter__item i {
+    position: absolute;
+    top: 8px;
+    right: 14px;
+    color: var(--secondary);
+    /* border: 1px solid red; */
+    pointer-events: none;
+}
 
 
 .main-middle {
