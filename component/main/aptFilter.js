@@ -12,7 +12,6 @@ const peopleSelect = people.querySelector('.filter__select');
 const peopleOption = people.querySelector('.filter__option-wrapper');
 const peopleOptionItem = people.querySelectorAll('.filter__option');
 
-
 // !같은 코드가 반복돼
 // 지금은 css 하는 중이라 안했는데
 // 나중에 기능 만들때 반복문으로 고쳐보자
@@ -33,3 +32,4 @@ document.addEventListener('click', e=> {
     if(e.target !== yearSelect) yearOption.style.display = "none";
     if(e.target !== peopleSelect) peopleOption.style.display = "none";
 })
+

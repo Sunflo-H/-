@@ -269,11 +269,13 @@ a {
     width: 100%;
     border-radius: 10px;
     margin-top: 5px;
-    box-shadow: 2px 2px 1px 1px #e9eaf3;
+    /* box-shadow: 2px 2px 1px 1px #e9eaf3, 
+                -2px -2px 1px 1px #e9eaf3; */
     background-color: white;
     padding: 5px 0;
     box-sizing: border-box;
     z-index: 10;
+    border: 2px solid var(--secondary);
 }
 
 .search__expand.active {

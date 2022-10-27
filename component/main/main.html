@@ -59,7 +59,7 @@
                        placeholder="search...">
                 <div class="search__expand">
                     <div class="search__expand__item">구의동</div>
-                    <div class="search__expand__item">구의동구의동구의동구의동구의동</div>
+                    <div class="search__expand__item">아차산빌라</div>
                     <div class="search__expand__item">구의동구의동구의동구의동구의동구의동구의동구의동</div>
                     <div class="search__expand__item">구의동구의동구의동구의동구의동구의동구의동구의동구의동구의동</div>
                     <div class="search__expand__item">구의동구의동구의동구의동구의동구의동구의동구의동구의동구의동</div>
@@ -86,30 +86,49 @@
         <div class="main-top">
             <div class="filter__wrapper">
                 <div class="filter filter--select">
-                    <div class="filter__select w100">
+                    <div class="filter__select ">
                         <div class="filter__select-checked">면적</div>
                         <div class="filter__select-arrow"><i class="fa-solid fa-sort-down"></i></div>
                     </div>
-                    <div class="filter__option-wrapper">
-                        <div class="filter__option">면적</div>
-                        <div class="filter__option">전체</div>
+                    <div class="filter__option-wrapper filter__option-wrapper--table">
+                        <!-- <div class="filter__option">면적</div> -->
+                        <!-- <div class="filter__option">전체</div>
                         <div class="filter__option">10평 이하</div>
                         <div class="filter__option">10평대</div>
                         <div class="filter__option">20평대</div>
                         <div class="filter__option">30평대</div>
                         <div class="filter__option">40평대</div>
                         <div class="filter__option">50평대</div>
-                        <div class="filter__option">60평대</div>
-                        <div class="filter__option">60평대 이상</div>
+                        <div class="filter__option">60평대 이상</div> -->
+
+                        <div class="table-wrapper">
+                            <table>
+                                <tr>
+                                    <td>전체</td>
+                                    <td>10평 이하</td>
+                                    <td>10평대</td>
+                                    <td>20평대</td>
+                                </tr>
+                                <tr>
+                                    <td>30평대</td>
+                                    <td>40평대</td>
+                                    <td>50평대</td>
+                                    <td>60평 이상</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="filter__btn filter__btn--apply">
+                            <i class="fa-solid fa-check"></i>적용
+                        </div>
                     </div>
                 </div>
                 <div class="filter">
-                    <div class="filter__select w100">
+                    <div class="filter__select">
                         <div class="filter__select-checked">준공년도</div>
                         <div class="filter__select-arrow"><i class="fa-solid fa-sort-down"></i></div>
                     </div>
                     <div class="filter__option-wrapper">
-                        <div class="filter__option">준공년도</div>
+                        <!-- <div class="filter__option">준공년도</div> -->
                         <div class="filter__option">전체</div>
                         <div class="filter__option">5년 이내</div>
                         <div class="filter__option">10년 이내</div>
@@ -119,12 +138,12 @@
                     </div>
                 </div>
                 <div class="filter">
-                    <div class="filter__select w120">
+                    <div class="filter__select">
                         <div class="filter__select-checked">세대수</div>
                         <div class="filter__select-arrow"><i class="fa-solid fa-sort-down"></i></div>
                     </div>
                     <div class="filter__option-wrapper">
-                        <div class="filter__option">세대수</div>
+                        <!-- <div class="filter__option">세대수</div> -->
                         <div class="filter__option">전체</div>
                         <div class="filter__option">200세대 이상</div>
                         <div class="filter__option">500세대 이상</div>
@@ -132,16 +151,36 @@
                         <div class="filter__option">2000세대 이상</div>
                     </div>
                 </div>
+                <!-- <div class="filter__btn filter__btn--apply">
+                    <i class="fa-solid fa-check"></i>적용
+                </div> -->
+                <!-- <div class="filter__btn filter__btn--reset">
+                    초기화
+                </div> -->
             </div>
 
-            div.filter
-
-            <div class="sort">
-                <div>기본 형태</div>
-                <div>리스트 형태(사진 없음)</div>
-                <div>가격순</div>
-                <div>최신순</div>
+            <div class="sort-wrapper">
+                <div class="sort">
+                    <!-- <div class="sort__item sort__item--price">
+                        가격순
+                        <i class="fa-solid fa-sort"></i>
+                        <i class="fa-solid fa-sort-up"></i>
+                        <i class="fa-solid fa-sort-down"></i>
+                    </div> -->
+                    <!-- <div class="sort__item sort__item--newest">최신순</div> -->
+                    <div class="sort_item-wrapper">
+                        <div class="sort__item sort__item--card active">
+                            <!-- <i class="fa-solid fa-square"></i> -->
+                            <i class="fa-solid fa-table-cells-large"></i>
+                        </div>
+                        <div class="sort__item sort__item--list">
+                            <i class="fa-solid fa-bars"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            
             <!-- <div class="filter">
                 <div class="filter__item">
                     <select class="filter__select" name="면적">
