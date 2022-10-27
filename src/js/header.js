@@ -28,8 +28,6 @@ document.addEventListener('click', e => {
     }
 })
 
-console.log(navItems);
-
 navItems.forEach((item, index) => {
     item.addEventListener('click', e => {
         for(let i = 0; i < navItems.length; i++) {

@@ -34,29 +34,128 @@ main {
     box-sizing: border-box;
     /* overflow: hidden; */
 }
+ 
+select::-ms-expand{
+    display:none;/*for IE10,11*/
+}
+
+.w100 {
+    width: 100px;
+}
+.w120 {
+    width: 120px !important;
+}
 
 .main-top {
+    display: flex;
     width: 100%;
     height: 100px;
     border:1px solid #00bfb3;
+    /* z-index: 9999999999999; */
 }
 
-.option {
-    border: 1px solid red;
+.filter {
+    position: relative;
+    /* border: 1px solid red; */
+    margin-right: 10px;
 }
+
+.filter__select {
+    display: flex;
+    /* width: 100px; */
+    height: 24px;
+    line-height: 24px;
+    /* border: 1px solid blue; */
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.filter__select-arrow {
+    color: var(--secondary);
+    /* border: 1px solid red; */
+    margin-left: auto;
+    line-height: 18px;
+}
+
+.filter__option-wrapper {
+    position: absolute;
+    /* border: 1px solid red; */
+    background-color: white;
+    margin-top: 5px;
+    z-index: 2;
+    width: 100%;
+    border-radius: 5px;
+    padding: 0 0 10px 10px;
+    box-sizing: border-box;
+}
+
+.filter__option {
+    margin-top: 10px;
+}
+
+/* .filter {
+    display: flex;
+    height: 100%;
+    border: 1px solid red;
+    box-sizing: border-box;
+}
+
+.filter__item {
+    position: relative;
+    display: flex;
+    height: 40px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px 1px #e9eaf3;
+    overflow: hidden;
+    margin: 40px 10px;
+}
+
+.filter__select {
+    border: none;
+    width: 100%;
+    border-radius: 5px;
+    outline: none;
+    padding: 10px;
+    -webkit-appearance:none; 
+    -moz-appearance:none; 
+    appearance:none;
+    padding-right: 35px;
+    font-weight: bold;
+}
+
+.filter__select option {
+    background: black;
+    color: #fff;
+    padding: 3px 0;
+    border-radius: 5px;
+}
+
+.filter__item i {
+    position: absolute;
+    top: 8px;
+    right: 14px;
+    color: var(--secondary);
+    pointer-events: none;
+} */
+
 
 .main-middle {
     display: flex;
     height: calc(100vh - 170px);
     padding-left: 10px;
+    /* z-index: -1; */
 }
 
 .map-wrapper {
-    width: 80%;
+    flex-grow: 1;
+    min-width: 80%;
     height: 100%;
     border-radius: 20px;
     box-sizing: border-box;
     padding-bottom: 10px;
+    /* border: 1px solid red; */
 }
 
 .map {
@@ -67,19 +166,21 @@ main {
 }
 
 .card {
-    flex-grow: 1;
+    width: 300px;
+    /* padding: 10px; */
     height: 100%;
     overflow: scroll;
-    /* overflow-y: hidden; */
+    /* border: 1px solid red; */
 }
 
 
 .card-li {
     display: flex;
+    width: 90%;
     height: 150px;
     background-color: white;
     border-radius: 10px;
-    margin: 0 10px 10px 10px;
+    margin: 0 auto 10px;
     box-shadow: 4px 4px 1px 1px #e9eaf3;
 }
 
