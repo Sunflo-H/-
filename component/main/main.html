@@ -85,78 +85,88 @@
     <main>
         <div class="main-top">
             <div class="filter__wrapper">
-                <div class="filter filter--select">
-                    <div class="filter__select ">
-                        <div class="filter__select-checked">면적</div>
+                <div class="filter">
+                    <div class="filter__select active">
+                        <div class="filter__select-checked">필터</div>
                         <div class="filter__select-arrow"><i class="fa-solid fa-sort-down"></i></div>
                     </div>
-                    <div class="filter__option-wrapper filter__option-wrapper--table">
-                        <!-- <div class="filter__option">면적</div> -->
-                        <!-- <div class="filter__option">전체</div>
-                        <div class="filter__option">10평 이하</div>
-                        <div class="filter__option">10평대</div>
-                        <div class="filter__option">20평대</div>
-                        <div class="filter__option">30평대</div>
-                        <div class="filter__option">40평대</div>
-                        <div class="filter__option">50평대</div>
-                        <div class="filter__option">60평대 이상</div> -->
+                    <div class=" filter__option-table">
+                        <div class="filter__reset">
+                            <div class="filter__btn filter__btn--reset">
+                                초기화
+                            </div>
+                        </div>
+                        <div class="filter__table-wrapper">
+                            <div class="filter__table-item">
+                                <div class="filter__table-title">
+                                    <span>면적</span>
+                                </div>
+                                <table class="filter__table">
+                                    <tbody>
+                                        <tr>
+                                            <td class="filter__td">전체</td>
+                                            <td class="filter__td">10평 이하</td>
+                                            <td class="filter__td">10평대</td>
+                                            <td class="filter__td">20평대</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="filter__td">30평대</td>
+                                            <td class="filter__td">40평대</td>
+                                            <td class="filter__td">50평대</td>
+                                            <td class="filter__td">60평 이상</td>
+                                        </tr>
+                                    </tbody>
+                                </table>    
+                            </div>
 
-                        <div class="table-wrapper">
-                            <table>
-                                <tr>
-                                    <td>전체</td>
-                                    <td>10평 이하</td>
-                                    <td>10평대</td>
-                                    <td>20평대</td>
-                                </tr>
-                                <tr>
-                                    <td>30평대</td>
-                                    <td>40평대</td>
-                                    <td>50평대</td>
-                                    <td>60평 이상</td>
-                                </tr>
-                            </table>
+                            <div class="filter__table-item">
+                                <div class="filter__table-title">
+                                    <span>준공년도</span>
+                                </div>
+                                <table class="filter__table">
+                                    <tbody>
+                                        <tr>
+                                            <td class="filter__td ">전체</td>
+                                            <td class="filter__td ">5년 이내</td>
+                                            <td class="filter__td ">10년 이내</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="filter__td ">15년 이내</td>
+                                            <td class="filter__td ">20년 이내</td>
+                                            <td class="filter__td ">25년 이내</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="filter__table-item">
+                                <div class="filter__table-title">
+                                    <span>세대수</span>
+                                </div>
+                                <table class="filter__table">
+                                    <tbody>
+                                        <tr>
+                                            <td class="filter__td">전체</td>
+                                            <td class="filter__td">200세대 이상</td>
+                                            <td class="filter__td">500세대 이상</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="filter__td">1000세대 이상</td>
+                                            <td class="filter__td">2000세대 이상</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         <div class="filter__btn filter__btn--apply">
                             <i class="fa-solid fa-check"></i>적용
                         </div>
+                        
                     </div>
                 </div>
-                <div class="filter">
-                    <div class="filter__select">
-                        <div class="filter__select-checked">준공년도</div>
-                        <div class="filter__select-arrow"><i class="fa-solid fa-sort-down"></i></div>
-                    </div>
-                    <div class="filter__option-wrapper">
-                        <!-- <div class="filter__option">준공년도</div> -->
-                        <div class="filter__option">전체</div>
-                        <div class="filter__option">5년 이내</div>
-                        <div class="filter__option">10년 이내</div>
-                        <div class="filter__option">15년 이내</div>
-                        <div class="filter__option">20년 이내</div>
-                        <div class="filter__option">25년 이내</div>
-                    </div>
-                </div>
-                <div class="filter">
-                    <div class="filter__select">
-                        <div class="filter__select-checked">세대수</div>
-                        <div class="filter__select-arrow"><i class="fa-solid fa-sort-down"></i></div>
-                    </div>
-                    <div class="filter__option-wrapper">
-                        <!-- <div class="filter__option">세대수</div> -->
-                        <div class="filter__option">전체</div>
-                        <div class="filter__option">200세대 이상</div>
-                        <div class="filter__option">500세대 이상</div>
-                        <div class="filter__option">1000세대 이상</div>
-                        <div class="filter__option">2000세대 이상</div>
-                    </div>
-                </div>
-                <!-- <div class="filter__btn filter__btn--apply">
-                    <i class="fa-solid fa-check"></i>적용
-                </div> -->
-                <!-- <div class="filter__btn filter__btn--reset">
-                    초기화
-                </div> -->
+            </div>
+            <div class="area-find">
+                    
             </div>
 
             <div class="sort-wrapper">
