@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
 
+    <!-- jQuery -->
+    <!-- <script src="http://code.jquery.com/jquery-latest.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
     <!-- 폰트어썸 -->
     <script
       src="https://kit.fontawesome.com/edda6de607.js"
@@ -15,7 +19,7 @@
     <!-- kakao map -->
     <script
       type="text/javascript"
-      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=89c94138aac3b434362c7179cb6bc993"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=89c94138aac3b434362c7179cb6bc993&libraries=services,clusterer,drawing"
     ></script>
     <script src="../../src/js/header.js" type="module"></script>
     <script src="../../src/js/contextMenu.js" type="module"></script>
@@ -360,7 +364,7 @@
       <div class="main-middle">
         <!-- Map -->
         <div class="map-box">
-          <div class="map"></div>
+          <div class="map" id="map"></div>
         </div>
 
         <!-- Card -->
