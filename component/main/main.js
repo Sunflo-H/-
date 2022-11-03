@@ -7,11 +7,13 @@ console.log(filter);
 
 var map = new kakao.maps.Map(document.getElementById("map"), {
   // 지도를 표시할 div
-  center: new kakao.maps.LatLng(36.2683, 127.6358), // 지도의 중심좌표
+  center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392), // 지도의 중심좌표
   //   level: 12, // 지도의 확대 레벨
   level: 8, // 지도의 확대 레벨
 });
-
+kakao.maps.event.addListener(map, "click", function (mouseEvent) {
+  console.log(mouseEvent.latLng); // true
+});
 let positions = [
   {
     lat: 37.27943075229118,
@@ -548,6 +550,11 @@ function makeCluster(data) {
 
   // 클러스터러에 마커들을 추가합니다
   clusterer.addMarkers(markers);
+  console.log(clusterer);
+}
+
+function clusterText() {
+  if()
 }
 
 makeCluster(positions);
