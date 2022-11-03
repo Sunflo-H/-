@@ -1,11 +1,16 @@
+const filter = document.querySelectorAll(".filter__select");
+console.log(filter);
+// const size = filter;
+// const sizeSelect = size.querySelector(".filter__select");
+// const sizeOption = size.querySelector(".filter__option-table");
+// const sizeOptionItem = size.querySelectorAll(".filter__option");
+
 var map = new kakao.maps.Map(document.getElementById("map"), {
   // 지도를 표시할 div
   center: new kakao.maps.LatLng(36.2683, 127.6358), // 지도의 중심좌표
   //   level: 12, // 지도의 확대 레벨
   level: 8, // 지도의 확대 레벨
 });
-
-// 마커 클러스터러를 생성합니다
 
 let positions = [
   {
@@ -536,6 +541,7 @@ function makeCluster(data) {
         lineHeight: "54px",
         borderRadius: "50%",
         border: "1px solid #4c3aff",
+        opacity: "0.85",
       },
     ],
   });
@@ -546,4 +552,11 @@ function makeCluster(data) {
 
 makeCluster(positions);
 
-// console.log(map.level);
+//
+// sizeSelect.addEventListener("click", (e) => {
+//   sizeOption.style.display = "block";
+// });
+
+// document.addEventListener("click", (e) => {
+//   if (e.target !== sizeSelect) sizeOption.style.display = "none";
+// });
