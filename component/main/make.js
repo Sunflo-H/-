@@ -66,3 +66,27 @@ function getData() {
 }
 
 // getData();
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function getApple() {
+  await delay(3000);
+  return "apple";
+}
+
+async function getBanana() {
+  await delay(3000);
+  return "banana";
+}
+
+async function pick() {
+  const apple = await getApple();
+  console.log(apple);
+  const banana = await getBanana();
+  console.log(banana);
+
+  return `${apple} + ${banana}`;
+}
+
+pick().then(console.log);
