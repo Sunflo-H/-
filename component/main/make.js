@@ -1,11 +1,6 @@
-/**
- * 1. 역 id를 찾는다. (fetch)
- * 2. 역 id로 주변 원룸을 찾는다.
- * 3. 주변 원룸의 좌표를 찾는다.
- * 4. 내 주변의
- */
-
 const SUBWAY_LIST_URL = "https://apis.zigbang.com/property/biglab/subway/all?";
+// let ROOM_LIST_URL = `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`;
+// let ROOM_INFO_URL = `https://apis.zigbang.com/v2/items/${roomId}`;
 const 지하철역리스트 = [
   "중곡역",
   "군자역",
@@ -18,55 +13,56 @@ const 지하철역리스트 = [
   "아차산역",
 ];
 // ERR_INSUFFICIENT_RESOURCES
-fetch(SUBWAY_LIST_URL)
-  .then((response) => response.json())
-  .then((data) => {
-    console.log(data);
-    for (let i = 0; i < 지하철역리스트.length; i++) {
-      for (let j = 0; j < data.length; j++) {
-        if (지하철역리스트[i] === data[j].name) {
-          console.log(data[j].id);
-          let subwayId = data[j].id;
-          fetch(
-            `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`
-          )
-            .then((response) => response.json())
-            .then((data) => {
-              for (let i = 0; i < data.list_items.length; i++) {
-                // 0번째가 agent 정보일 때가 있다. agent일때는 item_id가 없어 이걸 염두하고 하자
-                if (data.list_items[i].simple_item) {
-                  let roomId = data.list_items[i].simple_item.item_id;
-                  console.log(roomId);
-                  //   fetch(`https://apis.zigbang.com/v2/items/${roomId}`)
-                  //     .then((response) => response.json())
-                  //     .then((data) => console.log(data.item.item_id));
+
+function sleep(ms) {
+  const wakeUpTime = Date.now() + ms;
+  while (Date.now() < wakeUpTime) {}
+}
+/**
+ * 1. 모든 지하철 id를 받아온다
+ *
+ * 2. 원하는 지하철역 리스트의 id를 찾는다. (이중 반복문)
+ * 2-1 이름이 같다면 찾은것!
+ *
+ * 3. 지하철 id로 주변 매물 id를 찾는다.
+ */
+
+// 역을 검색해서 찾는걸로 할까?
+// 지도를 특정값 이상으로는 더 확대, 축소 못하게 해서 data를 제한
+// 만약 100개를 넘어가면 더이상 fetch 안하게 하고, 클러스터에는 100 + 로 표시
+
+// 매물 리스트에는 지도를 더 확대해 주세요
+function getData() {
+  fetch(SUBWAY_LIST_URL)
+    .then((response) => response.json())
+    .then((subwayData) => {
+      for (let i = 0; i < 지하철역리스트.length; i++) {
+        for (let j = 0; j < subwayData.length; j++) {
+          if (지하철역리스트[i] === subwayData[j].name) {
+            let subwayId = subwayData[j].id;
+            fetch(
+              `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`
+            )
+              .then((response) => response.json())
+              .then((subwayAroundData) => {
+                console.log(subwayAroundData);
+                for (let k = 0; k < subwayAroundData.list_items.length; k++) {
+                  if (subwayAroundData.list_items[k].simple_item) {
+                    let roomId =
+                      subwayAroundData.list_items[k].simple_item.item_id;
+                    if (k > 200) return;
+                    fetch(`https://apis.zigbang.com/v2/items/${roomId}`)
+                      .then((response) => response.json())
+                      .then((roomData) => {
+                        console.log(roomData);
+                      });
+                  }
                 }
-              }
-              console.log(data.list_items.length);
-            });
-          break;
+              });
+          }
         }
       }
-    }
-    // for (let j = 0; j < data.length; j++) {
-    //   let subwayId = data[j].id;
-    //   fetch(
-    //     //지하철역을 기반으로 주변 매물 id 얻음
-    //     `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`
-    //   )
-    //     .then((response) => response.json())
-    //     .then((data) => {
-    //       //   console.log(data);
-    //       for (let i = 0; i < data.list_items.length; i++) {
-    //         // 0번째가 agent 정보일 때가 있다. agent일때는 item_id가 없어 이걸 염두하고 하자
-    //         if (data.list_items[i].simple_item) {
-    //           //   console.log(data.list_items[i].simple_item.item_id);
-    //           let roomId = data.list_items[i].simple_item.item_id;
-    //           fetch(`https://apis.zigbang.com/v2/items/${roomId}`)
-    //             .then((response) => response.json())
-    //             .then((data) => console.log(data));
-    //         }
-    //       }
-    //     });
-    // }
-  });
+    });
+}
+
+// getData();

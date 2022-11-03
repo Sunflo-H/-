@@ -522,11 +522,6 @@ let positions = [
 ];
 
 function makeCluster(data) {
-  var markers = data.map(function (position, i) {
-    return new kakao.maps.Marker({
-      position: new kakao.maps.LatLng(position.lat, position.lng),
-    });
-  });
   let clusterer = new kakao.maps.MarkerClusterer({
     map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
     averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
@@ -547,17 +542,30 @@ function makeCluster(data) {
       },
     ],
   });
+  var markers = data.map(function (position, i) {
+    return new kakao.maps.Marker({
+      position: new kakao.maps.LatLng(position.lat, position.lng),
+    });
+  });
 
-  // 클러스터러에 마커들을 추가합니다
+  clusterer.setTexts((size) => {
+    var text = "";
+
+    // 클러스터에 포함된 마커 개수가 50개 미만이면 '적음' 으로 표시한다
+    if (size < 20) {
+      text = "적음";
+    } else if (size > 20) {
+      text = " 100 +";
+    }
+
+    return text;
+  });
   clusterer.addMarkers(markers);
-  console.log(clusterer);
-}
-
-function clusterText() {
-  if()
 }
 
 makeCluster(positions);
+// console.log(clusterer.getTexts());
+// clusterText();
 
 //
 // sizeSelect.addEventListener("click", (e) => {
