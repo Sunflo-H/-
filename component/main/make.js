@@ -65,28 +65,155 @@ function getData() {
     });
 }
 
+// 원하는 역정보가 하나일때, 모든 역일때
+/**
+ * 찾고자하는 역의 id가 한개일때 사용하는 fetch 함수
+ * @param {*} subwayName
+ * @returns 역 id
+ */
+async function getSubwayInfo(subwayName) {
+  let response = await fetch(SUBWAY_LIST_URL);
+  let data = await response.json();
+  let subway = data.find((subway) => subway.name === subwayName);
+
+  return subway.id;
+}
+
+async function getRoomIdList(subwayId) {
+  let response = await fetch(
+    `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`
+  );
+  let data = await response.json();
+
+  let roomIdList = data.list_items.map((room) => {
+    // 기존 data 배열을 id만 얻을수 있게 재정의하여 새 배열을 만들었다.
+    return room.simple_item.item_id;
+  });
+  return roomIdList;
+}
+
+async function getRoomInfo(roomId) {
+  let response = await fetch(`https://apis.zigbang.com/v2/items/${roomId}`);
+  let data = await response.json();
+  return data;
+}
+
+async function getDataAsync() {
+  let subwayId = await getSubwayInfo("아차산역");
+  console.log(subwayId);
+
+  let roomIdList = await getRoomIdList(subwayId);
+  console.log(roomIdList);
+
+  // roomIdList.forEach(roomId => {
+  //   getRoomInfo(roomId);
+  // });
+  console.log(await getRoomInfo(roomIdList[10]));
+}
+
+getRoomIdList(349);
+getRoomInfo(33969684);
+getDataAsync();
+
+// let a = await new Promise((resolve) => {
+//   resolve("하이");
+// });
+// console.log(a);
+// console.log("하이");
+
+// getDataAsync();
+// let subwayIdList = await fetch(SUBWAY_LIST_URL)
+//   .then((response) => response.json())
+//   .then((data) => data);
+// subwayIdList.then((data) => {
+//   console.log(data);
+// });
+
+// console.log(subwayIdList);
+// console.log(await subwayIdList);
+
+// console.log(subwayIdList.then((data) => data));
+
+// let subwayId = subwayIdList[0].id;
+
+// let roomIdList = fetch(
+//   `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`
+// )
+//   .then((response) => response.json())
+//   .then((data) => data);
+// console.log(roomIdList);
+
+// async function getSubwayId() {
+//   fetch(SUBWAY_LIST_URL)
+//     .then((response) => response.json())
+//     .then((data) => {
+//       return data;
+//     });
+// }
+
+// getSubwayId();
+// console.log(getSubwayId);
+// console.log(getSubwayId());
 // getData();
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+
+function getDataAll() {
+  fetch(SUBWAY_LIST_URL)
+    .then((response) => response.json())
+    .then((subwayData) => {
+      for (let i = 0; i < subwayData.length; i++) {
+        // for (let j = 0; j < subwayData.length; j++) {
+        // if (지하철역리스트[i] === subwayData[j].name) {
+        let subwayId = subwayData[i].id;
+        fetch(
+          `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`
+        )
+          .then((response) => response.json())
+          .then((subwayAroundData) => {
+            console.log(subwayAroundData);
+            for (let k = 0; k < subwayAroundData.list_items.length; k++) {
+              if (subwayAroundData.list_items[k].simple_item) {
+                let roomId = subwayAroundData.list_items[k].simple_item.item_id;
+                if (k > 200) return;
+                fetch(`https://apis.zigbang.com/v2/items/${roomId}`)
+                  .then((response) => response.json())
+                  .then((roomData) => {
+                    console.log(roomData);
+                  });
+              }
+            }
+          });
+        // }
+        // }
+      }
+    });
 }
+// getDataAll();
 
-async function getApple() {
-  await delay(3000);
-  return "apple";
-}
+// function delay(ms) {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
 
-async function getBanana() {
-  await delay(3000);
-  return "banana";
-}
+// async function getApple() {
+//   const response = await fetch(SUBWAY_LIST_URL);
+//   const data = await response.json();
+//   return data;
+//   // return "apple";
+// }
 
-async function pick() {
-  const apple = await getApple();
-  console.log(apple);
-  const banana = await getBanana();
-  console.log(banana);
+// async function getBanana() {
+//   return "banana";
+// }
 
-  return `${apple} + ${banana}`;
-}
+// async function pick() {
+//   const apple = await getApple();
+//   console.log(apple);
+//   await delay(1000);
 
-pick().then(console.log);
+//   const banana = await getBanana();
+//   console.log(banana);
+//   await delay(1000);
+
+//   return `${apple} + ${banana}`;
+// }
+
+// pick().then(console.log);
