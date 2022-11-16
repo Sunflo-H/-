@@ -1,14 +1,14 @@
+import getOneRoomData from "./oneroom.js";
+
 const filter = document.querySelectorAll(".filter__select");
-console.log(filter);
+// console.log(filter);
 // const size = filter;
 // const sizeSelect = size.querySelector(".filter__select");
 // const sizeOption = size.querySelector(".filter__option-table");
 // const sizeOptionItem = size.querySelectorAll(".filter__option");
 
 var map = new kakao.maps.Map(document.getElementById("map"), {
-  // 지도를 표시할 div
-  center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392), // 지도의 중심좌표
-  //   level: 12, // 지도의 확대 레벨
+  center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392),
   level: 8, // 지도의 확대 레벨
 });
 kakao.maps.event.addListener(map, "click", function (mouseEvent) {
@@ -521,7 +521,13 @@ let positions = [
   },
 ];
 
-function makeCluster(data) {
+async function asd() {
+  let coordList = getOneRoomData("아차산역");
+  console.log(coordList);
+}
+asd();
+
+function makeCluster(coords) {
   let clusterer = new kakao.maps.MarkerClusterer({
     map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
     averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
@@ -542,7 +548,7 @@ function makeCluster(data) {
       },
     ],
   });
-  var markers = data.map(function (position, i) {
+  var markers = coords.map(function (position, i) {
     return new kakao.maps.Marker({
       position: new kakao.maps.LatLng(position.lat, position.lng),
     });
