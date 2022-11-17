@@ -521,13 +521,75 @@ let positions = [
   },
 ];
 
-async function asd() {
-  let coordList = getOneRoomData("아차산역");
-  console.log(coordList);
-}
-asd();
+// !문제 시간차가 있어서 데이터를 바로 사용하지 못함, => 결국 promise의 데이터를 시간차 없이 다룰려면 promise안에서 다뤄야 한다.
+/**
+ * 1. 좌표를 구한다. (promise)
+ * 2. 좌표로 마커 배열을 만든다.
+ * 3. 마커 배열도 promise다..
+ * ! 이 promise 형태를 벗어난 뒤에 클러스터 함수에 적용해야되는데..
+ * 4. 클러스터의 addMarkers(마커배열)에 넣는다.
+ */
+async function getOneRoomCluster() {
+  let oneroomList = await getOneRoomData("아차산역"); // 프로미스 배열이 있음, await 안쓰면 프로미스 안에 프로미스배열이 있음
 
+  // console.log(oneroomList);
+  Promise.all(oneroomList).then((oneroomList) => {
+    let coordList = [];
+    oneroomList.forEach((oneroom) => {
+      coordList.push(oneroom.item.random_location.split(","));
+    });
+    console.log(coordList);
+    makeCluster(coordList);
+  });
+}
+getOneRoomCluster();
+
+// ~ 클러스터 만들기 = 좌표리스트
 function makeCluster(coords) {
+  let clusterer = new kakao.maps.MarkerClusterer({
+    map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
+    averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+    minLevel: 3, // 클러스터 할 최소 지도 레벨
+    gridSize: 60,
+    minClusterSize: 1, // Number : 클러스터링 할 최소 마커 수 (default: 2)
+    styles: [
+      {
+        width: "53px",
+        height: "52px",
+        background: "#3c5cff",
+        color: "#fff",
+        textAlign: "center",
+        lineHeight: "54px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+    ],
+  });
+
+  var markers = coords.map(function (position, i) {
+    return new kakao.maps.Marker({
+      position: new kakao.maps.LatLng(position[0], position[1]),
+    });
+  });
+
+  clusterer.setTexts((size) => {
+    var text = "";
+
+    // 클러스터에 포함된 마커 개수가 50개 미만이면 '적음' 으로 표시한다
+    if (size < 20) {
+      text = "적음";
+    } else if (size >= 20) {
+      text = " 100 +";
+    }
+
+    return text;
+  });
+  clusterer.addMarkers(markers);
+}
+
+// ~ 클러스터 원본
+function makeCluster원본(coords) {
   let clusterer = new kakao.maps.MarkerClusterer({
     map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
     averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
@@ -548,11 +610,13 @@ function makeCluster(coords) {
       },
     ],
   });
+
   var markers = coords.map(function (position, i) {
     return new kakao.maps.Marker({
       position: new kakao.maps.LatLng(position.lat, position.lng),
     });
   });
+  console.log(markers);
 
   clusterer.setTexts((size) => {
     var text = "";
@@ -567,17 +631,57 @@ function makeCluster(coords) {
     return text;
   });
   clusterer.addMarkers(markers);
+  console.log(clusterer);
 }
+// makeCluster원본(positions);
 
-makeCluster(positions);
-// console.log(clusterer.getTexts());
-// clusterText();
+//~ 카카오 테스트용 좌표를 한개씩 넣어보기
+// ! 한개씩 마커를 생성하면 실행은 되는데 클러스터가 제대로 만들어지지 않는다.
+let clusterer;
+let markers;
+function makeCluster테스트(coord) {
+  clusterer = new kakao.maps.MarkerClusterer({
+    map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
+    averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+    minLevel: 6, // 클러스터 할 최소 지도 레벨
+    gridSize: 60,
+    minClusterSize: 2, // Number : 클러스터링 할 최소 마커 수 (default: 2)
+    styles: [
+      {
+        width: "53px",
+        height: "52px",
+        background: "#3c5cff",
+        color: "#fff",
+        textAlign: "center",
+        lineHeight: "54px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+    ],
+  });
 
-//
-// sizeSelect.addEventListener("click", (e) => {
-//   sizeOption.style.display = "block";
-// });
+  let marker = new kakao.maps.Marker({
+    position: new kakao.maps.LatLng(coord.lat, coord.lng),
+  });
 
-// document.addEventListener("click", (e) => {
-//   if (e.target !== sizeSelect) sizeOption.style.display = "none";
-// });
+  clusterer.setTexts((size) => {
+    var text = "";
+
+    // 클러스터에 포함된 마커 개수가 50개 미만이면 '적음' 으로 표시한다
+    if (size < 20) {
+      text = "적음";
+    } else if (size > 20) {
+      text = " 100 +";
+    }
+
+    return text;
+  });
+  clusterer.addMarker(marker);
+  clusterer.redraw();
+  console.log(clusterer);
+}
+positions.forEach((data) => {
+  // makeCluster테스트(data);
+});
+// makeCluster(positions);
