@@ -1,15 +1,37 @@
 //! 지도 최대레벨일때 클러스터 전부다 보여주기 -> 어떻게 추려낼지 생각해서 만들어야돼
 //! 지도레벨 줄어들때 검색범위 줄이면서 클러스터 범위 변경
 
-class oneroom {
+class Oneroom {
   SUBWAY_LIST_URL = "https://apis.zigbang.com/property/biglab/subway/all?";
+  local = [
+    "서울특별시",
+    "경기도",
+    "강원도",
+    "충청남도",
+    "인천광역시",
+    "광주광역시",
+    "대구광역시",
+    "대전광역시",
+    "경상북도",
+    "경상남도",
+    "부산광역시",
+    "울산광역시",
+    //"null"
+  ];
+
+  area = [
+    "수도권",
+    "광주",
+    "대구",
+    "대전",
+    "부산",
+    //"null"
+  ];
 
   async getSubwayInfo(subwayName) {
     let response = await fetch(this.SUBWAY_LIST_URL);
     let data = await response.json();
-    console.log(data);
     let subway = data.find((subway) => subway.name === subwayName);
-    console.log(subway);
     return subway.id;
   }
 
@@ -17,9 +39,19 @@ class oneroom {
     let response = await fetch(this.SUBWAY_LIST_URL);
     let data = await response.json();
     let subway = data.filter((subway) => subway.local1 === local);
-    console.log(subway);
-    return data;
+    return subway;
   }
+
+  // async getLocal() {
+  //   let response = await fetch(this.SUBWAY_LIST_URL);
+  //   let data = await response.json();
+  //   let localData = [];
+  //   this.local.forEach((local) => {
+  //     let subway = data.find((subway) => subway.local1 === local);
+  //     localData.push(subway);
+  //   });
+  //   return localData;
+  // }
 
   async getRoomIdList(subwayId) {
     let response = await fetch(
@@ -57,8 +89,9 @@ class oneroom {
   }
 }
 
-let a = new oneroom();
+let a = new Oneroom();
 a.getSubwayInfo_local("서울특별시");
+export default Oneroom;
 
 // const SUBWAY_LIST_URL = "https://apis.zigbang.com/property/biglab/subway/all?";
 

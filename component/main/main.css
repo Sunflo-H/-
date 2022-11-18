@@ -398,3 +398,19 @@ select::-ms-expand {
   border-radius: 10px;
   overflow: hidden;
 }
+
+.customOverlay {
+  color: white;
+  width: 80px;
+  height: 80px;
+  border: 1px solid var(--gr1_1);
+  background-color: var(--primary);
+  opacity: 0.85;
+  border-radius: 50%;
+  line-height: 80px;
+  text-align: center;
+}
+
+.customOverlay:hover {
+  /* cursor: none; */
+}
