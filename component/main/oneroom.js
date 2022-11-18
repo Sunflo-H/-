@@ -42,17 +42,6 @@ class Oneroom {
     return subway;
   }
 
-  // async getLocal() {
-  //   let response = await fetch(this.SUBWAY_LIST_URL);
-  //   let data = await response.json();
-  //   let localData = [];
-  //   this.local.forEach((local) => {
-  //     let subway = data.find((subway) => subway.local1 === local);
-  //     localData.push(subway);
-  //   });
-  //   return localData;
-  // }
-
   async getRoomIdList(subwayId) {
     let response = await fetch(
       `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`

@@ -1,4 +1,3 @@
-// import { getOneRoomData } from "./oneroom.js";
 import Oneroom from "./oneroom.js";
 
 const filter = document.querySelectorAll(".filter__select");
@@ -33,29 +32,36 @@ const local = [
 //   [35.519301, 129.239078],
 // ];
 
-// console.log(filter);
-// const size = filter;
-// const sizeSelect = size.querySelector(".filter__select");
-// const sizeOption = size.querySelector(".filter__option-table");
-// const sizeOptionItem = size.querySelectorAll(".filter__option");
-
 const map = new kakao.maps.Map(document.getElementById("map"), {
   center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392),
-  level: 8, // 지도의 확대 레벨
+  level: 8,
   maxLevel: 11,
 });
 
 kakao.maps.event.addListener(map, "click", function (mouseEvent) {
-  console.log(mouseEvent.latLng); // true
+  console.log(mouseEvent.latLng);
   console.log(map.getLevel());
+});
+
+//^ 지도의 드래그가 끝났을때 화면에 보여지느 오버레이에 zoomIn 이벤트 등록
+kakao.maps.event.addListener(map, "dragend", function () {
+  const overlayList = document.querySelectorAll(".customOverlay");
+  overlayList.forEach((overlay) => {
+    overlay.addEventListener("click", zoomIn);
+  });
+});
+
+//^ 지도의 확대레벨이 변경될때 화면에 보여지는 오버레이에 zoomIn 이벤트 등록
+kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
+  const overlayList = document.querySelectorAll(".customOverlay");
+
+  overlayList.forEach((overlay) => {
+    overlay.addEventListener("click", zoomIn);
+  });
 });
 
 const oneroom = new Oneroom();
 
-// createCluster_팔도(local);
-// 마우스 휠에 따라 함수 실행?
-// 지도 렙에 따라 함수 실행?
-// 지도 렙은 마우스 휠에 따라 바뀌어 => 지도 렙 감지 or 마우스 휠 감지
 /**
  *^ 역 주변 매물의 위치를 클러스터로 나타낸다.
  */
@@ -74,7 +80,7 @@ async function getOneRoomCluster(subway) {
 // getOneRoomCluster("군자역");
 
 /**
- * 좌표 리스트를 받아 클러스터를 생성
+ * ^좌표 리스트를 받아 클러스터를 생성하는 함수
  * @param {*} coords
  */
 function createCluster(coords) {
@@ -117,49 +123,10 @@ function createCluster(coords) {
 }
 
 /**
- * 좌표 리스트를 받아 클러스터를 생성
- * @param {*} local {지역명, lat, lng}
+ * 지도의 레벨이 5보다 클때 서울, 경기 등 지역정보를 보여주는 오버레이 생성
+ * @param {*} local
  */
-function createCluster_팔도(local) {
-  let clusterer = new kakao.maps.MarkerClusterer({
-    map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
-    averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
-    minLevel: 3, // 클러스터 할 최소 지도 레벨
-    gridSize: 0,
-    minClusterSize: 1, // Number : 클러스터링 할 최소 마커 수 (default: 2)
-    styles: [
-      {
-        width: "53px",
-        height: "52px",
-        background: "#3c5cff",
-        color: "#fff",
-        textAlign: "center",
-        lineHeight: "54px",
-        borderRadius: "50%",
-        border: "1px solid #4c3aff",
-        opacity: "0.85",
-      },
-    ],
-  });
-
-  var markers = local.map(function (data, i) {
-    return new kakao.maps.Marker({
-      position: new kakao.maps.LatLng(data.lat, data.lng),
-    });
-  });
-
-  clusterer.setTexts((size) => {
-    var text = "";
-
-    if (size > 100) text = "100+";
-    else text = size;
-
-    return text;
-  });
-  clusterer.addMarkers(markers);
-}
-
-function create팔도(local) {
+function createLocalOverlay(local) {
   let list = [];
   local.forEach((data) => {
     let customOverlay = new kakao.maps.CustomOverlay({
@@ -176,29 +143,24 @@ function create팔도(local) {
   const overlayList = document.querySelectorAll(".customOverlay");
 
   overlayList.forEach((overlay) => {
-    console.log("이벤트 등록");
-    overlay.addEventListener("click", (e) => {
-      map.setLevel(map.getLevel() - 2, {
-        anchor: new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng),
-      });
-    });
+    overlay.addEventListener("click", zoomIn);
   });
 }
 
-create팔도(local);
+createLocalOverlay(local);
 
-window.addEventListener("wheel", zoomIn);
-
+/**
+ * ^클릭한 지점의 위치를 중심으로 지도를 확대하는 이벤트핸들러
+ */
 function zoomIn() {
-  const overlayList = document.querySelectorAll(".customOverlay");
+  let overlay = event.target;
+  // 1씩 낮추는 방법
+  // map.setLevel(map.getLevel() - 1, {
+  //   anchor: new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng),
+  // });
 
-  overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", (e) => {
-      map.setLevel(map.getLevel() - 2, {
-        anchor: new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng),
-      });
-    });
+  // 바로 지하철들 보이게 하는 방법
+  map.setLevel(5, {
+    anchor: new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng),
   });
 }
-
-// 지도를 움직일때도 적용해야돼
