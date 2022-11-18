@@ -4,18 +4,18 @@ import Oneroom from "./oneroom.js";
 const filter = document.querySelectorAll(".filter__select");
 
 const local = [
-  { name: "서울특별시", lat: "37.5642135", lng: "127.0016985" },
-  { name: "경기도", lat: "37.567167", lng: "127.190292" },
-  { name: "강원도", lat: "37.555837", lng: "128.209315" },
-  { name: "충청남도", lat: "36.557229", lng: "126.779757" },
-  { name: "인청광역시", lat: "37.469221", lng: "126.573234" },
-  { name: "광주광역시", lat: "35.126033", lng: "126.831302" },
-  { name: "대구광역시", lat: "35.798838", lng: "128.583052" },
-  { name: "대전광역시", lat: "36.321655", lng: "127.378953" },
-  { name: "경상북도", lat: "36.248647", lng: "128.664734" },
-  { name: "경상남도", lat: "35.259787", lng: "128.664734 " },
-  { name: "부산광역시", lat: "35.198362", lng: "129.053922" },
-  { name: "울산광역시", lat: "35.519301", lng: "129.239078" },
+  { id: "경기도", name: "경기도", lat: "37.567167", lng: "127.190292" },
+  { id: "강원도", name: "강원도", lat: "37.555837", lng: "128.209315" },
+  { id: "충청남도", name: "충청남도", lat: "36.557229", lng: "126.779757" },
+  { id: "인청광역시", name: "인천", lat: "37.469221", lng: "126.573234" },
+  { id: "광주광역시", name: "광주", lat: "35.126033", lng: "126.831302" },
+  { id: "대구광역시", name: "대구", lat: "35.798838", lng: "128.583052" },
+  { id: "대전광역시", name: "대전", lat: "36.321655", lng: "127.378953" },
+  { id: "경상북도", name: "경상북도", lat: "36.248647", lng: "128.664734" },
+  { id: "경상남도", name: "경상남도", lat: "35.259787", lng: "128.664734 " },
+  { id: "부산광역시", name: "부산", lat: "35.198362", lng: "129.053922" },
+  { id: "울산광역시", name: "울산", lat: "35.519301", lng: "129.239078" },
+  { id: "서울특별시", name: "서울", lat: "37.5642135", lng: "127.0016985" },
 ];
 
 // const local = [
@@ -176,6 +176,7 @@ function create팔도(local) {
   const overlayList = document.querySelectorAll(".customOverlay");
 
   overlayList.forEach((overlay) => {
+    console.log("이벤트 등록");
     overlay.addEventListener("click", (e) => {
       map.setLevel(map.getLevel() - 2, {
         anchor: new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng),
@@ -186,7 +187,9 @@ function create팔도(local) {
 
 create팔도(local);
 
-window.addEventListener("wheel", (e) => {
+window.addEventListener("wheel", zoomIn);
+
+function zoomIn() {
   const overlayList = document.querySelectorAll(".customOverlay");
 
   overlayList.forEach((overlay) => {
@@ -196,6 +199,6 @@ window.addEventListener("wheel", (e) => {
       });
     });
   });
-});
+}
 
 // 지도를 움직일때도 적용해야돼
