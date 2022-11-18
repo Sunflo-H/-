@@ -1,3 +1,6 @@
+//! 지도 최대레벨일때 클러스터 전부다 보여주기 -> 어떻게 추려낼지 생각해서 만들어야돼
+//! 지도레벨 줄어들때 검색범위 줄이면서 클러스터 범위 변경
+
 const SUBWAY_LIST_URL = "https://apis.zigbang.com/property/biglab/subway/all?";
 
 const 지하철역리스트 = [
@@ -30,6 +33,26 @@ const 지하철역리스트 = [
 async function getSubwayInfo(subwayName) {
   let response = await fetch(SUBWAY_LIST_URL);
   let data = await response.json();
+  let arr = data.map((subway) => subway.local1);
+  console.log(arr);
+  let nameArr = data.map((subway) => subway.name);
+  console.log(nameArr);
+  /**
+   * 서울특별시
+   * 경기도
+   * 강원도
+   * 충청남도
+   * 인천광역시
+   * 광주광역시
+   * 대구광역시
+   * 대전광역시
+   * 경상북도
+   * 경상남도
+   * 부산광역시
+   * 울산광역시
+   *
+   * null
+   */
   let subway = data.find((subway) => subway.name === subwayName);
   return subway.id;
 }
@@ -46,10 +69,15 @@ async function getRoomIdList(subwayId) {
   let data = await response.json();
 
   // 기존 data를 id만 재정의하여 새 배열을 만들었다.
+  console.log(data);
   let roomIdList = data.list_items.map((room) => {
-    return room.simple_item.item_id;
+    let roomInfo = room.simple_item || undefined;
+    if (roomInfo !== undefined) {
+      return roomInfo.item_id;
+    }
   });
-  return roomIdList;
+
+  return roomIdList.filter((id) => id !== undefined);
 }
 /**
  * id에 해당하는 원룸의 상세정보를 찾는 함수
@@ -77,28 +105,12 @@ async function getOneRoomData(subway) {
 
   let roomIdList = await getRoomIdList(subwayId);
 
-  // 모든 방id의 상세정보 찾기  ====== for문을 쓰면 속도는 느리지만 원하는대로 돼 => 아마 async 흐름 안에 또 async가 있다면 그건 새로운 흐름인듯
-  // 속도를 포기할수 없어서 forEach를 씀
-  // 프로미스 상태에서 해야 모든 것들을 비동기로 계산해. 0.5초정도면 처리됌
-  // 프로미스를 안쓰고 for, while 쓰면 반복문 하나하나가 동기로 계산돼 요청1 -> 다음코드, 반복 요청2 -> 다음코드 이런식이라 0.1초 X 요청수 만큼 시간이 필요
   let roomInfo = [];
   roomIdList.forEach((roomId) => {
     roomInfo.push(getRoomInfo(roomId));
   });
 
-  // let coords = roomIdList.map(async (roomId) => {
-  //   const data = await getRoomInfo(roomId);
-  //   return data.item.random_location.split(",");
-  // });
-  // Promise.all(coords).then((data) => {
-  //   console.log(data);
-  // });
-  // 1. 방정보를 얻는다.
-  // 2. 그중에서 좌표를 얻는다.
-  // 3. 좌표들로 배열을 만든다.
-  // 4. 클러스터함수(좌표배열) 실행
   return roomInfo;
-  // let data = await getRoomCoord(roomIdList);
 }
 
 // getOneRoomData("아차산역");
@@ -139,4 +151,4 @@ async function getOneRoomData(subway) {
 // }
 // getDataAll();
 
-export default getOneRoomData;
+export { getOneRoomData };
