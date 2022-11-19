@@ -43,7 +43,7 @@ kakao.maps.event.addListener(map, "click", function (mouseEvent) {
   console.log(map.getLevel());
 });
 
-//^ 지도의 드래그가 끝났을때 화면에 보여지느 오버레이에 zoomIn 이벤트 등록
+//^ 지도의 드래그가 끝났을때 화면에 보여지는 오버레이에 zoomIn 이벤트 등록
 kakao.maps.event.addListener(map, "dragend", function () {
   const overlayList = document.querySelectorAll(".customOverlay");
   overlayList.forEach((overlay) => {
@@ -60,7 +60,14 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   });
 });
 
-const oneroom = new Oneroom();
+//^ 지도의 확대레벨 6이상일때 지하철 오버레이를 전부 삭제하고, 지역 오버레이를 보여준다.
+kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
+  const overlayList = document.querySelectorAll(".customOverlay");
+
+  overlayList.forEach((overlay) => {
+    overlay.addEventListener("click", zoomIn);
+  });
+});
 
 /**
  *^ 역 주변 매물의 위치를 클러스터로 나타낸다.
@@ -122,23 +129,23 @@ function createCluster(coords) {
   clusterer.addMarkers(markers);
 }
 
+let localOverlaylist = [];
 /**
  * 지도의 레벨이 5보다 클때 서울, 경기 등 지역정보를 보여주는 오버레이 생성
  * @param {*} local
  */
 function createLocalOverlay(local) {
-  let list = [];
   local.forEach((data) => {
     let customOverlay = new kakao.maps.CustomOverlay({
       map: map,
-      content: `<div class="customOverlay" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`,
+      content: `<div class="customOverlay" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`,
       clickable: true,
       position: new kakao.maps.LatLng(data.lat, data.lng),
       xAnchor: 0.5,
       yAnchor: 1,
       zIndex: 999999,
     });
-    list.push(customOverlay);
+    localOverlaylist.push(customOverlay);
   });
   const overlayList = document.querySelectorAll(".customOverlay");
 
@@ -152,7 +159,7 @@ createLocalOverlay(local);
 /**
  * ^클릭한 지점의 위치를 중심으로 지도를 확대하는 이벤트핸들러
  */
-function zoomIn() {
+function zoomIn(event) {
   let overlay = event.target;
   // 1씩 낮추는 방법
   // map.setLevel(map.getLevel() - 1, {
@@ -162,5 +169,35 @@ function zoomIn() {
   // 바로 지하철들 보이게 하는 방법
   map.setLevel(5, {
     anchor: new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng),
+  });
+  localOverlaylist.forEach((overlay) => {
+    console.log(overlay);
+    overlay.setMap(null);
+  });
+  createSubwayOverlay(overlay.dataset.id);
+}
+
+const oneroom = new Oneroom();
+
+async function createSubwayOverlay(local) {
+  if (5 < map.getLevel()) return;
+  let subwayList = await oneroom.getSubwayInfo_local(local);
+
+  // lat,lng, id, name을 가지고 지도에 보여줘야해
+
+  subwayList.forEach((data) => {
+    let customOverlay = new kakao.maps.CustomOverlay({
+      map: map,
+      content: `<div class="customOverlay" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`,
+      clickable: true,
+      position: new kakao.maps.LatLng(data.lat, data.lng),
+      xAnchor: 0.5,
+      yAnchor: 1,
+    });
+  });
+  const overlayList = document.querySelectorAll(".customOverlay");
+
+  overlayList.forEach((overlay) => {
+    overlay.addEventListener("click", zoomIn);
   });
 }

@@ -39,6 +39,7 @@ class Oneroom {
     let response = await fetch(this.SUBWAY_LIST_URL);
     let data = await response.json();
     let subway = data.filter((subway) => subway.local1 === local);
+    // console.log(subway);
     return subway;
   }
 
@@ -79,7 +80,7 @@ class Oneroom {
 }
 
 let a = new Oneroom();
-a.getSubwayInfo_local("서울특별시");
+
 export default Oneroom;
 
 // const SUBWAY_LIST_URL = "https://apis.zigbang.com/property/biglab/subway/all?";
