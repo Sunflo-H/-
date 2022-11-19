@@ -39,7 +39,13 @@ class Oneroom {
     let response = await fetch(this.SUBWAY_LIST_URL);
     let data = await response.json();
     let subway = data.filter((subway) => subway.local1 === local);
-    // console.log(subway);
+    return subway;
+  }
+
+  async getSubwayInfo_all() {
+    let response = await fetch(this.SUBWAY_LIST_URL);
+    let subway = await response.json();
+
     return subway;
   }
 

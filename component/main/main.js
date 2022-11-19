@@ -3,10 +3,8 @@ import Oneroom from "./oneroom.js";
 const filter = document.querySelectorAll(".filter__select");
 
 const local = [
-  { id: "경기도", name: "경기도", lat: "37.567167", lng: "127.190292" },
   { id: "강원도", name: "강원도", lat: "37.555837", lng: "128.209315" },
   { id: "충청남도", name: "충청남도", lat: "36.557229", lng: "126.779757" },
-  { id: "인청광역시", name: "인천", lat: "37.469221", lng: "126.573234" },
   { id: "광주광역시", name: "광주", lat: "35.126033", lng: "126.831302" },
   { id: "대구광역시", name: "대구", lat: "35.798838", lng: "128.583052" },
   { id: "대전광역시", name: "대전", lat: "36.321655", lng: "127.378953" },
@@ -14,9 +12,12 @@ const local = [
   { id: "경상남도", name: "경상남도", lat: "35.259787", lng: "128.664734 " },
   { id: "부산광역시", name: "부산", lat: "35.198362", lng: "129.053922" },
   { id: "울산광역시", name: "울산", lat: "35.519301", lng: "129.239078" },
+  { id: "경기도", name: "경기도", lat: "37.567167", lng: "127.190292" },
+  { id: "인청광역시", name: "인천", lat: "37.469221", lng: "126.573234" },
   { id: "서울특별시", name: "서울", lat: "37.5642135", lng: "127.0016985" },
 ];
-
+const localOverlayList = [];
+const subwayOverlayList = [];
 // const local = [
 //   [37.5642135, 127.0016985],
 //   [37.567167, 127.190292],
@@ -47,7 +48,7 @@ kakao.maps.event.addListener(map, "click", function (mouseEvent) {
 kakao.maps.event.addListener(map, "dragend", function () {
   const overlayList = document.querySelectorAll(".customOverlay");
   overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", zoomIn);
+    overlay.addEventListener("click", zoomIn_local);
   });
 });
 
@@ -56,16 +57,29 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   const overlayList = document.querySelectorAll(".customOverlay");
 
   overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", zoomIn);
+    overlay.addEventListener("click", zoomIn_local);
   });
 });
 
-//^ 지도의 확대레벨 6이상일때 지하철 오버레이를 전부 삭제하고, 지역 오버레이를 보여준다.
+//^ 지도의 확대레벨 5보다 클때 지하철 오버레이를 전부 삭제하고, 지역 오버레이를 보여준다.
+//^ 클릭시 zoomIn_local 이벤트도 등록한다.
+//^ 지도의 확대레벨이 5이하일때 지역 오버레이를 전부 삭제, 지하철 오버레이를 보여준다.
+//^ 클릭시 zoomIn_subway 이벤트 등록
 kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   const overlayList = document.querySelectorAll(".customOverlay");
-
+  console.log("줌 이벤트");
+  if (map.getLevel() <= 5) {
+    localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
+    subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(map));
+  } else {
+    localOverlayList.forEach((localOverlay) => localOverlay.setMap(map));
+    subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(null));
+  }
+  console.log(localOverlayList);
+  console.log(subwayOverlayList);
+  console.log(overlayList);
   overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", zoomIn);
+    overlay.addEventListener("click", zoomIn_local);
   });
 });
 
@@ -129,12 +143,11 @@ function createCluster(coords) {
   clusterer.addMarkers(markers);
 }
 
-let localOverlaylist = [];
 /**
  * 지도의 레벨이 5보다 클때 서울, 경기 등 지역정보를 보여주는 오버레이 생성
  * @param {*} local
  */
-function createLocalOverlay(local) {
+function createOverlay_local(local) {
   local.forEach((data) => {
     let customOverlay = new kakao.maps.CustomOverlay({
       map: map,
@@ -145,21 +158,21 @@ function createLocalOverlay(local) {
       yAnchor: 1,
       zIndex: 999999,
     });
-    localOverlaylist.push(customOverlay);
+    localOverlayList.push(customOverlay);
   });
   const overlayList = document.querySelectorAll(".customOverlay");
 
   overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", zoomIn);
+    overlay.addEventListener("click", zoomIn_local);
   });
 }
 
-createLocalOverlay(local);
+createOverlay_local(local);
 
 /**
  * ^클릭한 지점의 위치를 중심으로 지도를 확대하는 이벤트핸들러
  */
-function zoomIn(event) {
+function zoomIn_local(event) {
   let overlay = event.target;
   // 1씩 낮추는 방법
   // map.setLevel(map.getLevel() - 1, {
@@ -170,16 +183,16 @@ function zoomIn(event) {
   map.setLevel(5, {
     anchor: new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng),
   });
-  localOverlaylist.forEach((overlay) => {
-    console.log(overlay);
-    overlay.setMap(null);
-  });
-  createSubwayOverlay(overlay.dataset.id);
+  // localOverlayList.forEach((overlay) => {
+  //   console.log(overlay);
+  //   overlay.setMap(null);
+  // });
+  // createOverlay_subway(overlay.dataset.id);
 }
 
 const oneroom = new Oneroom();
 
-async function createSubwayOverlay(local) {
+async function createOverlay_subway(local) {
   if (5 < map.getLevel()) return;
   let subwayList = await oneroom.getSubwayInfo_local(local);
 
@@ -194,10 +207,29 @@ async function createSubwayOverlay(local) {
       xAnchor: 0.5,
       yAnchor: 1,
     });
+    subwayOverlayList.push(customOverlay);
   });
   const overlayList = document.querySelectorAll(".customOverlay");
 
   overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", zoomIn);
+    overlay.addEventListener("click", zoomIn_local);
   });
 }
+
+async function createOverlay_subway_all() {
+  if (5 < map.getLevel()) return;
+  let subwayList = await oneroom.getSubwayInfo_all();
+  subwayList.forEach((data) => {
+    let customOverlay = new kakao.maps.CustomOverlay({
+      map: map,
+      content: `<div class="customOverlay" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`,
+      clickable: true,
+      position: new kakao.maps.LatLng(data.lat, data.lng),
+      xAnchor: 0.5,
+      yAnchor: 1,
+    });
+    subwayOverlayList.push(customOverlay);
+  });
+}
+
+createOverlay_subway_all();
