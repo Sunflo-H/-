@@ -72,13 +72,13 @@ class Oneroom {
   }
 
   async getOneRoomData(subway) {
-    let subwayId = await getSubwayInfo(subway);
+    let subwayId = await this.getSubwayInfo(subway);
 
-    let roomIdList = await getRoomIdList(subwayId);
+    let roomIdList = await this.getRoomIdList(subwayId);
 
     let roomInfo = [];
     roomIdList.forEach((roomId) => {
-      roomInfo.push(getRoomInfo(roomId));
+      roomInfo.push(this.getRoomInfo(roomId));
     });
 
     return roomInfo;

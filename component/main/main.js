@@ -34,6 +34,8 @@ const subwayOverlayList = [];
 //   [35.519301, 129.239078],
 // ];
 
+//지하철을 클릭했을때 매물 보여주기 만들어야해
+
 // 지도 생성
 const map = new kakao.maps.Map(document.getElementById("map"), {
   center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392),
@@ -47,40 +49,28 @@ kakao.maps.event.addListener(map, "click", function (mouseEvent) {
 });
 
 // ! 오버레이에 이벤트를 등록해야하는 상황
-// 1. 새 오버레이 생성
+// !1.에서 처음부터 생성.. 사용자 위치를 기준으로 지도레벨 확대해서 지하철부터 보여줄까???????
+// 1. 새 오버레이 생성 (로컬의 경우 처음부터 생성되었기때문에 이때 적용함, subway랑 매물은 아님)
 // 2. 지도확대 축소후 새로 생긴 오버레이
 // 3. 지도 이동후 새로생긴 오버레이
 //^ 지도의 드래그가 끝났을때 화면에 보여지는 오버레이에 이벤트 등록
 kakao.maps.event.addListener(map, "dragend", function () {
   const overlayList = document.querySelectorAll(".customOverlay");
   overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", zoomIn_local);
-  });
-});
-
-//^ 지도의 확대레벨이 변경될때 화면에 보여지는 오버레이에 이벤트 등록
-//! 로컬에는 클릭시 지하철이 보일때까지 확대하는 이벤트핸들러
-//! 지하철에는 클릭시 주변 매물정보를 클러스터 하는 이벤트 핸들러
-kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
-  const localOverlay = document.querySelectorAll(
-    ".customOverlay.customOverlay--local"
-  );
-  const subwayOverlay = document.querySelectorAll(
-    ".customOverlay.customOverlay--subway"
-  );
-  localOverlay.forEach((overlay) => {
-    overlay.addEventListener("click", zoomIn_local);
+    overlay.addEventListener("click", localOverlayClick);
   });
 });
 
 //^ 지도의 확대레벨 5보다 클때 지하철 오버레이를 전부 삭제하고, 지역 오버레이를 보여준다.
-//^ 클릭시 zoomIn_local 이벤트도 등록한다.
+//^ 클릭시 localOverlayClick 이벤트도 등록한다.
 //^ 지도의 확대레벨이 5이하일때 지역 오버레이를 전부 삭제, 지하철 오버레이를 보여준다.
 //^ 클릭시 zoomIn_subway 이벤트 등록
+/**
+ * 지도 레벨에 따라 지역, 지하철, 매물을 보여준다.
+ * 보여지는 오버레이에 클릭이벤트를 등록한다.
+ */
 kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
-  const overlayList = document.querySelectorAll(".customOverlay");
-  console.log(subwayOverlayList);
-  // if (subwayOverlayList.length === 0) createOverlay_subway_all();
+  // 지도 레벨에 따라 오버레이를 지도에 띄운다.
   if (map.getLevel() < CRITERIA_MAP_LEVEL) {
     localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
     subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(map));
@@ -88,8 +78,21 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
     localOverlayList.forEach((localOverlay) => localOverlay.setMap(map));
     subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(null));
   }
-  overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", zoomIn_local);
+
+  // 띄운 오버레이에 이벤트를 등록한다.
+  const localOverlay = document.querySelectorAll(
+    ".customOverlay.customOverlay--local"
+  );
+  const subwayOverlay = document.querySelectorAll(
+    ".customOverlay.customOverlay--subway"
+  );
+
+  localOverlay.forEach((overlay) => {
+    overlay.addEventListener("click", localOverlayClick);
+  });
+
+  subwayOverlay.forEach((overlay) => {
+    overlay.addEventListener("click", subwayOverlayClick);
   });
 });
 
@@ -177,14 +180,14 @@ function createOverlay_local(local) {
   const overlayList = document.querySelectorAll(".customOverlay");
 
   overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", zoomIn_local);
+    overlay.addEventListener("click", localOverlayClick);
   });
 }
 
 /**
  * ^클릭한 지점의 위치를 중심으로 지도를 확대하는 이벤트핸들러
  */
-function zoomIn_local(event) {
+function localOverlayClick(event) {
   let overlay = event.target;
   // 1씩 낮추는 방법
   // map.setLevel(map.getLevel() - 1, {
@@ -195,6 +198,13 @@ function zoomIn_local(event) {
   map.setLevel(CRITERIA_MAP_LEVEL - 1, {
     anchor: new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng),
   });
+}
+
+function subwayOverlayClick(event) {
+  let overlay = event.target;
+  let subwayName = overlay.dataset.name;
+
+  console.log(oneroom.getOneRoomData(subwayName));
 }
 
 /**
@@ -217,9 +227,9 @@ async function createOverlay_subway_all() {
 }
 
 function init() {
-  //지하철 오버레이 생성 (지도레벨 5이하에서 보임)
+  //지하철 오버레이 생성 (CRITERIA_MAP_LEVEL 미만에서 보임)
   createOverlay_subway_all();
-  //지역 오버레이 생성 (지도레벨 6이상에서 보임)
+  //지역 오버레이 생성 (CRITERIA_MAP_LEVEL 이상에서 보임)
   createOverlay_local(local);
 }
 
