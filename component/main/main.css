@@ -406,14 +406,30 @@ select::-ms-expand {
 /* Kakao Map */
 .customOverlay {
   color: white;
-  width: 65px;
-  height: 65px;
+  width: 70px;
+  height: 70px;
   border: 1px solid var(--gr1_1);
   background-color: var(--primary);
   opacity: 0.85;
   border-radius: 50%;
   line-height: 66px;
   text-align: center;
+  font-weight: bold;
+  padding: 2px;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customOverlay.customOverlay.customOverlay--subway {
+  font-size: 0.85rem;
+}
+
+.customOverlay.customOverlay--capital {
+  width: 100px;
+  height: 100px;
+  line-height: 96px;
 }
 
 .customOverlay:hover {
