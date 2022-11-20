@@ -65,20 +65,20 @@ class Oneroom {
     return roomIdList.filter((id) => id !== undefined);
   }
 
-  async getRoomInfo(roomId) {
+  async getRoomDetail(roomId) {
     let response = await fetch(`https://apis.zigbang.com/v2/items/${roomId}`);
     let data = await response.json();
     return data;
   }
 
-  async getOneRoomData(subway) {
+  async getRoomData(subway) {
     let subwayId = await this.getSubwayInfo(subway);
 
     let roomIdList = await this.getRoomIdList(subwayId);
 
     let roomInfo = [];
     roomIdList.forEach((roomId) => {
-      roomInfo.push(this.getRoomInfo(roomId));
+      roomInfo.push(this.getRoomDetail(roomId));
     });
 
     return roomInfo;
