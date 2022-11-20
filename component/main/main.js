@@ -87,17 +87,34 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
     console.log("67");
     localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
     subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(map));
-
-    if (roomCluster != null) roomCluster.clear();
+    let style = [
+      {
+        display: "none",
+      },
+    ];
+    if (roomCluster != null) roomCluster.setStyles(style);
   } else if (map.getLevel() <= 5) {
     console.log("5");
     if (roomClusterState) {
       console.log("줌이 바뀌었는데 방정보 있을때");
-      // display none을주면?
-      setTimeout(() => {
-        roomCluster.addMarkers(markers);
-      }, 3000);
-      // roomCluster.setMap(map);
+      if (roomCluster != null) {
+        let style = [
+          {
+            display: "block",
+            width: "53px",
+            height: "52px",
+            background: "#3c5cff",
+            color: "#fff",
+            textAlign: "center",
+            lineHeight: "54px",
+            borderRadius: "50%",
+            border: "1px solid #4c3aff",
+            opacity: "0.85",
+          },
+        ];
+        roomCluster.setStyles(style);
+      }
+
       localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
       subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(null));
     } else {
