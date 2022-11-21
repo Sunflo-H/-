@@ -23,25 +23,33 @@ const localOverlayList = [];
 const subwayOverlayList = [];
 let roomCluster = null;
 let roomClusterState = false; //true면 지도 레벨이 낮을때 roomCluster만 보이게된다, //false면 지도 레벨이 낮을때 subwayOverlay만 보이게된다.
+let roomAndMarker = [];
 let markers = null;
-// const local = [
-//   [37.5642135, 127.0016985],
-//   [37.567167, 127.190292],
-//   [37.555837, 128.209315],
-//   [36.557229, 126.779757],
-//   [37.469221, 126.573234],
-//   [35.126033, 126.831302],
-//   [35.798838, 128.583052],
-//   [36.321655, 127.378953],
-//   [36.248647, 128.664734],
-//   [35.259787, 128.664734],
-//   [35.198362, 129.053922],
-//   [35.519301, 129.239078],
-// ];
 
-// 방 클러스터가 띄워져 있는 상태에서 어떻게 다시 역 오버레이 상태로 갈것인가?
-// 방법1. 버튼을 만든다. (이전 버튼?)
-// 방법2. 지도레벨 축소한다.
+/**
+ * !설명
+ * 지역, 지하철은 customOverlay로 만들었다. 방은 cluster로 만들었다.
+ *
+ * !지도 이용 순서
+ * 1. init()함수로 지역, 지하철 오버레이를 생성한다.
+ * 2. 지하철 오버레이를 클릭하면 방 클러스터가 생성된다.
+ * 3. 방을 리스트로 보여주며, 모든 방에 대해 필터적용, 각 방에 대한 세권찾기
+ */
+
+//* 매물 정보로 리스트 띄우기
+//  1 매물정보를 불러올때 리스트를 같이 만든다.
+//  1-1 roomDataList[]에 {marker, roomData} 이렇게 저장해서 마커와 매물정보를 매치시킴
+//  1-2 roomDataList로 리스트를 만들자
+//  1-3 리스트는 지도레벨 5이하에서 보여야한다. 6부터는 찾을 곳을 선택해주세요.
+// !리스트는 클러스터할때 생성되고, 줌이 바뀔때 생성,삭제해야한다.
+// !제일 처음에는 매물을 찾을 곳을 선택하세요를 띄워야해
+
+//* 매물 리스트 호버시 지도의 어느 클러스터에 매물이 존재하는지 표시하기
+//  1 매물에 해당하는 마커를 찾고 마커가 어느 클러스터에 있는지 확인해야해
+//  1-0 방 클러스터 생성후 roomCluster에 넣는다.
+//  1-1 roomCluster._clusters[]._markers[] 에 마커가 있다.
+//  1-2 roomCluster._markers[]에 마커가 있다.
+//* 필터, 세권 만들기
 
 // 지도 생성
 const map = new kakao.maps.Map(document.getElementById("map"), {
@@ -60,58 +68,31 @@ kakao.maps.event.addListener(map, "click", function (mouseEvent) {
 // 1. 새 오버레이 생성 (로컬의 경우 처음부터 생성되었기때문에 이때 적용함, subway랑 매물은 아님)
 // 2. 지도확대 축소후 새로 생긴 오버레이
 // 3. 지도 이동후 새로생긴 오버레이
-//^ 지도의 드래그가 끝났을때 화면에 보여지는 오버레이에 이벤트 등록
+// ^ 지도의 드래그가 끝났을때 화면에 보여지는 오버레이에 이벤트 등록
 kakao.maps.event.addListener(map, "dragend", function () {
   overlaySetEvent();
 });
 
-//^ 지도의 확대레벨 5보다 클때 지하철 오버레이를 전부 삭제하고, 지역 오버레이를 보여준다.
-//^ 클릭시 localOverlayClick 이벤트도 등록한다.
-//^ 지도의 확대레벨이 5이하일때 지역 오버레이를 전부 삭제, 지하철 오버레이를 보여준다.
-//^ 클릭시 zoomIn_subway 이벤트 등록
-
 /**
- * 지도 레벨에 따라 지역, 지하철, 매물을 보여준다.
- * 보여지는 오버레이에 클릭이벤트를 등록한다.
+ * ^ 지도 레벨에 따라 지역, 지하철, 방을 보여준다.
+ * ^ 보여지는 오버레이에 클릭이벤트를 등록한다.
  */
 kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
-  // 지도 레벨에 따라 오버레이를 지도에 띄운다.
-
   // 5이하 : 매물, 6~8 : 지하철, 9이상 : 지역
   if (5 < map.getLevel() && map.getLevel() < 8) {
     localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
     subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(map));
-    let style = [
-      {
-        display: "none",
-      },
-    ];
-    if (roomCluster != null) roomCluster.setStyles(style);
+
+    displayRoomCluster(false);
   } else if (map.getLevel() <= 5) {
     if (roomClusterState) {
       console.log("줌이 바뀌었는데 방정보 있을때");
-      if (roomCluster != null) {
-        let style = [
-          {
-            display: "block",
-            width: "53px",
-            height: "52px",
-            background: "#3c5cff",
-            color: "#fff",
-            textAlign: "center",
-            lineHeight: "54px",
-            borderRadius: "50%",
-            border: "1px solid #4c3aff",
-            opacity: "0.85",
-          },
-        ];
-        roomCluster.setStyles(style);
-      }
-
+      displayRoomCluster(true);
+      console.log("이게 먼저 실행되나?");
       localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
       subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(null));
     } else {
-      console.log("줌이 바뀌었는데 방정보 없을때");
+      //console.log("줌이 바뀌었는데 방정보 없을때");
       localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
       subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(map));
     }
@@ -120,21 +101,71 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
     subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(null));
   }
 
-  // 띄운 오버레이에 이벤트를 등록한다.
-  setTimeout(() => {
-    overlaySetEvent();
-  }, 1000);
+  // 띄운 오버레이들에 이벤트를 등록한다.
+  overlaySetEvent();
 });
 
+//! 방 정보, 방 클러스터 관련 함수
 /**
- *^ 역 주변 매물의 위치를 클러스터로 나타낸다.
+ * ^ 역 주변 매물정보를 요청하여 위치를 클러스터로 나타낸다.
  */
 async function getOneRoomCluster(subway) {
-  let oneroomList = await oneroom.getRoomData(subway); // 프로미스 배열이 있음, await 안쓰면 프로미스 안에 프로미스배열이 있음
   loading(true);
+
+  let oneroomList = await oneroom.getRoomData(subway); // 프로미스 배열이 있음, await 안쓰면 프로미스 안에 프로미스배열이 있음
+
+  // oneroomList를 foreach 돌려서 async 안에 async의 흐름 확인해보기
   Promise.all(oneroomList).then((oneroomList) => {
+    console.log("1", roomAndMarker);
     createCluster(oneroomList);
+    createCardList(oneroomList);
+    console.log(roomAndMarker);
     loading(false);
+  });
+}
+
+/**
+ * ^ 방 정보를 받아 cardList를 생성한다.
+ */
+function createCardList(oneroomList) {
+  console.log(roomAndMarker);
+  console.log(oneroomList);
+  const cardBox = document.querySelector(".card-box");
+  const cards = cardBox.querySelector("ul.cards");
+
+  oneroomList.forEach((oneroom) => {
+    let type = oneroom.item.sales_type;
+    let price = ``;
+    switch (type) {
+      case "월세":
+        price = `${oneroom.item.보증금액} / ${oneroom.item.월세금액}`;
+        break;
+      case "전세":
+        price = `${oneroom.item.보증금액}`;
+        break;
+      case "매매":
+        console.log("매매");
+    }
+    let element = `<li class="card">
+    <div class="card__text">
+      <div class="card__price">${type} ${price}</div>
+      <div class="card__size">6평 1층</div>
+      <div class="card__addr">광진구 구의동</div>
+      <div class="card__description">
+        최고급 어쩌구~ 아차산역 5분거리최고급 어쩌구~ 아차산역
+        5분거리최고급 어쩌구~ 아차산역 5분거리최고급 어쩌구~ 아차산역
+        5분거리최고급 어쩌구~ 아차산역 5분거리최고급 어쩌구~ 아차산역
+        5분거리최고급 어쩌구~ 아차산역 5분거리
+      </div>
+    </div>
+    <div class="card__image">
+      <img
+        src="https://ic.zigbang.com/ic/items/33724732/1.jpg?w=400&h=300&q=70&a=1"
+        alt=""
+      />
+    </div>
+  </li>`;
+    cards.insertAdjacentHTML("beforeend", element);
   });
 }
 
@@ -163,12 +194,18 @@ function createCluster(roomList) {
       },
     ],
   });
+  roomAndMarker = [];
 
+  /**
+   * 방리스트를 받아 마커를 생성하고 배열에 넣으시오
+   */
   markers = roomList.map(function (room, i) {
     let position = room.item.random_location.split(",");
-    return new kakao.maps.Marker({
+    let marker = new kakao.maps.Marker({
       position: new kakao.maps.LatLng(position[0], position[1]),
     });
+    roomAndMarker.push({ roomData: room, marker: marker });
+    return marker;
   });
 
   roomCluster.setTexts((size) => {
@@ -180,13 +217,39 @@ function createCluster(roomList) {
     return text;
   });
   roomCluster.addMarkers(markers);
-  // roomClusterList.push(oneroom);
-
-  // 클러스터를 맵에서 제거할 방법을 찾아보자
 }
 
+// ^ 클러스터의 style(CSS)에 변화를 줘서 클러스터를 보이게, 안보이게 하는 함수
+function displayRoomCluster(boolean) {
+  let style = [];
+  if (boolean) {
+    style = [
+      {
+        display: "block",
+        width: "53px",
+        height: "52px",
+        background: "#3c5cff",
+        color: "#fff",
+        textAlign: "center",
+        lineHeight: "54px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+    ];
+  } else {
+    style = [
+      {
+        display: "none",
+      },
+    ];
+  }
+  if (roomCluster != null) roomCluster.setStyles(style);
+}
+
+//! 지역 / 지하철 오버레이 관련 함수
 /**
- * 지도의 레벨이 5보다 클때 서울, 경기 등 지역정보를 보여주는 오버레이 생성
+ *^ 서울, 경기, 부산 등 지역정보를 보여주는 오버레이 생성
  * @param {*} local
  */
 function createOverlay_local(local) {
@@ -214,7 +277,9 @@ function createOverlay_local(local) {
 }
 
 /**
- * 모든 지하철 역에 대한 overlay를 배열에 저장하고, 지도에 띄운다.
+ * ^ 모든 지하철역에 대한 overlay객체를 생성하고, 배열에 저장하는 함수.
+ * ^ overlay 배열을 순회해서 setMap(map)/setMap(null)을 적용한다.
+ * ^ 지도 레벨에따라 지도에 올려진다./삭제된다.
  */
 async function createOverlay_subway_all() {
   let subwayList = await oneroom.getSubwayInfo_all();
@@ -233,26 +298,19 @@ async function createOverlay_subway_all() {
 }
 
 /**
- * ^클릭한 지역의 위치를 중심으로 지도를 확대하는 이벤트핸들러
- * @param {*} event
+ * ^ 클릭한 지역오버레이를 중심으로 지도를 확대하는 이벤트 핸들러
+ * @param {*} event 클릭한 오버레이 정보
  */
 function localOverlayClick(event) {
   let overlay = event.target;
-  // 1씩 낮추는 방법
-  // map.setLevel(map.getLevel() - 1, {
-  //   anchor: new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng),
-  // });
-
-  // 바로 지하철들 보이게 하는 방법
   map.setLevel(CRITERIA_MAP_LEVEL - 1);
-
   map.setCenter(
     new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng)
   );
 }
 
 /**
- * ^ 클릭한 지하철의 위치를 중심으로 지도를 확대하는 이벤트 핸들러
+ * ^ 클릭한 지하철오버레이를 중심으로 지도를 확대하는 이벤트 핸들러
  * @param {*} event
  */
 function subwayOverlayClick(event) {
@@ -278,21 +336,24 @@ function subwayOverlayClick(event) {
 }
 
 function overlaySetEvent() {
-  // 오버레이가 많을때 모든 오버레이가 선택이 안되는 경우를 위한 setTimeout
   const localOverlay = document.querySelectorAll(
     ".customOverlay.customOverlay--local"
   );
-
-  const subwayOverlay = document.querySelectorAll(
-    ".customOverlay.customOverlay--subway"
-  );
-
   localOverlay.forEach((overlay) => {
+    console.log("count");
     overlay.addEventListener("click", localOverlayClick);
   });
-  subwayOverlay.forEach((overlay) => {
-    overlay.addEventListener("click", subwayOverlayClick);
-  });
+
+  // 오버레이가 많을때 모든 오버레이를 선택할수 있게 지연을 시켰다.
+  setTimeout(() => {
+    const subwayOverlay = document.querySelectorAll(
+      ".customOverlay.customOverlay--subway"
+    );
+
+    subwayOverlay.forEach((overlay) => {
+      overlay.addEventListener("click", subwayOverlayClick);
+    });
+  }, 500);
 }
 
 function loading(boolean) {
@@ -302,10 +363,9 @@ function loading(boolean) {
 }
 
 function init() {
-  //지하철 오버레이 생성 (CRITERIA_MAP_LEVEL 미만에서 보임)
   createOverlay_subway_all();
-  //지역 오버레이 생성 (CRITERIA_MAP_LEVEL 이상에서 보임)
   createOverlay_local(local);
+  // setCardList();
 }
 
 init();
