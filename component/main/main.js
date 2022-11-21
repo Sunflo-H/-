@@ -134,8 +134,14 @@ function createCardList(oneroomList) {
   const cards = cardBox.querySelector("ul.cards");
 
   oneroomList.forEach((oneroom) => {
-    let type = oneroom.item.sales_type;
+    let item = oneroom.item;
     let price = ``;
+    let size = ``;
+    oneroom.floor != null
+      ? (size = `${getPyeong(item.전용면적_m2)}평 ${item.floor}층`)
+      : (size = `${getPyeong(item.전용면적_m2)}평 ${item.floor_string}층`);
+
+    let type = item.sales_type;
     switch (type) {
       case "월세":
         price = `${oneroom.item.보증금액} / ${oneroom.item.월세금액}`;
@@ -149,19 +155,16 @@ function createCardList(oneroomList) {
     let element = `<li class="card">
     <div class="card__text">
       <div class="card__price">${type} ${price}</div>
-      <div class="card__size">6평 1층</div>
-      <div class="card__addr">광진구 구의동</div>
+      <div class="card__size">${size}</div>
+      <div class="card__addr">${item.local2} ${item.local3}</div>
       <div class="card__description">
-        최고급 어쩌구~ 아차산역 5분거리최고급 어쩌구~ 아차산역
-        5분거리최고급 어쩌구~ 아차산역 5분거리최고급 어쩌구~ 아차산역
-        5분거리최고급 어쩌구~ 아차산역 5분거리최고급 어쩌구~ 아차산역
-        5분거리최고급 어쩌구~ 아차산역 5분거리
+        ${item.description}
       </div>
     </div>
     <div class="card__image">
       <img
-        src="https://ic.zigbang.com/ic/items/33724732/1.jpg?w=400&h=300&q=70&a=1"
-        alt=""
+        src=${item.image_thumbnail}?w=400&h=300&q=70&a=1
+        alt="썸네일"
       />
     </div>
   </li>`;
@@ -360,6 +363,10 @@ function loading(boolean) {
   const loading = document.querySelector("#loading");
   if (boolean) loading.classList.add("active");
   else loading.classList.remove("active");
+}
+
+function getPyeong(size) {
+  return Math.floor(Math.round(Number(size)) / 3);
 }
 
 function init() {
