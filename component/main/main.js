@@ -44,6 +44,9 @@ let markers = null;
 // !리스트는 클러스터할때 생성되고, 줌이 바뀔때 생성,삭제해야한다.
 // !제일 처음에는 매물을 찾을 곳을 선택하세요를 띄워야해
 
+// !리스트 생성까지는 했어, 이제 확대축소했을때 보이는 마커,클러스터 만 리스트 생성하게
+// 그렇다면 방정보를 받는게 아니고 클러스터 정보를 받아야하네
+
 //* 매물 리스트 호버시 지도의 어느 클러스터에 매물이 존재하는지 표시하기
 //  1 매물에 해당하는 마커를 찾고 마커가 어느 클러스터에 있는지 확인해야해
 //  1-0 방 클러스터 생성후 roomCluster에 넣는다.
@@ -55,12 +58,13 @@ let markers = null;
 const map = new kakao.maps.Map(document.getElementById("map"), {
   center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392),
   level: 8,
-  maxLevel: 11,
+  maxLevel: 12,
 });
 
 kakao.maps.event.addListener(map, "click", function (mouseEvent) {
-  console.log(mouseEvent.latLng);
-  console.log(map.getLevel());
+  // console.log(mouseEvent.latLng);
+  // console.log(map.getLevel());
+  console.log(roomCluster);
 });
 
 // ! 오버레이에 이벤트를 등록해야하는 상황
@@ -72,7 +76,7 @@ kakao.maps.event.addListener(map, "click", function (mouseEvent) {
 kakao.maps.event.addListener(map, "dragend", function () {
   overlaySetEvent();
 });
-
+let resultMarkerList = [];
 /**
  * ^ 지도 레벨에 따라 지역, 지하철, 방을 보여준다.
  * ^ 보여지는 오버레이에 클릭이벤트를 등록한다.
@@ -86,11 +90,28 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
     displayRoomCluster(false);
   } else if (map.getLevel() <= 5) {
     if (roomClusterState) {
-      console.log("줌이 바뀌었는데 방정보 있을때");
+      // console.log("줌이 바뀌었는데 방정보 있을때");
       displayRoomCluster(true);
-      console.log("이게 먼저 실행되나?");
       localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
       subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(null));
+
+      // resultMarkerList = [];
+      // if (roomCluster != null) {
+      //   roomAndMarker.forEach((item) => {
+      //     // if (resultMarker !== undefined) return;
+      //     let resultMarker = undefined;
+      //     let want = item.marker;
+      //     roomCluster._clusters.forEach((cluster) => {
+      //       if (resultMarker !== undefined) return;
+      //       resultMarker = cluster._markers.find((marker) => marker === want);
+      //     });
+      //     console.log(resultMarker);
+      //     // 일치하는 마커를 찾았다면 배열에 저장
+      //     if (resultMarker != undefined) resultMarkerList.push(resultMarker);
+      //   });
+      // }
+      // console.log(resultMarkerList);
+      // createCardList();
     } else {
       //console.log("줌이 바뀌었는데 방정보 없을때");
       localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
@@ -116,10 +137,10 @@ async function getOneRoomCluster(subway) {
 
   // oneroomList를 foreach 돌려서 async 안에 async의 흐름 확인해보기
   Promise.all(oneroomList).then((oneroomList) => {
-    console.log("1", roomAndMarker);
     createCluster(oneroomList);
+    // console.log(roomCluster);
+    // console.log(roomAndMarker);
     createCardList(oneroomList);
-    console.log(roomAndMarker);
     loading(false);
   });
 }
@@ -128,10 +149,13 @@ async function getOneRoomCluster(subway) {
  * ^ 방 정보를 받아 cardList를 생성한다.
  */
 function createCardList(oneroomList) {
-  console.log(roomAndMarker);
-  console.log(oneroomList);
   const cardBox = document.querySelector(".card-box");
   const cards = cardBox.querySelector("ul.cards");
+
+  console.log(oneroomList);
+  while (cards.firstChild) {
+    cards.removeChild(cards.firstChild);
+  }
 
   oneroomList.forEach((oneroom) => {
     let item = oneroom.item;
@@ -199,9 +223,6 @@ function createCluster(roomList) {
   });
   roomAndMarker = [];
 
-  /**
-   * 방리스트를 받아 마커를 생성하고 배열에 넣으시오
-   */
   markers = roomList.map(function (room, i) {
     let position = room.item.random_location.split(",");
     let marker = new kakao.maps.Marker({
@@ -220,6 +241,7 @@ function createCluster(roomList) {
     return text;
   });
   roomCluster.addMarkers(markers);
+  console.log("클러스터 생성");
 }
 
 // ^ 클러스터의 style(CSS)에 변화를 줘서 클러스터를 보이게, 안보이게 하는 함수
