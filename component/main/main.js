@@ -77,6 +77,7 @@ kakao.maps.event.addListener(map, "dragend", function () {
   overlaySetEvent();
 });
 let resultMarkerList = [];
+
 /**
  * ^ 지도 레벨에 따라 지역, 지하철, 방을 보여준다.
  * ^ 보여지는 오버레이에 클릭이벤트를 등록한다.
@@ -242,6 +243,56 @@ function createCluster(roomList) {
   });
   roomCluster.addMarkers(markers);
   console.log("클러스터 생성");
+  console.log(roomCluster);
+  // kakao.maps.event.addListener(roomCluster, "clustered", function (clusters) {
+  //   console.log(roomCluster);
+  //   console.log(clusters); //클러스터된게 맵에 보일때 마다 추가된다. 현재 맵에 보이는것만 저장되는게 아니다.
+  //   // 지도를 드래그할때 새로 생긴 클러스터가 저장된다.
+  //   // 다른곳으로 드래그하여 클러스터가 사라졌어도 값은 그대로 저장되어있다.
+  //   // 지도레벨이 변경될때 초기화된다.
+  // });
+
+  // kakao.maps.event.addListener(roomCluster, "clusterover", function (cluster) {
+  //   console.log(cluster);
+  //   console.log(cluster.length);
+  //   displayRoomCluster_hover(true, cluster);
+  // });
+
+  // kakao.maps.event.addListener(roomCluster, "clusterout", function (cluster) {
+  //   console.log(cluster);
+  //   console.log(roomCluster);
+  //   displayRoomCluster_hover(false, cluster);
+  // });
+
+  kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
+    // console.log(cluster);
+    // console.log(cluster.getSize()); // 해당 클러스터 객체에 포함된 마커의 개수
+    // console.log(cluster.getMarkers()); // 해당 클러스터 객체에 포함된 마커들의 정보를 얻는다.
+  });
+
+  kakao.maps.event.addListener(roomCluster, "clustered", function (clusters) {
+    for (var i = 0; i < clusters.length; i++) {
+      var cluster = clusters[i];
+      var overlay = cluster.getClusterMarker().getContent();
+      // console.log(overlay);
+      // 각 클러스터의 overlay에 mouseover 이벤트를 등록합니다.
+      overlay.addEventListener("mouseover", function () {
+        console.log("오버");
+        console.log(this);
+        // if (!this.classList.contains("cluster-over")) {
+        this.classList.add("cluster-over");
+        // }
+      });
+
+      // 각 클러스터의 overlay에 mouseout 이벤트를 등록합니다.
+      overlay.addEventListener("mouseout", function () {
+        console.log("아웃");
+        if (this.classList.contains("cluster-over")) {
+          this.classList.remove("cluster-over");
+        }
+      });
+    }
+  });
 }
 
 // ^ 클러스터의 style(CSS)에 변화를 줘서 클러스터를 보이게, 안보이게 하는 함수
@@ -270,6 +321,42 @@ function displayRoomCluster(boolean) {
     ];
   }
   if (roomCluster != null) roomCluster.setStyles(style);
+}
+
+function displayRoomCluster_hover(boolean, cluster) {
+  let style = [];
+  if (boolean) {
+    style = [
+      {
+        display: "block",
+        width: "53px",
+        height: "52px",
+        background: "#fff",
+        color: "#3c5cff",
+        textAlign: "center",
+        lineHeight: "54px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+    ];
+  } else {
+    style = [
+      {
+        display: "block",
+        width: "53px",
+        height: "52px",
+        background: "#3c5cff",
+        color: "#fff",
+        textAlign: "center",
+        lineHeight: "54px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+    ];
+  }
+  cluster.setStyles(style);
 }
 
 //! 지역 / 지하철 오버레이 관련 함수
