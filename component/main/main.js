@@ -127,7 +127,7 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   overlaySetEvent();
 });
 
-//! 방 정보, 방 클러스터 관련 함수
+//* ============================== 방 정보, 방 클러스터 관련 함수 =================================
 /**
  * ^ 역 주변 매물정보를 요청하여 위치를 클러스터로 나타낸다.
  */
@@ -210,6 +210,17 @@ function createCluster(roomList) {
     minClusterSize: 1, // Number : 클러스터링 할 최소 마커 수 (default: 2)
     styles: [
       {
+        width: "40px",
+        height: "40px",
+        background: "#3c5cff",
+        color: "#fff",
+        textAlign: "center",
+        lineHeight: "40px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+      {
         width: "53px",
         height: "52px",
         background: "#3c5cff",
@@ -221,9 +232,10 @@ function createCluster(roomList) {
         opacity: "0.85",
       },
     ],
+    calculator: [10],
   });
   roomAndMarker = [];
-
+  console.log(roomCluster.getCalculator());
   markers = roomList.map(function (room, i) {
     let position = room.item.random_location.split(",");
     let marker = new kakao.maps.Marker({
@@ -252,18 +264,6 @@ function createCluster(roomList) {
   //   // 지도레벨이 변경될때 초기화된다.
   // });
 
-  // kakao.maps.event.addListener(roomCluster, "clusterover", function (cluster) {
-  //   console.log(cluster);
-  //   console.log(cluster.length);
-  //   displayRoomCluster_hover(true, cluster);
-  // });
-
-  // kakao.maps.event.addListener(roomCluster, "clusterout", function (cluster) {
-  //   console.log(cluster);
-  //   console.log(roomCluster);
-  //   displayRoomCluster_hover(false, cluster);
-  // });
-
   kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
     // console.log(cluster);
     // console.log(cluster.getSize()); // 해당 클러스터 객체에 포함된 마커의 개수
@@ -274,11 +274,12 @@ function createCluster(roomList) {
     for (var i = 0; i < clusters.length; i++) {
       var cluster = clusters[i];
       var overlay = cluster.getClusterMarker().getContent();
-      // console.log(overlay);
+      console.log(cluster);
+      console.log(overlay);
       // 각 클러스터의 overlay에 mouseover 이벤트를 등록합니다.
+      // console.log("클러스터링 완료 후 이벤트 등록");
       overlay.addEventListener("mouseover", function () {
         console.log("오버");
-        console.log(this);
         // if (!this.classList.contains("cluster-over")) {
         this.classList.add("cluster-over");
         // }
@@ -293,6 +294,27 @@ function createCluster(roomList) {
       });
     }
   });
+
+  // 클러스터가 생성된 직후에 바로 clustered 이벤트의 적용이 안된다.
+  // 그래서 클러스터를 처음 생성한 후에는 직접 각 클러스터의 오버레이에 이벤트를 등록해줬다.
+  roomCluster._clusters.forEach((cluster) => {
+    let overlay = cluster.getClusterMarker().getContent();
+    // console.log(overlay);
+    overlay.addEventListener("mouseover", function () {
+      console.log("오버2");
+      if (!this.classList.contains("cluster-over")) {
+        this.classList.add("cluster-over");
+      }
+    });
+
+    // 각 클러스터의 overlay에 mouseout 이벤트를 등록합니다.
+    overlay.addEventListener("mouseout", function () {
+      console.log("아웃2");
+      if (this.classList.contains("cluster-over")) {
+        this.classList.remove("cluster-over");
+      }
+    });
+  });
 }
 
 // ^ 클러스터의 style(CSS)에 변화를 줘서 클러스터를 보이게, 안보이게 하는 함수
@@ -301,7 +323,17 @@ function displayRoomCluster(boolean) {
   if (boolean) {
     style = [
       {
-        display: "block",
+        width: "40px",
+        height: "40px",
+        background: "#3c5cff",
+        color: "#fff",
+        textAlign: "center",
+        lineHeight: "40px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+      {
         width: "53px",
         height: "52px",
         background: "#3c5cff",
@@ -359,7 +391,7 @@ function displayRoomCluster_hover(boolean, cluster) {
   cluster.setStyles(style);
 }
 
-//! 지역 / 지하철 오버레이 관련 함수
+//* =============================== 지역 / 지하철 오버레이 관련 함수 ===============================
 /**
  *^ 서울, 경기, 부산 등 지역정보를 보여주는 오버레이 생성
  * @param {*} local
