@@ -37,6 +37,7 @@ let oneroomList_resolved = null;
  * 3. 방을 리스트로 보여주며, 모든 방에 대해 필터적용, 각 방에 대한 세권찾기
  */
 //* 필터, 세권 만들기
+//* 매물 정렬에 가격 => 보증금순, 월세순 으로 바꾸고, 월세순으로 할때 전세는 월세가 없으니까 맨 아래로 보내
 
 // 지도 생성
 const map = new kakao.maps.Map(document.getElementById("map"), {
@@ -134,7 +135,11 @@ function createCardList(oneroomList = null) {
 
   if (oneroomList === null) {
     console.log("널입니다.");
-    cards;
+    let element = `<li class="no-result">
+                    <p class="no-result__text"><b>장소</b>를 클릭하여</p>
+                    <p class="no-result__text">매물을 확인해보세요.</p>
+                  </li>`;
+    cards.insertAdjacentHTML("beforeend", element);
     return;
   }
   console.log("실행");
@@ -449,6 +454,7 @@ function getPyeong(size) {
 function init() {
   createOverlay_subway_all();
   createOverlay_local(local);
+  createCardList(null);
   // setCardList();
 }
 
