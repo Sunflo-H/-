@@ -356,10 +356,12 @@ select::-ms-expand {
 
 /* Card */
 .card-box {
+  position: relative;
   min-width: 300px;
   width: 300px;
   overflow: scroll;
   padding-top: 2px;
+  /* border: 1px solid blue; */
 }
 
 .card {
@@ -369,16 +371,11 @@ select::-ms-expand {
   background-color: white;
   border-radius: 10px;
   margin: 0 auto 14px;
-  /* box-shadow: 1px 1px 5px 1px #e9eaf3; */
   box-shadow: 1px 1px 5px 1px var(--secondary);
   background: #ffffff;
 }
 .card:hover {
   cursor: pointer;
-}
-
-.card--short {
-  height: 50px;
 }
 
 .card__text {
@@ -443,6 +440,31 @@ select::-ms-expand {
   box-sizing: border-box;
   border-radius: 10px;
   overflow: hidden;
+}
+
+.card--short {
+  height: 50px;
+}
+
+.no-result {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* border: 1px solid red; */
+  width: 240px;
+  word-break: keep-all;
+  text-align: center;
+}
+
+.no-result__text {
+  font-size: 1.1rem;
+  line-height: 30px;
+}
+
+.no-result__text b {
+  font-weight: bold;
+  color: var(--primary);
 }
 
 /* Kakao Map */

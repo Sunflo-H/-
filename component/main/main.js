@@ -23,8 +23,9 @@ const localOverlayList = [];
 const subwayOverlayList = [];
 let roomCluster = null;
 let roomClusterState = false; //true면 지도 레벨이 낮을때 roomCluster만 보이게된다, //false면 지도 레벨이 낮을때 subwayOverlay만 보이게된다.
-let roomAndMarker = [];
+let roomAndMarker = null;
 let markers = null;
+let oneroomList_resolved = null;
 
 /**
  * !설명
@@ -35,23 +36,6 @@ let markers = null;
  * 2. 지하철 오버레이를 클릭하면 방 클러스터가 생성된다.
  * 3. 방을 리스트로 보여주며, 모든 방에 대해 필터적용, 각 방에 대한 세권찾기
  */
-
-//* 매물 정보로 리스트 띄우기
-//  1 매물정보를 불러올때 리스트를 같이 만든다.
-//  1-1 roomDataList[]에 {marker, roomData} 이렇게 저장해서 마커와 매물정보를 매치시킴
-//  1-2 roomDataList로 리스트를 만들자
-//  1-3 리스트는 지도레벨 5이하에서 보여야한다. 6부터는 찾을 곳을 선택해주세요.
-// !리스트는 클러스터할때 생성되고, 줌이 바뀔때 생성,삭제해야한다.
-// !제일 처음에는 매물을 찾을 곳을 선택하세요를 띄워야해
-
-// !리스트 생성까지는 했어, 이제 확대축소했을때 보이는 마커,클러스터 만 리스트 생성하게
-// 그렇다면 방정보를 받는게 아니고 클러스터 정보를 받아야하네
-
-//* 매물 리스트 호버시 지도의 어느 클러스터에 매물이 존재하는지 표시하기
-//  1 매물에 해당하는 마커를 찾고 마커가 어느 클러스터에 있는지 확인해야해
-//  1-0 방 클러스터 생성후 roomCluster에 넣는다.
-//  1-1 roomCluster._clusters[]._markers[] 에 마커가 있다.
-//  1-2 roomCluster._markers[]에 마커가 있다.
 //* 필터, 세권 만들기
 
 // 지도 생성
@@ -63,7 +47,7 @@ const map = new kakao.maps.Map(document.getElementById("map"), {
 
 kakao.maps.event.addListener(map, "click", function (mouseEvent) {
   // console.log(mouseEvent.latLng);
-  // console.log(map.getLevel());
+  console.log(map.getLevel());
   console.log(roomCluster);
 });
 
@@ -85,45 +69,30 @@ let resultMarkerList = [];
 kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   // 5이하 : 매물, 6~8 : 지하철, 9이상 : 지역
   if (5 < map.getLevel() && map.getLevel() < 8) {
+    console.log("지하철 오버레이");
     localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
     subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(map));
-
     displayRoomCluster(false);
+    createCardList();
   } else if (map.getLevel() <= 5) {
     if (roomClusterState) {
-      // console.log("줌이 바뀌었는데 방정보 있을때");
+      console.log("줌이 바뀌었는데 방정보 있을때");
       displayRoomCluster(true);
+      createCardList(oneroomList_resolved);
       localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
       subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(null));
-
-      // resultMarkerList = [];
-      // if (roomCluster != null) {
-      //   roomAndMarker.forEach((item) => {
-      //     // if (resultMarker !== undefined) return;
-      //     let resultMarker = undefined;
-      //     let want = item.marker;
-      //     roomCluster._clusters.forEach((cluster) => {
-      //       if (resultMarker !== undefined) return;
-      //       resultMarker = cluster._markers.find((marker) => marker === want);
-      //     });
-      //     console.log(resultMarker);
-      //     // 일치하는 마커를 찾았다면 배열에 저장
-      //     if (resultMarker != undefined) resultMarkerList.push(resultMarker);
-      //   });
-      // }
-      // console.log(resultMarkerList);
-      // createCardList();
     } else {
-      //console.log("줌이 바뀌었는데 방정보 없을때");
+      console.log("줌이 바뀌었는데 방정보 없을때");
       localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
       subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(map));
     }
   } else {
+    console.log("로컬 오버레이 보여줘");
     localOverlayList.forEach((localOverlay) => localOverlay.setMap(map));
     subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(null));
+    createCardList();
   }
 
-  // 띄운 오버레이들에 이벤트를 등록한다.
   overlaySetEvent();
 });
 
@@ -139,9 +108,8 @@ async function getOneRoomCluster(subway) {
   // oneroomList를 foreach 돌려서 async 안에 async의 흐름 확인해보기
   Promise.all(oneroomList).then((oneroomList) => {
     createCluster(oneroomList);
-    // console.log(roomCluster);
-    // console.log(roomAndMarker);
-    createCardList(oneroomList);
+    // createCardList(oneroomList);
+    oneroomList_resolved = oneroomList;
     loading(false);
   });
 }
@@ -149,16 +117,28 @@ async function getOneRoomCluster(subway) {
 /**
  * ^ 방 정보를 받아 cardList를 생성한다.
  * @param {*} oneroomList [{원룸 정보}, {원룸 정보} ...]
+ * * 생성
+ * 1. 클러스터 클릭시 카드 생성
+ * 2. 지하철, 지역상태에서 확대했는데 방 정보가 있을때
+ *
+ * * 삭제
+ * 1. 지도 축소 해서 지하철, 지역이 보일때
  */
-function createCardList(oneroomList) {
+function createCardList(oneroomList = null) {
   const cardBox = document.querySelector(".card-box");
   const cards = cardBox.querySelector("ul.cards");
 
-  console.log(oneroomList);
   while (cards.firstChild) {
     cards.removeChild(cards.firstChild);
   }
 
+  if (oneroomList === null) {
+    console.log("널입니다.");
+    cards;
+    return;
+  }
+  console.log("실행");
+  oneroomList_resolved = oneroomList;
   oneroomList.forEach((oneroom) => {
     let item = oneroom.item;
     let price = ``;
@@ -237,7 +217,6 @@ function createCluster(roomList) {
     calculator: [10],
   });
   roomAndMarker = [];
-  console.log(roomCluster.getCalculator());
   markers = roomList.map(function (room, i) {
     let position = room.item.random_location.split(",");
     let marker = new kakao.maps.Marker({
@@ -256,8 +235,6 @@ function createCluster(roomList) {
     return text;
   });
   roomCluster.addMarkers(markers);
-  console.log("클러스터 생성");
-  console.log(roomCluster);
 
   // * 생성된 클러스터에 적용하는 이벤트들
   // & clustered(클러스터 생성 완료 후) 이벤트가 바로 적용되지 않는 이유 :
@@ -270,13 +247,10 @@ function createCluster(roomList) {
   roomCluster._clusters.forEach((cluster) => {
     let overlay = cluster.getClusterMarker().getContent();
     overlay.addEventListener("mouseover", function () {
-      console.log("오버2");
       if (!this.classList.contains("cluster-over")) {
         this.classList.add("cluster-over");
       }
     });
-
-    // 각 클러스터의 overlay에 mouseout 이벤트를 등록합니다.
     overlay.addEventListener("mouseout", function () {
       if (this.classList.contains("cluster-over")) {
         this.classList.remove("cluster-over");
@@ -299,20 +273,14 @@ function createCluster(roomList) {
     for (var i = 0; i < clusters.length; i++) {
       var cluster = clusters[i];
       var overlay = cluster.getClusterMarker().getContent();
-      console.log(cluster);
-      console.log(overlay);
-      // 각 클러스터의 overlay에 mouseover 이벤트를 등록합니다.
-      // console.log("클러스터링 완료 후 이벤트 등록");
+
       overlay.addEventListener("mouseover", function () {
-        console.log("오버");
-        // if (!this.classList.contains("cluster-over")) {
-        this.classList.add("cluster-over");
-        // }
+        if (!this.classList.contains("cluster-over")) {
+          this.classList.add("cluster-over");
+        }
       });
 
-      // 각 클러스터의 overlay에 mouseout 이벤트를 등록합니다.
       overlay.addEventListener("mouseout", function () {
-        console.log("아웃");
         if (this.classList.contains("cluster-over")) {
           this.classList.remove("cluster-over");
         }
