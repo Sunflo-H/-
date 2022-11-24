@@ -148,6 +148,7 @@ async function getOneRoomCluster(subway) {
 
 /**
  * ^ 방 정보를 받아 cardList를 생성한다.
+ * @param {*} oneroomList [{원룸 정보}, {원룸 정보} ...]
  */
 function createCardList(oneroomList) {
   const cardBox = document.querySelector(".card-box");
@@ -208,6 +209,7 @@ function createCluster(roomList) {
     minLevel: 1, // 클러스터 할 최소 지도 레벨
     gridSize: 60,
     minClusterSize: 1, // Number : 클러스터링 할 최소 마커 수 (default: 2)
+    disableClickZoom: true,
     styles: [
       {
         width: "40px",
@@ -256,18 +258,41 @@ function createCluster(roomList) {
   roomCluster.addMarkers(markers);
   console.log("클러스터 생성");
   console.log(roomCluster);
-  // kakao.maps.event.addListener(roomCluster, "clustered", function (clusters) {
-  //   console.log(roomCluster);
-  //   console.log(clusters); //클러스터된게 맵에 보일때 마다 추가된다. 현재 맵에 보이는것만 저장되는게 아니다.
-  //   // 지도를 드래그할때 새로 생긴 클러스터가 저장된다.
-  //   // 다른곳으로 드래그하여 클러스터가 사라졌어도 값은 그대로 저장되어있다.
-  //   // 지도레벨이 변경될때 초기화된다.
-  // });
+
+  // * 생성된 클러스터에 적용하는 이벤트들
+  // & clustered(클러스터 생성 완료 후) 이벤트가 바로 적용되지 않는 이유 :
+  // &   클러스터가 생성된 후에 클러스터들에게 이벤트를 적용시킨다.
+  // &   생성된 후에 clustered 이벤트를 적용시킨다.
+  // &   따라서 처음 생성된 클러스터에는 clustered 이벤트가 적용되지 않는다.
+  // &   그리고 생성된 클러스터는 지도가 확대/축소될때마다 clustered되며 이때마다 이벤트가 적용된다.
+
+  // 처음 생성된 클러스터에 적용하는 이벤트 (clustered 이벤트핸들러와 내용은 같다.)
+  roomCluster._clusters.forEach((cluster) => {
+    let overlay = cluster.getClusterMarker().getContent();
+    overlay.addEventListener("mouseover", function () {
+      console.log("오버2");
+      if (!this.classList.contains("cluster-over")) {
+        this.classList.add("cluster-over");
+      }
+    });
+
+    // 각 클러스터의 overlay에 mouseout 이벤트를 등록합니다.
+    overlay.addEventListener("mouseout", function () {
+      if (this.classList.contains("cluster-over")) {
+        this.classList.remove("cluster-over");
+      }
+    });
+  });
 
   kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
-    // console.log(cluster);
-    // console.log(cluster.getSize()); // 해당 클러스터 객체에 포함된 마커의 개수
-    // console.log(cluster.getMarkers()); // 해당 클러스터 객체에 포함된 마커들의 정보를 얻는다.
+    let roomList = cluster
+      .getMarkers()
+      .map(
+        (marker) =>
+          roomAndMarker.find((item) => marker === item.marker).roomData
+      );
+
+    createCardList(roomList);
   });
 
   kakao.maps.event.addListener(roomCluster, "clustered", function (clusters) {
@@ -293,27 +318,6 @@ function createCluster(roomList) {
         }
       });
     }
-  });
-
-  // 클러스터가 생성된 직후에 바로 clustered 이벤트의 적용이 안된다.
-  // 그래서 클러스터를 처음 생성한 후에는 직접 각 클러스터의 오버레이에 이벤트를 등록해줬다.
-  roomCluster._clusters.forEach((cluster) => {
-    let overlay = cluster.getClusterMarker().getContent();
-    // console.log(overlay);
-    overlay.addEventListener("mouseover", function () {
-      console.log("오버2");
-      if (!this.classList.contains("cluster-over")) {
-        this.classList.add("cluster-over");
-      }
-    });
-
-    // 각 클러스터의 overlay에 mouseout 이벤트를 등록합니다.
-    overlay.addEventListener("mouseout", function () {
-      console.log("아웃2");
-      if (this.classList.contains("cluster-over")) {
-        this.classList.remove("cluster-over");
-      }
-    });
   });
 }
 
@@ -353,42 +357,6 @@ function displayRoomCluster(boolean) {
     ];
   }
   if (roomCluster != null) roomCluster.setStyles(style);
-}
-
-function displayRoomCluster_hover(boolean, cluster) {
-  let style = [];
-  if (boolean) {
-    style = [
-      {
-        display: "block",
-        width: "53px",
-        height: "52px",
-        background: "#fff",
-        color: "#3c5cff",
-        textAlign: "center",
-        lineHeight: "54px",
-        borderRadius: "50%",
-        border: "1px solid #4c3aff",
-        opacity: "0.85",
-      },
-    ];
-  } else {
-    style = [
-      {
-        display: "block",
-        width: "53px",
-        height: "52px",
-        background: "#3c5cff",
-        color: "#fff",
-        textAlign: "center",
-        lineHeight: "54px",
-        borderRadius: "50%",
-        border: "1px solid #4c3aff",
-        opacity: "0.85",
-      },
-    ];
-  }
-  cluster.setStyles(style);
 }
 
 //* =============================== 지역 / 지하철 오버레이 관련 함수 ===============================
