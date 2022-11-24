@@ -265,8 +265,22 @@ select::-ms-expand {
   box-shadow: 1px 1px 1px 1px #e9eaf3;
   cursor: pointer;
 }
+.sort-btn__icon {
+  position: relative;
+  width: 8px;
+  margin-left: 2px;
+  display: inline-block;
+}
 
-.sort-btn i {
+.sort-btn__icon .fa-solid {
+  position: absolute;
+  top: -17px;
+  color: var(--secondary);
+  transform: translateY(3px);
+}
+
+.sort-btn .fa-sort-up.active,
+.sort-btn .fa-sort-down.active {
   color: var(--primary);
 }
 

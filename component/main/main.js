@@ -52,8 +52,10 @@ let currentOneroomList = null;
 
 //! 할것
 //* 매물 정렬에 가격 => 보증금순, 월세순 으로 바꾸고, 월세순으로 할때 전세는 월세가 없으니까 맨 아래로 보내
-// 1 현재 데이터가 cardlist에 어떻게 제공되는지 확인하기
-// 2 데이터에서 보증금, 월세, 최신 에 대한 데이터를 확인 후 비교할수 있는지 생각하기
+// 1 현재 데이터가 cardlist에 어떻게 제공되는지 확인하기 +
+// 2 데이터에서 보증금, 월세, 최신 에 대한 데이터를 확인 후 비교할수 있는지 생각하기 +
+// 3 데이터 정렬 버튼 만들고 기능 적용하기
+//* 카드 호버시 css 변화
 
 //* 클릭한 지점의 클러스터 오버레이의 css 변화
 //* 필터, 세권 만들기
@@ -92,7 +94,7 @@ async function getOneRoomCluster(subway) {
  * * 삭제
  * 1. 지도 축소 해서 지하철, 지역이 보일때
  */
-function createCardList(oneroomList = null) {
+function createCardList(roomList = null) {
   const cardBox = document.querySelector(".card-box");
   const cards = cardBox.querySelector("ul.cards");
 
@@ -100,8 +102,8 @@ function createCardList(oneroomList = null) {
     cards.removeChild(cards.firstChild);
   }
 
-  // oneroomList가 없다면 기본값을 띄운다.
-  if (oneroomList === null) {
+  // roomList가 없다면 기본값을 띄운다.
+  if (roomList === null) {
     let element = `<li class="no-result">
                     <p class="no-result__text"><b>장소</b>를 클릭하여</p>
                     <p class="no-result__text">매물을 확인해보세요.</p>
@@ -110,9 +112,7 @@ function createCardList(oneroomList = null) {
     return;
   }
 
-  currentOneroomList = oneroomList;
-
-  oneroomList.forEach((oneroom) => {
+  roomList.forEach((oneroom) => {
     let item = oneroom.item;
     let price = ``;
     let size = ``;
@@ -148,6 +148,16 @@ function createCardList(oneroomList = null) {
     </div>
   </li>`;
     cards.insertAdjacentHTML("beforeend", element);
+  });
+
+  currentOneroomList = roomList;
+  console.log(currentOneroomList);
+  currentOneroomList.forEach((item) => {
+    // let 준공일자 = item.item.approve_date.replace(/[^0-9]/g, "");
+    let 보증금 = item.item.보증금액;
+    let 월세 = item.item.월세금액;
+
+    console.log(보증금, "/", 월세);
   });
 }
 
