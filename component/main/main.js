@@ -2,6 +2,7 @@ import Oneroom from "./oneroom.js";
 
 const filter = document.querySelectorAll(".filter__select");
 const sortBtn = document.querySelectorAll(".sort-btn");
+const layoutBtn = document.querySelectorAll(".layout-btn");
 
 const CRITERIA_MAP_LEVEL = 7;
 const oneroom = new Oneroom();
@@ -45,6 +46,8 @@ let currentOneroomList = null;
  * sort()하기 전 원본 배열
  */
 let originalOneroomList = [];
+
+let cardListLayout = "card";
 
 /**
  * !설명
@@ -104,7 +107,7 @@ function createCardList(roomList = null) {
     cards.removeChild(cards.firstChild);
   }
 
-  // roomList가 없다면 기본값을 띄운다.
+  // roomList가 없다면 기본값을 띄우고 함수 종료
   if (roomList === null) {
     let element = `<li class="no-result">
                     <p class="no-result__text"><b>장소</b>를 클릭하여</p>
@@ -133,22 +136,84 @@ function createCardList(roomList = null) {
       case "매매":
         console.log("매매");
     }
-    let element = `<li class="card">
-    <div class="card__text">
-      <div class="card__price">${type} ${price}</div>
-      <div class="card__size">${size}</div>
-      <div class="card__addr">${item.local2} ${item.local3}</div>
-      <div class="card__description">
-        ${item.description}
-      </div>
-    </div>
-    <div class="card__image">
-      <img
-        src=${item.image_thumbnail}?w=400&h=300&q=70&a=1
-        alt="썸네일"
-      />
-    </div>
-  </li>`;
+    let element = "";
+    cardListLayout === "card"
+      ? (element = `<li class="card">
+                      <div class="card__text">
+                        <div class="card__price">${type} ${price}</div>
+                        <div class="card__size">${size}</div>
+                        <div class="card__addr">${item.local2} ${item.local3}</div>
+                        <div class="card__description">
+                          ${item.description}
+                        </div>
+                      </div>
+                      <div class="card__image">
+                        <img
+                          src=${item.image_thumbnail}?w=400&h=300&q=70&a=1
+                          alt="썸네일"
+                        />
+                      </div>
+                    </li>`)
+      : (element = `<li class="card card--short">
+                      <div class="card__text card__text--short">
+                        <div class="card__price card__price--short">${type} ${price}</div>
+                        <div class="card__size card__size--short">${size}</div>
+                      </div>
+                    </li>`);
+    cards.insertAdjacentHTML("beforeend", element);
+  });
+
+  currentOneroomList = roomList;
+  // 오리지널에 일치하는 값이 있다면 이미 오리지널이 존재하므로 바꾸지 않는다.
+  // 오리지널에 일치하는 값이 없다면 아직 오리지널에 값을 저장하지 않은것이므로 roomList를 저장한다.
+  if (!originalOneroomList.find((item) => item === roomList[0]))
+    originalOneroomList = roomList;
+}
+
+function createCardList_short(roomList = null) {
+  const cardBox = document.querySelector(".card-box");
+  const cards = cardBox.querySelector("ul.cards");
+
+  while (cards.firstChild) {
+    cards.removeChild(cards.firstChild);
+  }
+
+  // roomList가 없다면 기본값을 띄우고 함수 종료
+  if (roomList === null) {
+    let element = `<li class="no-result">
+                    <p class="no-result__text"><b>장소</b>를 클릭하여</p>
+                    <p class="no-result__text">매물을 확인해보세요.</p>
+                  </li>`;
+    cards.insertAdjacentHTML("beforeend", element);
+    return;
+  }
+
+  roomList.forEach((oneroom) => {
+    let item = oneroom.item;
+    let price = ``;
+    let size = ``;
+    oneroom.floor != null
+      ? (size = `${getPyeong(item.전용면적_m2)}평 ${item.floor}층`)
+      : (size = `${getPyeong(item.전용면적_m2)}평 ${item.floor_string}층`);
+
+    let type = item.sales_type;
+    switch (type) {
+      case "월세":
+        price = `${oneroom.item.보증금액} / ${oneroom.item.월세금액}`;
+        break;
+      case "전세":
+        price = `${oneroom.item.보증금액}`;
+        break;
+      case "매매":
+        console.log("매매");
+    }
+    let element = `
+    <li class="card card--short">
+              <div class="card__text card__text--short">
+                <div class="card__price">${type} ${price}</div>
+                <div class="card__size card__size--short">${size}</div>
+              </div>
+            </li>`;
     cards.insertAdjacentHTML("beforeend", element);
   });
 
@@ -582,6 +647,7 @@ function sortBtnClick(event, sort1, sort2) {
       break;
   }
 }
+
 sortBtn.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     sortBtnClick(e, "보증금액", "월세금액");
@@ -589,5 +655,13 @@ sortBtn.forEach((btn) => {
     // 빌라 : 매매, 보증금액(전세)
     // 원룸 : 보증금액, 월세
     // 오피스텔 : 보증금액, 월세
+  });
+});
+
+layoutBtn.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    if (btn === layoutBtn[0]) cardListLayout = "card";
+    else cardListLayout = "short";
+    createCardList(currentOneroomList);
   });
 });
