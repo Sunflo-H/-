@@ -387,9 +387,11 @@ select::-ms-expand {
   margin: 0 auto 14px;
   box-shadow: 1px 1px 5px 1px var(--secondary);
   background: #ffffff;
+  transition: all 0.3s ease-in-out;
 }
 .card:hover {
   cursor: pointer;
+  transform: scale(1.04);
 }
 
 .card__text {

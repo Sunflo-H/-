@@ -57,10 +57,6 @@ let originalOneroomList = [];
  */
 
 //! 할것
-//* 매물 정렬에 가격 => 보증금순, 월세순 으로 바꾸고, 월세순으로 할때 전세는 월세가 없으니까 맨 아래로 보내
-// 1 현재 데이터가 cardlist에 어떻게 제공되는지 확인하기 +
-// 2 데이터에서 보증금, 월세, 최신 에 대한 데이터를 확인 후 비교할수 있는지 생각하기 +
-// 3 데이터 정렬 버튼 만들고 기능 적용하기
 //* 카드 호버시 css 변화
 
 //* 클릭한 지점의 클러스터 오버레이의 css 변화
@@ -509,6 +505,13 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   overlaySetEvent();
 });
 
+/**
+ * 카드리스트 정렬 버튼을 클릭했을때 사용되는 이벤트핸들러
+ * @param {*} event
+ * @param {*} sort1 버튼에 해당하는 정렬값
+ * @param {*} sort2 버튼에 해당하는 정렬값
+ * @returns
+ */
 function sortBtnClick(event, sort1, sort2) {
   if (currentOneroomList == null) return;
   //* 정렬버튼 상태변화 및 정렬기능
@@ -582,75 +585,9 @@ function sortBtnClick(event, sort1, sort2) {
 sortBtn.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     sortBtnClick(e, "보증금액", "월세금액");
+    // 아파트 : 매매, 보증금액(전세)
+    // 빌라 : 매매, 보증금액(전세)
+    // 원룸 : 보증금액, 월세
+    // 오피스텔 : 보증금액, 월세
   });
 });
-
-// sortBtn.forEach((btn) => {
-//   btn.addEventListener("click", (e) => {
-//     if (currentOneroomList == null) return;
-//     //* 정렬버튼 상태변화 및 정렬기능
-//     let state = btn.dataset.state;
-//     const up = btn.querySelector(".fa-sort-up");
-//     const down = btn.querySelector(".fa-sort-down");
-
-//     /**
-//      * 원래값을 바꾸지 않기위해 사용하는 변수
-//      */
-//     let sortOneroomList = [...currentOneroomList];
-//     if (state === "basic") state = "down";
-//     else if (state === "down") state = "up";
-//     else if (state === "up") state = "basic";
-
-//     switch (state) {
-//       case "basic":
-//         btn.dataset.state = "basic";
-//         up.classList.add("active");
-//         down.classList.add("active");
-//         createCardList(originalOneroomList);
-//         break;
-
-//       case "down": //오름차순
-//         btn.dataset.state = "down";
-//         up.classList.remove("active");
-//         down.classList.add("active");
-
-//         // 보증금을 누르면 월세는 항상 basic이 되게
-//         // 월세를 누르면 보증금은 항상 basic이 되게, 이 코드는 흐름상 down일때만 적용하면 된다.
-//         if (btn === sortBtn[0]) {
-//           sortBtn[1].dataset.state = "basic";
-//           sortBtn[1].querySelector(".fa-sort-up").classList.add("active");
-//           sortBtn[1].querySelector(".fa-sort-down").classList.add("active");
-//         } else {
-//           sortBtn[0].dataset.state = "basic";
-//           sortBtn[0].querySelector(".fa-sort-up").classList.add("active");
-//           sortBtn[0].querySelector(".fa-sort-down").classList.add("active");
-//         }
-
-//         btn === sortBtn[0]
-//           ? sortOneroomList.sort(
-//               (a, b) => Number(a.item.보증금액) - Number(b.item.보증금액)
-//             )
-//           : sortOneroomList.sort(
-//               (a, b) => Number(a.item.월세금액) - Number(b.item.월세금액)
-//             );
-//         createCardList(sortOneroomList);
-//         sortOneroomList = [...originalOneroomList];
-//         break;
-
-//       case "up": // 내림차순
-//         btn.dataset.state = "up";
-//         up.classList.add("active");
-//         down.classList.remove("active");
-//         btn === sortBtn[0]
-//           ? sortOneroomList.sort(
-//               (a, b) => Number(b.item.보증금액) - Number(a.item.보증금액)
-//             )
-//           : sortOneroomList.sort(
-//               (a, b) => Number(b.item.월세금액) - Number(a.item.월세금액)
-//             );
-//         createCardList(sortOneroomList);
-//         sortOneroomList = [...originalOneroomList];
-//         break;
-//     }
-//   });
-// });
