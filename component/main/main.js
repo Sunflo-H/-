@@ -2,7 +2,6 @@ import Oneroom from "./oneroom.js";
 
 const filter = document.querySelectorAll(".filter__select");
 const sortBtn = document.querySelectorAll(".sort-btn");
-console.log(sortBtn);
 
 const CRITERIA_MAP_LEVEL = 7;
 const oneroom = new Oneroom();
@@ -275,6 +274,14 @@ function createCluster(roomList) {
       );
 
     createCardList(roomList);
+
+    sortBtn.forEach((btn) => {
+      const up = btn.querySelector(".fa-sort-up");
+      const down = btn.querySelector(".fa-sort-down");
+      btn.dataset.state = "basic";
+      up.classList.add("active");
+      down.classList.add("active");
+    });
   });
 }
 
