@@ -508,6 +508,13 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
 
   overlaySetEvent();
 });
+function sortBtnClick(e) {
+  console.log(e.target);
+  console.log(e.currentTarget); //이걸로
+}
+sortBtn.forEach((btn) => {
+  btn.addEventListener("click", sortBtnClick);
+});
 
 sortBtn.forEach((btn) => {
   btn.addEventListener("click", (e) => {
@@ -517,6 +524,9 @@ sortBtn.forEach((btn) => {
     const up = btn.querySelector(".fa-sort-up");
     const down = btn.querySelector(".fa-sort-down");
 
+    /**
+     * 원래값을 바꾸지 않기위해 사용하는 변수
+     */
     let sortOneroomList = [...currentOneroomList];
     if (state === "basic") state = "down";
     else if (state === "down") state = "up";
@@ -528,13 +538,24 @@ sortBtn.forEach((btn) => {
         up.classList.add("active");
         down.classList.add("active");
         createCardList(originalOneroomList);
-
         break;
 
-      case "down":
+      case "down": //오름차순
         btn.dataset.state = "down";
         up.classList.remove("active");
         down.classList.add("active");
+
+        // 보증금을 누르면 월세는 항상 basic이 되게
+        // 월세를 누르면 보증금은 항상 basic이 되게, 이 코드는 흐름상 down일때만 적용하면 된다.
+        if (btn === sortBtn[0]) {
+          sortBtn[1].dataset.state = "basic";
+          sortBtn[1].querySelector(".fa-sort-up").classList.add("active");
+          sortBtn[1].querySelector(".fa-sort-down").classList.add("active");
+        } else {
+          sortBtn[0].dataset.state = "basic";
+          sortBtn[0].querySelector(".fa-sort-up").classList.add("active");
+          sortBtn[0].querySelector(".fa-sort-down").classList.add("active");
+        }
 
         btn === sortBtn[0]
           ? sortOneroomList.sort(
@@ -543,13 +564,11 @@ sortBtn.forEach((btn) => {
           : sortOneroomList.sort(
               (a, b) => Number(a.item.월세금액) - Number(b.item.월세금액)
             );
-
         createCardList(sortOneroomList);
         sortOneroomList = [...originalOneroomList];
-
         break;
 
-      case "up":
+      case "up": // 내림차순
         btn.dataset.state = "up";
         up.classList.add("active");
         down.classList.remove("active");
