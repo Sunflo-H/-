@@ -47,6 +47,10 @@ let currentOneroomList = null;
  */
 let originalOneroomList = [];
 /**
+ * sort()한 후의 배열
+ */
+let sortedOneroomList = [];
+/**
  * !설명
  * 지역, 지하철은 customOverlay로 만들었다. 방은 cluster로 만들었다.
  *
@@ -514,89 +518,68 @@ sortBtn.forEach((btn) => {
     const up = btn.querySelector(".fa-sort-up");
     const down = btn.querySelector(".fa-sort-down");
 
-    //클릭했는데 active가 없으면 sortState는 basic => up
-    //클릭했는데 up이 active면 sortState는 up => down
-    //클릭했는데 down이 active면 sortState는 down => basic
-
-    /**
-     * 1. 전역변수 사용
-     * 1-1 정렬 상태를 전역변수로 만든다. let sortState = "sort"; 또는 let sortState = ["","",""]
-     * 1-2 누를때마다 sortState = "up" , "down" , "basic" 의 순서대로 적용
-     * 1-3 sortState에 따라 up, down에 active를 적용
-     * 1-4
-     *
-     * 2. 지역변수 사용
-     * 2-1 btn에 data-state = "basic" 적용
-     * 2-2 state에 따라 up, down에 active를 적용
-     * 2-3 state에 따라 currentRoomList를 정렬하여 createCardList(currentRoomList) 실행
-     */
     let sortOneroomList = [...currentOneroomList];
-    // originalOneroomList = [...currentOneroomList];
+    console.log(sortOneroomList);
+    console.log(originalOneroomList);
     switch (state) {
-      case "basic":
+      case "basic": // basic => down
         console.log("오름차순정렬");
         btn.dataset.state = "down";
         up.classList.remove("active");
         down.classList.add("active");
-        // btn === sortBtn[0]
-        //   ? sortOneroomList.sort((a, b) => {
-        //       let 보증금액1 = Number(a.item.보증금액);
-        //       let 보증금액2 = Number(b.item.보증금액);
-        //       return 보증금액1 - 보증금액2;
-        //     })
-        //   : sortOneroomList.sort((a, b) => {
-        //       let 월세금액1 = Number(a.item.보증금액);
-        //       let 월세금액2 = Number(b.item.보증금액);
-        //       return 월세금액1 - 월세금액2;
-        //     });
+        btn === sortBtn[0]
+          ? sortOneroomList.sort(
+              (a, b) => Number(a.item.보증금액) - Number(b.item.보증금액)
+            )
+          : sortOneroomList.sort(
+              (a, b) => Number(a.item.월세금액) - Number(b.item.월세금액)
+            );
 
-        sortOneroomList.sort((a, b) => {
-          let 보증금액1 = Number(a.item.보증금액);
-          let 보증금액2 = Number(b.item.보증금액);
-          return 보증금액1 - 보증금액2;
-        });
-
-        sortOneroomList.forEach((item) => {
-          console.log("임시:", item.item.보증금액);
-        });
-        originalOneroomList.forEach((item) => {
-          console.log("현재:", item.item.보증금액);
-        });
+        // sortOneroomList.forEach((item) => {
+        //   console.log("임시:", item.item.보증금액);
+        // });
+        // originalOneroomList.forEach((item) => {
+        //   console.log("현재:", item.item.보증금액);
+        // });
 
         createCardList(sortOneroomList);
+        sortedOneroomList = [...sortOneroomList];
         sortOneroomList = [...originalOneroomList];
         break;
-      case "down":
+      case "down": // down => up
         console.log("내림차순정렬");
         btn.dataset.state = "up";
         up.classList.add("active");
         down.classList.remove("active");
-        sortOneroomList.sort((a, b) => {
-          let 보증금액1 = Number(a.item.보증금액);
-          let 보증금액2 = Number(b.item.보증금액);
-          return 보증금액2 - 보증금액1;
-        });
-        sortOneroomList.forEach((item) => {
-          console.log("임시:", item.item.보증금액);
-        });
-        originalOneroomList.forEach((item) => {
-          console.log("현재:", item.item.보증금액);
-        });
+        btn === sortBtn[0]
+          ? sortOneroomList.sort(
+              (a, b) => Number(b.item.보증금액) - Number(a.item.보증금액)
+            )
+          : sortOneroomList.sort(
+              (a, b) => Number(b.item.월세금액) - Number(a.item.월세금액)
+            );
+        // sortOneroomList.forEach((item) => {
+        //   console.log("임시:", item.item.보증금액);
+        // });
+        // originalOneroomList.forEach((item) => {
+        //   console.log("현재:", item.item.보증금액);
+        // });
         createCardList(sortOneroomList);
+        sortedOneroomList = [...sortOneroomList];
         sortOneroomList = [...originalOneroomList];
         break;
 
-      case "up":
+      case "up": // up => basic
         console.log("원래정렬");
         btn.dataset.state = "basic";
         up.classList.add("active");
         down.classList.add("active");
-        sortOneroomList.forEach((item) => {
-          console.log("임시:", item.item.보증금액);
-        });
-        originalOneroomList.forEach((item) => {
-          console.log("현재:", item.item.보증금액);
-        });
+        // sortOneroomList.forEach((item) => {
+        //   console.log("임시:", item.item.보증금액);
+        // });
+        // originalOneroomList.forEach((item) => {
+        //   console.log("현재:", item.item.보증금액);
+        // });
         createCardList(originalOneroomList);
         break;
     }
@@ -604,4 +587,9 @@ sortBtn.forEach((btn) => {
 
   // 다중조건 (보증금도 하고, 월세도 하는 경우)
   // 보증금을 먼저 한뒤에 그 결과로 월세조건실행
+  /**
+   * 보증금, 월세로 정렬하는 코드는 만듬
+   *
+   * 1. 보증금으로 정렬했는데
+   */
 });
