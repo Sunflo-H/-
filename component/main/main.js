@@ -508,92 +508,149 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
 
   overlaySetEvent();
 });
-function sortBtnClick(e) {
-  console.log(e.target);
-  console.log(e.currentTarget); //이걸로
+
+function sortBtnClick(event, sort1, sort2) {
+  if (currentOneroomList == null) return;
+  //* 정렬버튼 상태변화 및 정렬기능
+  let btn = event.currentTarget;
+  let state = btn.dataset.state;
+  const up = btn.querySelector(".fa-sort-up");
+  const down = btn.querySelector(".fa-sort-down");
+
+  /**
+   * 원래값을 바꾸지 않기위해 사용하는 변수
+   */
+  let sortOneroomList = [...currentOneroomList];
+  if (state === "basic") state = "down";
+  else if (state === "down") state = "up";
+  else if (state === "up") state = "basic";
+
+  switch (state) {
+    case "basic":
+      btn.dataset.state = "basic";
+      up.classList.add("active");
+      down.classList.add("active");
+      createCardList(originalOneroomList);
+      break;
+
+    case "down": //오름차순
+      btn.dataset.state = "down";
+      up.classList.remove("active");
+      down.classList.add("active");
+
+      // 보증금을 누르면 월세는 항상 basic이 되게
+      // 월세를 누르면 보증금은 항상 basic이 되게, 이 코드는 흐름상 down일때만 적용하면 된다.
+      if (btn === sortBtn[0]) {
+        sortBtn[1].dataset.state = "basic";
+        sortBtn[1].querySelector(".fa-sort-up").classList.add("active");
+        sortBtn[1].querySelector(".fa-sort-down").classList.add("active");
+      } else {
+        sortBtn[0].dataset.state = "basic";
+        sortBtn[0].querySelector(".fa-sort-up").classList.add("active");
+        sortBtn[0].querySelector(".fa-sort-down").classList.add("active");
+      }
+
+      btn === sortBtn[0]
+        ? sortOneroomList.sort(
+            (a, b) => Number(a.item[sort1]) - Number(b.item[sort1])
+          )
+        : sortOneroomList.sort(
+            (a, b) => Number(a.item[sort2]) - Number(b.item[sort2])
+          );
+
+      createCardList(sortOneroomList);
+      sortOneroomList = [...originalOneroomList];
+      break;
+
+    case "up": // 내림차순
+      btn.dataset.state = "up";
+      up.classList.add("active");
+      down.classList.remove("active");
+      btn === sortBtn[0]
+        ? sortOneroomList.sort(
+            (a, b) => Number(b.item[sort1]) - Number(a.item[sort1])
+          )
+        : sortOneroomList.sort(
+            (a, b) => Number(b.item[sort2]) - Number(a.item[sort2])
+          );
+
+      createCardList(sortOneroomList);
+      sortOneroomList = [...originalOneroomList];
+      break;
+  }
 }
 sortBtn.forEach((btn) => {
-  btn.addEventListener("click", sortBtnClick);
-});
-
-sortBtn.forEach((btn) => {
   btn.addEventListener("click", (e) => {
-    if (currentOneroomList == null) return;
-    //* 정렬버튼 상태변화 및 정렬기능
-    let state = btn.dataset.state;
-    const up = btn.querySelector(".fa-sort-up");
-    const down = btn.querySelector(".fa-sort-down");
-
-    /**
-     * 원래값을 바꾸지 않기위해 사용하는 변수
-     */
-    let sortOneroomList = [...currentOneroomList];
-    if (state === "basic") state = "down";
-    else if (state === "down") state = "up";
-    else if (state === "up") state = "basic";
-
-    switch (state) {
-      case "basic":
-        btn.dataset.state = "basic";
-        up.classList.add("active");
-        down.classList.add("active");
-        createCardList(originalOneroomList);
-        break;
-
-      case "down": //오름차순
-        btn.dataset.state = "down";
-        up.classList.remove("active");
-        down.classList.add("active");
-
-        // 보증금을 누르면 월세는 항상 basic이 되게
-        // 월세를 누르면 보증금은 항상 basic이 되게, 이 코드는 흐름상 down일때만 적용하면 된다.
-        if (btn === sortBtn[0]) {
-          sortBtn[1].dataset.state = "basic";
-          sortBtn[1].querySelector(".fa-sort-up").classList.add("active");
-          sortBtn[1].querySelector(".fa-sort-down").classList.add("active");
-        } else {
-          sortBtn[0].dataset.state = "basic";
-          sortBtn[0].querySelector(".fa-sort-up").classList.add("active");
-          sortBtn[0].querySelector(".fa-sort-down").classList.add("active");
-        }
-
-        btn === sortBtn[0]
-          ? sortOneroomList.sort(
-              (a, b) => Number(a.item.보증금액) - Number(b.item.보증금액)
-            )
-          : sortOneroomList.sort(
-              (a, b) => Number(a.item.월세금액) - Number(b.item.월세금액)
-            );
-        createCardList(sortOneroomList);
-        sortOneroomList = [...originalOneroomList];
-        break;
-
-      case "up": // 내림차순
-        btn.dataset.state = "up";
-        up.classList.add("active");
-        down.classList.remove("active");
-        btn === sortBtn[0]
-          ? sortOneroomList.sort(
-              (a, b) => Number(b.item.보증금액) - Number(a.item.보증금액)
-            )
-          : sortOneroomList.sort(
-              (a, b) => Number(b.item.월세금액) - Number(a.item.월세금액)
-            );
-        createCardList(sortOneroomList);
-        sortOneroomList = [...originalOneroomList];
-        break;
-    }
+    sortBtnClick(e, "보증금액", "월세금액");
   });
-
-  // 다중조건 (보증금도 하고, 월세도 하는 경우)
-  // 보증금을 먼저 한뒤에 그 결과로 월세조건실행
-  /**
-   * 보증금으로 정렬하고 월세로도 정렬하는경우
-   * 1. 보증금으로 정렬했을때 sortedOneroomList가 있어
-   * 2. sortedOneroomList가 있다면 sortOneroomList = [...sortedOneroomList]
-   * 3. sortOneroomList로 정렬 후 createCardList(sortOneroomList) 실행
-   *
-   * 주의할점은 sortedOneroomList를 바꾸지 말아야한다는것
-   * 그래야 월세정렬을 할때마다 값이 바뀌는걸 막는다.
-   */
 });
+
+// sortBtn.forEach((btn) => {
+//   btn.addEventListener("click", (e) => {
+//     if (currentOneroomList == null) return;
+//     //* 정렬버튼 상태변화 및 정렬기능
+//     let state = btn.dataset.state;
+//     const up = btn.querySelector(".fa-sort-up");
+//     const down = btn.querySelector(".fa-sort-down");
+
+//     /**
+//      * 원래값을 바꾸지 않기위해 사용하는 변수
+//      */
+//     let sortOneroomList = [...currentOneroomList];
+//     if (state === "basic") state = "down";
+//     else if (state === "down") state = "up";
+//     else if (state === "up") state = "basic";
+
+//     switch (state) {
+//       case "basic":
+//         btn.dataset.state = "basic";
+//         up.classList.add("active");
+//         down.classList.add("active");
+//         createCardList(originalOneroomList);
+//         break;
+
+//       case "down": //오름차순
+//         btn.dataset.state = "down";
+//         up.classList.remove("active");
+//         down.classList.add("active");
+
+//         // 보증금을 누르면 월세는 항상 basic이 되게
+//         // 월세를 누르면 보증금은 항상 basic이 되게, 이 코드는 흐름상 down일때만 적용하면 된다.
+//         if (btn === sortBtn[0]) {
+//           sortBtn[1].dataset.state = "basic";
+//           sortBtn[1].querySelector(".fa-sort-up").classList.add("active");
+//           sortBtn[1].querySelector(".fa-sort-down").classList.add("active");
+//         } else {
+//           sortBtn[0].dataset.state = "basic";
+//           sortBtn[0].querySelector(".fa-sort-up").classList.add("active");
+//           sortBtn[0].querySelector(".fa-sort-down").classList.add("active");
+//         }
+
+//         btn === sortBtn[0]
+//           ? sortOneroomList.sort(
+//               (a, b) => Number(a.item.보증금액) - Number(b.item.보증금액)
+//             )
+//           : sortOneroomList.sort(
+//               (a, b) => Number(a.item.월세금액) - Number(b.item.월세금액)
+//             );
+//         createCardList(sortOneroomList);
+//         sortOneroomList = [...originalOneroomList];
+//         break;
+
+//       case "up": // 내림차순
+//         btn.dataset.state = "up";
+//         up.classList.add("active");
+//         down.classList.remove("active");
+//         btn === sortBtn[0]
+//           ? sortOneroomList.sort(
+//               (a, b) => Number(b.item.보증금액) - Number(a.item.보증금액)
+//             )
+//           : sortOneroomList.sort(
+//               (a, b) => Number(b.item.월세금액) - Number(a.item.월세금액)
+//             );
+//         createCardList(sortOneroomList);
+//         sortOneroomList = [...originalOneroomList];
+//         break;
+//     }
+//   });
+// });
