@@ -45,10 +45,7 @@ let currentOneroomList = null;
  * sort()하기 전 원본 배열
  */
 let originalOneroomList = [];
-/**
- * sort()한 후의 배열
- */
-let sortedOneroomList = [];
+
 /**
  * !설명
  * 지역, 지하철은 customOverlay로 만들었다. 방은 cluster로 만들었다.
@@ -160,16 +157,10 @@ function createCardList(roomList = null) {
   });
 
   currentOneroomList = roomList;
+  // 오리지널에 일치하는 값이 있다면 이미 오리지널이 존재하므로 바꾸지 않는다.
+  // 오리지널에 일치하는 값이 없다면 아직 오리지널에 값을 저장하지 않은것이므로 roomList를 저장한다.
   if (!originalOneroomList.find((item) => item === roomList[0]))
     originalOneroomList = roomList;
-  console.log(currentOneroomList);
-  currentOneroomList.forEach((item) => {
-    // let 준공일자 = item.item.approve_date.replace(/[^0-9]/g, "");
-    let 보증금 = item.item.보증금액;
-    let 월세 = item.item.월세금액;
-
-    // console.log(보증금, "/", 월세);
-  });
 }
 
 /**
@@ -521,19 +512,30 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
 sortBtn.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     if (currentOneroomList == null) return;
+    //* 정렬버튼 상태변화 및 정렬기능
     let state = btn.dataset.state;
     const up = btn.querySelector(".fa-sort-up");
     const down = btn.querySelector(".fa-sort-down");
 
     let sortOneroomList = [...currentOneroomList];
-    console.log(sortOneroomList);
-    console.log(originalOneroomList);
+    if (state === "basic") state = "down";
+    else if (state === "down") state = "up";
+    else if (state === "up") state = "basic";
+
     switch (state) {
-      case "basic": // basic => down
-        console.log("오름차순정렬");
+      case "basic":
+        btn.dataset.state = "basic";
+        up.classList.add("active");
+        down.classList.add("active");
+        createCardList(originalOneroomList);
+
+        break;
+
+      case "down":
         btn.dataset.state = "down";
         up.classList.remove("active");
         down.classList.add("active");
+
         btn === sortBtn[0]
           ? sortOneroomList.sort(
               (a, b) => Number(a.item.보증금액) - Number(b.item.보증금액)
@@ -542,19 +544,12 @@ sortBtn.forEach((btn) => {
               (a, b) => Number(a.item.월세금액) - Number(b.item.월세금액)
             );
 
-        // sortOneroomList.forEach((item) => {
-        //   console.log("임시:", item.item.보증금액);
-        // });
-        // originalOneroomList.forEach((item) => {
-        //   console.log("현재:", item.item.보증금액);
-        // });
-
         createCardList(sortOneroomList);
-        sortedOneroomList = [...sortOneroomList];
         sortOneroomList = [...originalOneroomList];
+
         break;
-      case "down": // down => up
-        console.log("내림차순정렬");
+
+      case "up":
         btn.dataset.state = "up";
         up.classList.add("active");
         down.classList.remove("active");
@@ -565,29 +560,8 @@ sortBtn.forEach((btn) => {
           : sortOneroomList.sort(
               (a, b) => Number(b.item.월세금액) - Number(a.item.월세금액)
             );
-        // sortOneroomList.forEach((item) => {
-        //   console.log("임시:", item.item.보증금액);
-        // });
-        // originalOneroomList.forEach((item) => {
-        //   console.log("현재:", item.item.보증금액);
-        // });
         createCardList(sortOneroomList);
-        sortedOneroomList = [...sortOneroomList];
         sortOneroomList = [...originalOneroomList];
-        break;
-
-      case "up": // up => basic
-        console.log("원래정렬");
-        btn.dataset.state = "basic";
-        up.classList.add("active");
-        down.classList.add("active");
-        // sortOneroomList.forEach((item) => {
-        //   console.log("임시:", item.item.보증금액);
-        // });
-        // originalOneroomList.forEach((item) => {
-        //   console.log("현재:", item.item.보증금액);
-        // });
-        createCardList(originalOneroomList);
         break;
     }
   });
@@ -595,8 +569,12 @@ sortBtn.forEach((btn) => {
   // 다중조건 (보증금도 하고, 월세도 하는 경우)
   // 보증금을 먼저 한뒤에 그 결과로 월세조건실행
   /**
-   * 보증금, 월세로 정렬하는 코드는 만듬
+   * 보증금으로 정렬하고 월세로도 정렬하는경우
+   * 1. 보증금으로 정렬했을때 sortedOneroomList가 있어
+   * 2. sortedOneroomList가 있다면 sortOneroomList = [...sortedOneroomList]
+   * 3. sortOneroomList로 정렬 후 createCardList(sortOneroomList) 실행
    *
-   * 1. 보증금으로 정렬했는데
+   * 주의할점은 sortedOneroomList를 바꾸지 말아야한다는것
+   * 그래야 월세정렬을 할때마다 값이 바뀌는걸 막는다.
    */
 });
