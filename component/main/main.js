@@ -578,7 +578,10 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
  * @returns
  */
 function sortBtnClick(event, sort1, sort2) {
-  if (currentOneroomList == null) return;
+  if (!currentOneroomList) {
+    alert("먼저 장소를 눌러 매물정보를 확인해주세요");
+    return;
+  }
   //* 정렬버튼 상태변화 및 정렬기능
   let btn = event.currentTarget;
   let state = btn.dataset.state;
@@ -660,8 +663,22 @@ sortBtn.forEach((btn) => {
 
 layoutBtn.forEach((btn) => {
   btn.addEventListener("click", (e) => {
+    if (!currentOneroomList) {
+      alert("먼저 장소를 눌러 매물정보를 확인해주세요");
+      return;
+    }
+
+    //이미 card레이아웃상태에서 또 card를 누르면 함수 종료
+    if (cardListLayout === "card" && btn === layoutBtn[0]) return;
+    if (cardListLayout === "short" && btn === layoutBtn[1]) return;
+
     if (btn === layoutBtn[0]) cardListLayout = "card";
     else cardListLayout = "short";
+
+    layoutBtn[0].classList.remove("active");
+    layoutBtn[1].classList.remove("active");
+    btn.classList.add("active");
+
     createCardList(currentOneroomList);
   });
 });
