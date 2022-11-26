@@ -38,7 +38,6 @@ let roomClusterState = false;
 let roomAndMarker = null;
 /**
  * 현재 카드리스트에 사용되는 방 정보를 저장한 배열,
- * 줌 인, 아웃 후 다시 똑같은 카드를 만들때 사용된다.
  */
 let currentOneroomList = null;
 
@@ -46,7 +45,9 @@ let currentOneroomList = null;
  * sort()하기 전 원본 배열
  */
 let originalOneroomList = [];
-
+/**
+ * cardList의 현재 layout상태에 대한 변수
+ */
 let cardListLayout = "card";
 
 /**
@@ -60,8 +61,6 @@ let cardListLayout = "card";
  */
 
 //! 할것
-//* 카드 호버시 css 변화
-
 //* 클릭한 지점의 클러스터 오버레이의 css 변화
 //* 필터, 세권 만들기
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
@@ -286,15 +285,25 @@ function createCluster(roomList) {
   // 처음 생성된 클러스터에 적용하는 이벤트 (clustered 이벤트핸들러와 기능은 같다.)
   roomCluster._clusters.forEach((cluster) => {
     let overlay = cluster.getClusterMarker().getContent();
-    overlay.addEventListener("mouseover", function () {
+    overlay.addEventListener("mouseover", function (e) {
       if (!this.classList.contains("cluster-over")) {
         this.classList.add("cluster-over");
       }
     });
-    overlay.addEventListener("mouseout", function () {
+    overlay.addEventListener("mouseout", function (e) {
       if (this.classList.contains("cluster-over")) {
         this.classList.remove("cluster-over");
       }
+    });
+
+    overlay.addEventListener("click", (e) => {
+      roomCluster._clusters.forEach((cluster) => {
+        cluster
+          .getClusterMarker()
+          .getContent()
+          .classList.remove("cluster-click");
+      });
+      e.currentTarget.classList.add("cluster-click");
     });
   });
 
@@ -313,6 +322,16 @@ function createCluster(roomList) {
         if (this.classList.contains("cluster-over")) {
           this.classList.remove("cluster-over");
         }
+      });
+
+      overlay.addEventListener("click", (e) => {
+        roomCluster._clusters.forEach((cluster) => {
+          cluster
+            .getClusterMarker()
+            .getContent()
+            .classList.remove("cluster-click");
+        });
+        e.currentTarget.classList.add("cluster-click");
       });
     }
   });
@@ -552,7 +571,7 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
     if (roomClusterState) {
       // console.log("줌이 바뀌었는데 방정보 있을때");
       displayRoomCluster(true);
-      createCardList(currentOneroomList);
+      createCardList();
       localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
       subwayOverlayList.forEach((subwayOverlay) => subwayOverlay.setMap(null));
     } else {

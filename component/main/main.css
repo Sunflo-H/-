@@ -334,7 +334,8 @@ select::-ms-expand {
   box-shadow: 4px 4px 1px 1px #e9eaf3;
 }
 
-.cluster-over {
+.cluster-over,
+.cluster-click {
   background-color: #fff !important;
   color: var(--primary) !important;
 }
@@ -461,12 +462,12 @@ select::-ms-expand {
 }
 
 .card__price--short {
-  flex-basis: 55%;
+  flex-basis: 60%;
 }
 
 .card__size--short {
   font-size: 0.95rem;
-  flex-basis: 45%;
+  flex-basis: 40%;
   margin: auto;
   margin-left: 10px;
 }
