@@ -8,7 +8,7 @@
 
     <!-- jQuery -->
     <!-- <script src="http://code.jquery.com/jquery-latest.min.js"></script> -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script> -->
 
     <!-- 폰트어썸 -->
     <script
@@ -21,14 +21,16 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=89c94138aac3b434362c7179cb6bc993&libraries=services,clusterer,drawing"
     ></script>
+
+    <!-- Java Script -->
     <script src="../../src/js/header.js" type="module"></script>
-    <!-- <script src="../../src/js/contextMenu.js" type="module"></script> -->
     <script src="main.js" type="module"></script>
-    <script src="oneroom.js" type="module"></script>
-    <!-- <script src="make.js" type="text/javascript" defer></script> -->
+    <script src="oneroomModule.js" type="module"></script>
+    <script src="kakaoSearchModule.js" type="module"></script>
     <script src="aptFilter.js" type="module"></script>
     <script src="inputSlider.js" type="module"></script>
 
+    <!-- CSS -->
     <link rel="stylesheet" href="../../src/css/contextMenu.css" />
     <link rel="stylesheet" href="../../src/css/reset.css" />
     <link rel="stylesheet" href="../../src/css/header.css" />
@@ -82,19 +84,19 @@
             class="search__input"
             placeholder="search..."
           />
-          <div class="search__expand">
-            <div class="search__expand__item">구의동</div>
-            <div class="search__expand__item">아차산빌라</div>
-            <div class="search__expand__item">
+          <div class="search__list">
+            <div class="search__list__item">구의동</div>
+            <div class="search__list__item">아차산빌라</div>
+            <div class="search__list__item">
               구의동구의동구의동구의동구의동구의동구의동구의동
             </div>
-            <div class="search__expand__item">
+            <div class="search__list__item">
               구의동구의동구의동구의동구의동구의동구의동구의동구의동구의동
             </div>
-            <div class="search__expand__item">
+            <div class="search__list__item">
               구의동구의동구의동구의동구의동구의동구의동구의동구의동구의동
             </div>
-            <div class="search__expand__item">
+            <div class="search__list__item">
               구의동구의동구의동구의동구의동구의동구의동구의동구의동구의동
             </div>
           </div>

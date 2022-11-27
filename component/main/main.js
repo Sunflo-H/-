@@ -1,11 +1,14 @@
-import Oneroom from "./oneroom.js";
+import Oneroom from "./oneroomModule.js";
+import KakaoSearch from "./kakaoSearchModule.js";
 
 const filter = document.querySelectorAll(".filter__select");
 const sortBtn = document.querySelectorAll(".sort-btn");
 const layoutBtn = document.querySelectorAll(".layout-btn");
+const search = document.querySelector(".search");
 
 const CRITERIA_MAP_LEVEL = 7;
 const oneroom = new Oneroom();
+const kakaoSearch = new KakaoSearch();
 
 /**
  * * id :
@@ -513,6 +516,69 @@ function displayOverlay_local_subway(localState, subwayState) {
     subwayOverlay.setMap(subwayState)
   );
 }
+
+//* ============================================== 검색 기능 ========================================================
+function enterKey() {
+  const lat = map.getCenter()._lat;
+  const lng = map.getCenter()._lng;
+
+  kakaoSearch.search(search.value, lat, lng).then((data) => {
+    const addressSearchData = data[0];
+    const keywordSearchData = data[1];
+
+    // 주소검색 결과만 있는경우
+    if (addressSearchData.length !== 0) {
+      panTo(addressSearchData[0].y, addressSearchData[0].x);
+      displaySearchContent(addressSearchData[0].y, addressSearchData[0].x);
+      removeMarker();
+      addressSearchData.forEach((data) => {
+        createMarker(data, "search");
+      });
+      setMarkerEvent();
+      return data;
+    }
+    // 키워드검색 결과만 있는경우
+    else if (addressSearchData.length === 0 && keywordSearchData.length !== 0) {
+      panTo(keywordSearchData[0].y, keywordSearchData[0].x);
+      displaySearchContent(keywordSearchData[0].y, keywordSearchData[0].x);
+      removeMarker();
+      keywordSearchData.forEach((data) => {
+        createMarker(data, "search");
+      });
+      setMarkerEvent();
+    }
+    // 모두 없는 경우
+    else if (addressSearchData.length === 0 && keywordSearchData.length === 0) {
+      // 주소데이터, 키워드데이터 둘다 없다면
+      alert("검색 결과가 없습니다.");
+    }
+  });
+  displaySearchList(false);
+}
+
+function displaySearchList(isTrue) {
+  const searchList = document.querySelector(
+    ".interaction-container .searchList"
+  );
+
+  if (isTrue) {
+    searchList.classList.remove("hide");
+    searchListState.setState(true);
+  } else {
+    searchList.classList.add("hide");
+    searchListState.setState(false);
+  }
+}
+
+/** 검색창에 위, 아래, 엔터 각각의 함수를 이벤트로 등록한다. */
+search.addEventListener("keyup", (e) => {
+  if (e.keyCode === 13) enterKey();
+  else if (e.keyCode === 38) {
+    if (searchListState.getState()) upKey();
+  } else if (e.keyCode === 40) {
+    if (searchListState.getState()) downKey();
+  } else if (e.isComposing === false) return; //엔터키 중복입력을 막는다.
+});
 
 //* ================================================== 이벤트들 ===============================================================
 kakao.maps.event.addListener(map, "click", function (mouseEvent) {
