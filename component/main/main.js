@@ -4,7 +4,7 @@ import KakaoSearch from "./kakaoSearchModule.js";
 const filter = document.querySelectorAll(".filter__select");
 const sortBtn = document.querySelectorAll(".sort-btn");
 const layoutBtn = document.querySelectorAll(".layout-btn");
-const search = document.querySelector(".search");
+const search = document.querySelector(".search__input");
 
 const CRITERIA_MAP_LEVEL = 7;
 const oneroom = new Oneroom();
@@ -519,12 +519,14 @@ function displayOverlay_local_subway(localState, subwayState) {
 
 //* ============================================== 검색 기능 ========================================================
 function enterKey() {
-  const lat = map.getCenter()._lat;
-  const lng = map.getCenter()._lng;
-
+  // console.log(map.getCenter().);
+  const lat = map.getCenter().Ma;
+  const lng = map.getCenter().La;
+  console.log(search.value);
   kakaoSearch.search(search.value, lat, lng).then((data) => {
     const addressSearchData = data[0];
     const keywordSearchData = data[1];
+    console.log(data);
 
     // 주소검색 결과만 있는경우
     if (addressSearchData.length !== 0) {
@@ -557,17 +559,24 @@ function enterKey() {
 }
 
 function displaySearchList(isTrue) {
-  const searchList = document.querySelector(
-    ".interaction-container .searchList"
-  );
+  const searchList = document.querySelector(".search__list");
 
   if (isTrue) {
-    searchList.classList.remove("hide");
-    searchListState.setState(true);
+    searchList.classList.add("active");
+    // searchListState.setState(true);
   } else {
-    searchList.classList.add("hide");
-    searchListState.setState(false);
+    searchList.classList.remove("active");
+    // searchListState.setState(false);
   }
+}
+
+/**
+ * 지도를 해당 좌표로 부드럽게 이동시킨다.
+ * @param {*} lat
+ * @param {*} lng
+ */
+function panTo(lat, lng) {
+  map.panTo(new kakao.maps.LatLng(lat, lng));
 }
 
 /** 검색창에 위, 아래, 엔터 각각의 함수를 이벤트로 등록한다. */
