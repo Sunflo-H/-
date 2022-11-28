@@ -528,3 +528,12 @@ select::-ms-expand {
   color: var(--primary);
   font-weight: bold;
 }
+
+.marker {
+  color: #eb4162;
+  font-size: 1.5rem;
+}
+
+.marker:hover {
+  cursor: pointer;
+}
