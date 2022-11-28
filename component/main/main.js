@@ -266,7 +266,7 @@ function createCluster(roomList) {
   });
 
   roomCluster.setTexts((size) => {
-    var text = "";
+    let text = "";
 
     if (size > 100) text = "100+";
     else text = size;
@@ -739,18 +739,27 @@ function createMarker(data) {
     <i class="fa-solid fa-location-dot"></i>
   </div>`;
 
-  var marker = new kakao.maps.Marker({
+  let marker = new kakao.maps.Marker({
     map: map,
     position: new kakao.maps.LatLng(lat, lng),
   });
 
-  var markerImage = new kakao.maps.MarkerImage(
+  let markerImage = new kakao.maps.MarkerImage(
     "../../img/map/marker1.png",
     new kakao.maps.Size(30, 30),
     new kakao.maps.Point(15, 26)
   );
   marker.setImage(markerImage);
 
+  let infowindow = new kakao.maps.InfoWindow({
+    position: new kakao.maps.LatLng(lat, lng),
+    content: "open me plz.",
+  });
+
+  kakao.maps.event.addListener(marker, "click", function () {
+    // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
+    infowindow.open(map, marker);
+  });
   // let customOverlay = new kakao.maps.CustomOverlay({
   //   map: map,
   //   clickable: true,
