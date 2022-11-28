@@ -64,7 +64,7 @@ export default class kakaoSearch {
       let option = {
         x: lng,
         y: lat,
-        radius: this.RADIUS.LV1,
+        radius: this.RADIUS.LV4,
         size: this.SEARCH_DATA_LENGTH,
       };
       places.keywordSearch(keyword, getResult, option);

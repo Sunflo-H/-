@@ -95,12 +95,13 @@ let markerList = [];
 //! 할것
 //* 검색기능
 //  1. 입력된 값으로 검색하기 +
-//  2. 검색한 내용을 마커로 표시하기
+//  2. 검색한 내용을 마커로 표시하기 +
 //   2-1 마커를 꾸밀수 있나? 꾸밀수 있으면 마커로 +
 //   2-2 꾸밀수 없다면 꾸밀수 있는 무언가로 + 오버레이로 합시다.
-//   2-3 어떻게 꾸미는게 좋을까
+//   2-3 어떻게 꾸미는게 좋을까 +
+//   2-4 마커 클릭하면 정보 띄우자 인포윈도우
 //  3. 자동완성
-//  4. 히스토리
+//  4. 히스토리?
 //  5. 지하철로 검색하면 그 장소로 바로 매물찾기? 매물없이 지하철만 찾고싶으면 어떡함,
 //  6. 검색중 위 아래키 입력
 //* 필터, 세권 만들기
@@ -650,40 +651,6 @@ function displayOverlay_local_subway(localState, subwayState) {
 
 //* ============================================== 검색 기능 ========================================================
 
-searchInput.addEventListener("click", (e) => {
-  search.classList.add("active");
-  if (searchInput.value !== "") searchList.classList.add("active");
-});
-
-searchInput.addEventListener("keyup", (e) => {
-  searchList.classList.add("active");
-});
-
-document.addEventListener("click", (e) => {
-  if (
-    e.target !== search &&
-    e.target !== searchInput &&
-    e.target !== searchList
-  ) {
-    search.classList.remove("active");
-    searchList.classList.remove("active");
-  }
-});
-
-navItems.forEach((item, index) => {
-  item.addEventListener("click", (e) => {
-    for (let i = 0; i < navItems.length; i++) {
-      if (index === i) navItems[i].classList.add("active");
-      else navItems[i].classList.remove("active");
-
-      /**
-       * 클릭한 item의 인덱스랑 값이 같은 navItem[i]에는 active 추가
-       * 나머지는 active 제거
-       */
-    }
-  });
-});
-
 function enterKey() {
   //* 엔터키입력
   //! 1. search-list에 active 제거
@@ -751,18 +718,39 @@ searchInput.addEventListener("keyup", (e) => {
  * @param {*} data
  */
 function createMarker(data) {
+  let address = data.address_name.replaceAll(" ", "&");
+  let roadAddress = data.road_address_name || null;
+  let place = data.place_name || null;
   let category = data.category_group_name; //주소, 장소, 음식점-카페 등등
   let lat = data.y;
   let lng = data.x;
 
-  var customOverlay = new kakao.maps.CustomOverlay({
+  if (roadAddress) roadAddress = roadAddress.replaceAll(" ", "&");
+  if (place) place = place.replaceAll(" ", "&");
+
+  let content = `
+  <div class="marker" 
+    data-place =${place} 
+    data-address= ${address} 
+    data-road-address= ${roadAddress} 
+    data-category = ${category}
+    data-data-lat =${lat} 
+    data-lng = ${lng} >
+    <i class="fa-solid fa-location-dot"></i>
+  </div>`;
+
+  let customOverlay = new kakao.maps.CustomOverlay({
     map: map,
     clickable: true,
-    content:
-      '<div class="marker"><i class="fa-solid fa-location-dot"></i></div>',
+    content: content,
     position: new kakao.maps.LatLng(lat, lng),
     yAnchor: 1,
     zIndex: 3,
+  });
+
+  customOverlay.a.addEventListener("click", (e) => {
+    let marker = e.currentTarget.firstElementChild;
+    console.log(marker);
   });
 
   let marekrObj = {
@@ -782,6 +770,45 @@ function removeMarker() {
   });
   markerList = [];
 }
+
+// 검색창을 클릭하면 움직이게 하고, input에 포커스를 준다.
+search.addEventListener("click", (e) => {
+  search.classList.add("active");
+  searchInput.focus();
+  // if (searchInput.value !== "") searchList.classList.add("active");
+});
+
+// searchInput.addEventListener("keyup", (e) => {
+//   searchList.classList.add("active");
+// });
+
+// search 관련 element 외의 것들을 클릭시 search의 active가 사라지는 이벤트
+document.addEventListener("click", (e) => {
+  if (
+    e.target !== search &&
+    e.target !== searchInput &&
+    e.target !== searchList
+  ) {
+    search.classList.remove("active");
+    searchList.classList.remove("active");
+  }
+});
+
+//* ========================================== NAV 관련 코드들
+
+navItems.forEach((item, index) => {
+  item.addEventListener("click", (e) => {
+    for (let i = 0; i < navItems.length; i++) {
+      if (index === i) navItems[i].classList.add("active");
+      else navItems[i].classList.remove("active");
+
+      /**
+       * 클릭한 item의 인덱스랑 값이 같은 navItem[i]에는 active 추가
+       * 나머지는 active 제거
+       */
+    }
+  });
+});
 
 //* ========================================== kakao Map 관련 코드들 ================================================
 
