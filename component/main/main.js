@@ -4,7 +4,16 @@ import KakaoSearch from "./kakaoSearchModule.js";
 const filter = document.querySelectorAll(".filter__select");
 const sortBtn = document.querySelectorAll(".sort-btn");
 const layoutBtn = document.querySelectorAll(".layout-btn");
-const search = document.querySelector(".search__input");
+
+const search = document.querySelector(".search");
+const searchInput = search.querySelector(".search__input");
+const searchList = search.querySelector(".search-list");
+const searchListItem = searchList.querySelectorAll(".search-list__item");
+const nav = document.querySelector(".nav");
+const navbox = document.querySelector(".nav__item-box");
+const navItems = nav.querySelectorAll(".nav__item");
+
+const searchIcon = search.querySelector(".search__label");
 
 const CRITERIA_MAP_LEVEL = 7;
 const oneroom = new Oneroom();
@@ -640,15 +649,50 @@ function displayOverlay_local_subway(localState, subwayState) {
 }
 
 //* ============================================== 검색 기능 ========================================================
+
+searchInput.addEventListener("click", (e) => {
+  search.classList.add("active");
+  if (searchInput.value !== "") searchList.classList.add("active");
+});
+
+searchInput.addEventListener("keyup", (e) => {
+  searchList.classList.add("active");
+});
+
+document.addEventListener("click", (e) => {
+  if (
+    e.target !== search &&
+    e.target !== searchInput &&
+    e.target !== searchList
+  ) {
+    search.classList.remove("active");
+    searchList.classList.remove("active");
+  }
+});
+
+navItems.forEach((item, index) => {
+  item.addEventListener("click", (e) => {
+    for (let i = 0; i < navItems.length; i++) {
+      if (index === i) navItems[i].classList.add("active");
+      else navItems[i].classList.remove("active");
+
+      /**
+       * 클릭한 item의 인덱스랑 값이 같은 navItem[i]에는 active 추가
+       * 나머지는 active 제거
+       */
+    }
+  });
+});
+
 function enterKey() {
   //* 엔터키입력
-  //! 1. search__list에 active 제거
+  //! 1. search-list에 active 제거
   //! 2. search에 active 제거
   //! 3. 검색한 결과를 맵에 보이게 하기
   const lat = map.getCenter().Ma;
   const lng = map.getCenter().La;
-  if (!search.value) return;
-  kakaoSearch.search(search.value, lat, lng).then((data) => {
+  if (!searchInput.value) return;
+  kakaoSearch.search(searchInput.value, lat, lng).then((data) => {
     const addressSearchData = data[0];
     const keywordSearchData = data[1];
     console.log(data);
@@ -681,7 +725,7 @@ function enterKey() {
 }
 
 function displaySearchList(isTrue) {
-  const searchList = document.querySelector(".search__list");
+  const searchList = document.querySelector(".search-list");
 
   if (isTrue) {
     searchList.classList.add("active");
@@ -693,7 +737,7 @@ function displaySearchList(isTrue) {
 }
 
 /** 검색창에 위, 아래, 엔터 각각의 함수를 이벤트로 등록한다. */
-search.addEventListener("keyup", (e) => {
+searchInput.addEventListener("keyup", (e) => {
   if (e.keyCode === 13) enterKey();
   else if (e.keyCode === 38) {
     if (searchListState.getState()) upKey();
