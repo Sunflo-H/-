@@ -739,26 +739,38 @@ function createMarker(data) {
     <i class="fa-solid fa-location-dot"></i>
   </div>`;
 
-  let customOverlay = new kakao.maps.CustomOverlay({
+  var marker = new kakao.maps.Marker({
     map: map,
-    clickable: true,
-    content: content,
     position: new kakao.maps.LatLng(lat, lng),
-    yAnchor: 1,
-    zIndex: 3,
   });
 
-  customOverlay.a.addEventListener("click", (e) => {
-    let marker = e.currentTarget.firstElementChild;
-    console.log(marker);
-  });
+  var markerImage = new kakao.maps.MarkerImage(
+    "../../img/map/marker1.png",
+    new kakao.maps.Size(30, 30),
+    new kakao.maps.Point(15, 26)
+  );
+  marker.setImage(markerImage);
 
-  let marekrObj = {
-    marker: customOverlay,
-    info: data,
-  };
+  // let customOverlay = new kakao.maps.CustomOverlay({
+  //   map: map,
+  //   clickable: true,
+  //   content: content,
+  //   position: new kakao.maps.LatLng(lat, lng),
+  //   yAnchor: 1,
+  //   zIndex: 3,
+  // });
 
-  markerList.push(marekrObj);
+  // customOverlay.a.addEventListener("click", (e) => {
+  //   let marker = e.currentTarget.firstElementChild;
+  //   console.log(marker);
+  // });
+
+  // let marekrObj = {
+  //   marker: customOverlay,
+  //   info: data,
+  // };
+
+  // markerList.push(marekrObj);
 }
 
 /**
