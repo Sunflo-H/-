@@ -661,7 +661,9 @@ function enterKey() {
   //! 3. 검색한 결과를 맵에 보이게 하기
   const lat = map.getCenter().Ma;
   const lng = map.getCenter().La;
+
   if (!searchInput.value) return;
+
   kakaoSearch.search(searchInput.value, lat, lng).then((data) => {
     const addressSearchData = data[0];
     const keywordSearchData = data[1];
@@ -669,24 +671,19 @@ function enterKey() {
 
     // 주소검색 결과가 있다면 주소검색 결과만 다룬다.
     if (addressSearchData.length !== 0) {
-      // panTo(addressSearchData[0].y, addressSearchData[0].x);
       removeMarker();
       removeInfoWindow();
       addressSearchData.forEach((data) => {
         createMarker(data);
       });
-      // setMarkerEvent();
-      // return data;
     }
     // 키워드검색 결과만 있다면 키워드검색 결과만 다룬다.
     else if (addressSearchData.length === 0 && keywordSearchData.length !== 0) {
-      // panTo(keywordSearchData[0].y, keywordSearchData[0].x);
       removeMarker();
       removeInfoWindow();
       keywordSearchData.forEach((data) => {
         createMarker(data);
       });
-      // setMarkerEvent();
     }
     // 주소데이터, 키워드데이터 둘다 없다면
     else if (addressSearchData.length === 0 && keywordSearchData.length === 0) {
@@ -697,8 +694,6 @@ function enterKey() {
 }
 
 function displaySearchList(isTrue) {
-  const searchList = document.querySelector(".search-list");
-
   if (isTrue) {
     searchList.classList.add("active");
     // searchListState.setState(true);
@@ -708,32 +703,67 @@ function displaySearchList(isTrue) {
   }
 }
 
-/** 검색창에 위, 아래, 엔터 각각의 함수를 이벤트로 등록한다. */
-searchInput.addEventListener("keyup", (e) => {
-  if (e.keyCode === 13) enterKey();
-  else if (e.keyCode === 38) {
-    if (searchListState.getState()) upKey();
-  } else if (e.keyCode === 40) {
-    if (searchListState.getState()) downKey();
-  } else if (e.isComposing === false) return; //엔터키 중복입력을 막는다.
-});
+function setAutoComplete(addressData, keywordData) {
+  console.log(addressData); // address_name
+  console.log(keywordData); // place_name
+  let element = "";
+
+  while (searchList.firstChild) {
+    searchList.removeChild(searchList.firstChild);
+  }
+
+  addressData.forEach((data, index) => {
+    if (index > 5) return;
+    element = `<div class="search-list__item">${data.address_name}</div>`;
+    searchList.insertAdjacentHTML("beforeend", element);
+  });
+
+  keywordData.forEach((data, index) => {
+    if (index > 10) return;
+    element = `<div class="search-list__item">${data.place_name}</div>`;
+    searchList.insertAdjacentHTML("beforeend", element);
+  });
+
+  /**
+   * 1. 검색결과를 받는다.
+   * 2. 결과를 토대로 search-list__item을 생성
+   * 2-1 item 생성전에 기존에 있던 item 다 지운다.
+   * 2-2 주소데이터로 item을 생성한다.
+   * 2-3 장소데이터로 item을 생성한다.
+   */
+}
+
+// /**
+//  * 자동완성 JSON파일에서 -keyword-와 글자가 일치하는 데이터들을 가져온다.
+//  * @param {*} keyword 일치하는지 찾아볼 단어
+//  * @returns [강남, 강남식당, 강남포차, ...]
+//  */
+// function getJsonData(keyword) {
+//   let result = fetch("./data/restaurant.json")
+//     .then((res) => res.json())
+//     .then((data) => {
+//       let list = [];
+//       const restList = data.results[0].items.filter(
+//         (restaurant) => restaurant.name.substring(0, keyword.length) === keyword
+//       );
+//       restList.forEach((data) => list.push(data.name));
+//       // 엄청 많이 찾음 100개 넘어감
+//       return list;
+//     });
+//   return result;
+// }
 
 /**
- * 장소 data를 받아 1개의 마커를 생성하는 함수
+ * 장소 data를 받아 마커를 생성하고 이벤트를 적용하는 함수
  * @param {*} data
  */
 function createMarker(data) {
-  console.log(data);
   let address = data.address_name || null;
-  let roadAddress = data.road_address_name || null;
+  // let roadAddress = data.road_address_name || null;
   let place = data.place_name || null;
   let category = data.category_group_name; //주소, 장소, 음식점-카페 등등
   let lat = data.y;
   let lng = data.x;
-
-  // if (address) address = address.replaceAll(" ", "&");
-  // if (roadAddress) roadAddress = roadAddress.replaceAll(" ", "&");
-  // if (place) place = place.replaceAll(" ", "&");
 
   let content = "";
   place === null
@@ -802,7 +832,6 @@ function removeInfoWindow() {
 search.addEventListener("click", (e) => {
   search.classList.add("active");
   searchInput.focus();
-  // if (searchInput.value !== "") searchList.classList.add("active");
 });
 
 // search 관련 element 외의 것들을 클릭시 search의 active가 사라지는 이벤트
@@ -815,6 +844,37 @@ document.addEventListener("click", (e) => {
     search.classList.remove("active");
     searchList.classList.remove("active");
   }
+});
+
+/** 검색창에 위, 아래, 엔터 각각의 함수를 이벤트로 등록한다. */
+searchInput.addEventListener("keyup", (e) => {
+  if (e.keyCode === 13) enterKey();
+  else if (e.keyCode === 38) {
+    if (searchListState.getState()) upKey();
+  } else if (e.keyCode === 40) {
+    if (searchListState.getState()) downKey();
+  } else if (e.isComposing === false) return; //엔터키 중복입력을 막는다.
+});
+
+/** 검색창에 값이 입력되면 검색창 아래에 리스트를 만들고 자동완성단어를 세팅한다. */
+searchInput.addEventListener("input", (e) => {
+  const lat = map.getCenter().Ma;
+  const lng = map.getCenter().La;
+
+  if (searchInput.value === "") {
+    displaySearchList(false);
+    // setHistory();
+    return;
+  }
+  displaySearchList(true);
+  console.log(searchInput.value);
+  // getJsonAddr(searchInput.value).then((data) => console.log(data));
+  kakaoSearch.search(searchInput.value, lat, lng).then((data) => {
+    const addressSearchData = data[0];
+    const keywordSearchData = data[1];
+
+    setAutoComplete(addressSearchData, keywordSearchData);
+  });
 });
 
 //* ========================================== NAV 관련 코드들
