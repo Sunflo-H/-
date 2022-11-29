@@ -529,11 +529,46 @@ select::-ms-expand {
   font-weight: bold;
 }
 
-.marker {
-  color: #eb4162;
-  font-size: 1.5rem;
+.infoWindow-box {
+  border: none !important;
+  border-radius: 5px !important;
+  box-shadow: 1px 1px 5px 1px var(--secondary);
+}
+.infoWindow__arrow {
+  z-index: 1 !important;
+}
+.infoWindow__content-box {
+  width: auto !important;
+  /* max-height: 200px !important; */
 }
 
-.marker:hover {
-  cursor: pointer;
+.infoWindow__place {
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: start;
+  padding: 5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.infoWindow__category {
+  font-size: 0.7rem;
+  padding-left: 5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.infoWindow__address {
+  font-size: 0.8rem;
+  padding: 5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.infoWindow__address-data {
+  font-size: 1rem;
+  font-weight: bold;
 }

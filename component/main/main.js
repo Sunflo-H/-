@@ -78,6 +78,8 @@ let cardListLayout = "card";
 
 let markerList = [];
 
+let infoWindow = null;
+
 /**
  * !설명
  * 지역, 지하철은 customOverlay로 만들었다. 방은 cluster로 만들었다.
@@ -99,7 +101,8 @@ let markerList = [];
 //   2-1 마커를 꾸밀수 있나? 꾸밀수 있으면 마커로 +
 //   2-2 꾸밀수 없다면 꾸밀수 있는 무언가로 + 오버레이로 합시다.
 //   2-3 어떻게 꾸미는게 좋을까 +
-//   2-4 마커 클릭하면 정보 띄우자 인포윈도우
+//   2-4 마커 클릭하면 정보 띄우자 인포윈도우 +
+//   2-5 인포윈도우 꾸미기
 //  3. 자동완성
 //  4. 히스토리?
 //  5. 지하철로 검색하면 그 장소로 바로 매물찾기? 매물없이 지하철만 찾고싶으면 어떡함,
@@ -666,7 +669,7 @@ function enterKey() {
 
     // 주소검색 결과가 있다면 주소검색 결과만 다룬다.
     if (addressSearchData.length !== 0) {
-      panTo(addressSearchData[0].y, addressSearchData[0].x);
+      // panTo(addressSearchData[0].y, addressSearchData[0].x);
       removeMarker();
       addressSearchData.forEach((data) => {
         createMarker(data);
@@ -676,7 +679,7 @@ function enterKey() {
     }
     // 키워드검색 결과만 있다면 키워드검색 결과만 다룬다.
     else if (addressSearchData.length === 0 && keywordSearchData.length !== 0) {
-      panTo(keywordSearchData[0].y, keywordSearchData[0].x);
+      // panTo(keywordSearchData[0].y, keywordSearchData[0].x);
       removeMarker();
       keywordSearchData.forEach((data) => {
         createMarker(data);
@@ -718,26 +721,28 @@ searchInput.addEventListener("keyup", (e) => {
  * @param {*} data
  */
 function createMarker(data) {
-  let address = data.address_name.replaceAll(" ", "&");
+  console.log(data);
+  let address = data.address_name || null;
   let roadAddress = data.road_address_name || null;
   let place = data.place_name || null;
   let category = data.category_group_name; //주소, 장소, 음식점-카페 등등
   let lat = data.y;
   let lng = data.x;
 
-  if (roadAddress) roadAddress = roadAddress.replaceAll(" ", "&");
-  if (place) place = place.replaceAll(" ", "&");
+  // if (address) address = address.replaceAll(" ", "&");
+  // if (roadAddress) roadAddress = roadAddress.replaceAll(" ", "&");
+  // if (place) place = place.replaceAll(" ", "&");
 
-  let content = `
-  <div class="marker" 
-    data-place =${place} 
-    data-address= ${address} 
-    data-road-address= ${roadAddress} 
-    data-category = ${category}
-    data-data-lat =${lat} 
-    data-lng = ${lng} >
-    <i class="fa-solid fa-location-dot"></i>
-  </div>`;
+  let content = "";
+  place === null
+    ? (content = `<div class="infoWindow__content">
+                    <div class="infoWindow__address infoWindow__address-data">${address}</div>
+                  </div>`)
+    : (content = `<div class="infoWindow__content">
+                    <div class="infoWindow__place">${place}</div>
+                    <div class="infoWindow__category">${category}</div>
+                    <div class="infoWindow__address">${address}</div>
+                  </div>`);
 
   let marker = new kakao.maps.Marker({
     map: map,
@@ -751,35 +756,27 @@ function createMarker(data) {
   );
   marker.setImage(markerImage);
 
-  let infowindow = new kakao.maps.InfoWindow({
-    position: new kakao.maps.LatLng(lat, lng),
-    content: "open me plz.",
-  });
-
   kakao.maps.event.addListener(marker, "click", function () {
-    // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
-    infowindow.open(map, marker);
+    if (infoWindow) infoWindow.close();
+    infoWindow = new kakao.maps.InfoWindow({
+      position: new kakao.maps.LatLng(lat, lng),
+      content: content,
+    });
+    let infoWindowBox = infoWindow.a;
+    let infoWindowArrow = infoWindow.a.firstElementChild;
+    let infoWindowContentBox = infoWindow.Uf;
+    infoWindowBox.classList.add("infoWindow-box");
+    infoWindowArrow.classList.add("infoWindow__arrow");
+    infoWindowContentBox.classList.add("infoWindow__content-box");
+    infoWindow.open(map, marker);
   });
-  // let customOverlay = new kakao.maps.CustomOverlay({
-  //   map: map,
-  //   clickable: true,
-  //   content: content,
-  //   position: new kakao.maps.LatLng(lat, lng),
-  //   yAnchor: 1,
-  //   zIndex: 3,
-  // });
 
-  // customOverlay.a.addEventListener("click", (e) => {
-  //   let marker = e.currentTarget.firstElementChild;
-  //   console.log(marker);
-  // });
+  let marekrObj = {
+    marker: marker,
+    info: data,
+  };
 
-  // let marekrObj = {
-  //   marker: customOverlay,
-  //   info: data,
-  // };
-
-  // markerList.push(marekrObj);
+  markerList.push(marekrObj);
 }
 
 /**
@@ -836,6 +833,7 @@ navItems.forEach((item, index) => {
 kakao.maps.event.addListener(map, "click", function (mouseEvent) {
   console.log(map.getLevel());
   console.log(roomCluster);
+  infoWindow.close();
 });
 
 // ! 오버레이에 이벤트를 등록해야하는 상황
