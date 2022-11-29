@@ -102,7 +102,7 @@ let infoWindow = null;
 //   2-2 꾸밀수 없다면 꾸밀수 있는 무언가로 + 오버레이로 합시다.
 //   2-3 어떻게 꾸미는게 좋을까 +
 //   2-4 마커 클릭하면 정보 띄우자 인포윈도우 +
-//   2-5 인포윈도우 꾸미기
+//   2-5 인포윈도우 꾸미기 +
 //  3. 자동완성
 //  4. 히스토리?
 //  5. 지하철로 검색하면 그 장소로 바로 매물찾기? 매물없이 지하철만 찾고싶으면 어떡함,
@@ -671,6 +671,7 @@ function enterKey() {
     if (addressSearchData.length !== 0) {
       // panTo(addressSearchData[0].y, addressSearchData[0].x);
       removeMarker();
+      removeInfoWindow();
       addressSearchData.forEach((data) => {
         createMarker(data);
       });
@@ -681,6 +682,7 @@ function enterKey() {
     else if (addressSearchData.length === 0 && keywordSearchData.length !== 0) {
       // panTo(keywordSearchData[0].y, keywordSearchData[0].x);
       removeMarker();
+      removeInfoWindow();
       keywordSearchData.forEach((data) => {
         createMarker(data);
       });
@@ -789,16 +791,19 @@ function removeMarker() {
   markerList = [];
 }
 
+/**
+ * 인포윈도우를 닫는다.
+ */
+function removeInfoWindow() {
+  if (infoWindow) infoWindow.close();
+}
+
 // 검색창을 클릭하면 움직이게 하고, input에 포커스를 준다.
 search.addEventListener("click", (e) => {
   search.classList.add("active");
   searchInput.focus();
   // if (searchInput.value !== "") searchList.classList.add("active");
 });
-
-// searchInput.addEventListener("keyup", (e) => {
-//   searchList.classList.add("active");
-// });
 
 // search 관련 element 외의 것들을 클릭시 search의 active가 사라지는 이벤트
 document.addEventListener("click", (e) => {
@@ -833,7 +838,7 @@ navItems.forEach((item, index) => {
 kakao.maps.event.addListener(map, "click", function (mouseEvent) {
   console.log(map.getLevel());
   console.log(roomCluster);
-  infoWindow.close();
+  removeInfoWindow();
 });
 
 // ! 오버레이에 이벤트를 등록해야하는 상황
