@@ -62,9 +62,6 @@ export default class kakaoSearch {
    * @returns promise [장소데이터1, 장소데이터2, ...]
    */
   searchByKeyword(keyword, lat, lng) {
-    // const lat = map.getCenter()._lat;
-    // const lng = map.getCenter()._lng;
-
     let placeList = new Promise((resolve, reject) => {
       let places = new kakao.maps.services.Places();
 

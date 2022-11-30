@@ -60,17 +60,6 @@ select::-ms-expand {
   /* border:1px solid #00bfb3; */
 }
 
-/* Subway-Search */
-.subway-search-box {
-  border: 1px solid red;
-}
-
-.subway-search__input-box {
-  border: 1px solid blue;
-  height: 24px;
-  margin: auto;
-}
-
 /* Filter */
 .filter-box {
   display: flex;

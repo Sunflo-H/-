@@ -8,7 +8,6 @@ const layoutBtn = document.querySelectorAll(".layout-btn");
 const search = document.querySelector(".search");
 const searchInput = search.querySelector(".search__input");
 const searchList = search.querySelector(".search-list");
-const searchListItem = searchList.querySelectorAll(".search-list__item");
 const nav = document.querySelector(".nav");
 const navbox = document.querySelector(".nav__item-box");
 const navItems = nav.querySelectorAll(".nav__item");
@@ -103,9 +102,8 @@ let infoWindow = null;
 //   2-3 어떻게 꾸미는게 좋을까 +
 //   2-4 마커 클릭하면 정보 띄우자 인포윈도우 +
 //   2-5 인포윈도우 꾸미기 +
-//  3. 자동완성
-//  4. 히스토리?
-//  5. 지하철로 검색하면 그 장소로 바로 매물찾기? 매물없이 지하철만 찾고싶으면 어떡함,
+//  3. 자동완성 +
+//  4. 자동완성 클릭, 엔터 이벤트
 //  6. 검색중 위 아래키 입력
 //* 필터, 세권 만들기
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
@@ -737,6 +735,55 @@ function setAutoComplete(addressData, keywordData) {
     if (index >= 10) return;
     element = `<div class="search-list__item">${data}</div>`;
     searchList.insertAdjacentHTML("beforeend", element);
+  });
+
+  const searchListItem = document.querySelectorAll(".search-list__item");
+
+  searchListItem.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      // 클릭하면 해당 value로 검색
+      let text = e.currentTarget.innerText;
+
+      const lat = map.getCenter().Ma;
+      const lng = map.getCenter().La;
+
+      kakaoSearch.search(text, lat, lng).then((data) => {
+        const addressSearchData = data[0];
+        const keywordSearchData = data[1];
+
+        // 주소검색 결과가 있다면 주소검색 결과만 다룬다.
+        if (addressSearchData.length !== 0) {
+          removeMarker();
+          removeInfoWindow();
+          addressSearchData.forEach((data) => {
+            createMarker(data);
+          });
+        }
+        // 키워드검색 결과만 있다면 키워드검색 결과만 다룬다.
+        else if (
+          addressSearchData.length === 0 &&
+          keywordSearchData.length !== 0
+        ) {
+          removeMarker();
+          removeInfoWindow();
+          keywordSearchData.forEach((data) => {
+            createMarker(data);
+          });
+        }
+        // 주소데이터, 키워드데이터 둘다 없다면
+        else if (
+          addressSearchData.length === 0 &&
+          keywordSearchData.length === 0
+        ) {
+          alert("검색 결과가 없습니다.");
+        }
+      });
+      displaySearchList(false);
+    });
+
+    //엔터를 누르면?
+    //방향키 위 아래 누르면 input의 value를 바뀌게 해서 엔터누르면 검색
+    //안바뀌게 하고, item중 active상태인게 있으면 그 값으로 검색
   });
 }
 
