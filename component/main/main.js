@@ -979,13 +979,19 @@ searchInput.addEventListener("input", (e) => {
   }
 });
 
+searchInput.addEventListener("keydown", (e) => {
+  // 위,아래 입력시 커서가 이동하는걸 막음
+  if (e.keyCode === 38 || e.keyCode === 40) e.preventDefault();
+});
+
 //* ========================================== 필터 관련 코드들
 filter.forEach((item, index) => {
+  const filterOption = item.querySelector(".filter__option-table");
   item.addEventListener("click", (e) => {
-    const filterOption = filter[index].querySelector(".filter__option-table");
-    filter[index].classList.toggle("active");
-    if (filter[index].classList.contains("active"))
-      filterOption.classList.add("active");
+    e.stopPropagation();
+    if (e.target !== item) return; // 자식 element들에게 이벤트 위임을 막음
+    item.classList.toggle("active");
+    if (item.classList.contains("active")) filterOption.classList.add("active");
     else filterOption.classList.remove("active");
   });
 });
