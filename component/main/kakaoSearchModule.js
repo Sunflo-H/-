@@ -23,6 +23,19 @@ export default class kakaoSearch {
   }
 
   /**
+   * 주소로검색, 키워드(자동완성)로검색 두 함수를 한번에 사용하여 검색하여 결과값을 반환하는 함수
+   * @param {*} keyword 입력한 단어
+   * @returns 두 검색방법으로 찾은 데이터
+   */
+  search_autoComplete(keyword) {
+    let data = Promise.all([
+      this.searchByAddr(keyword),
+      this.autoComplete(keyword),
+    ]).then((data) => data);
+    return data;
+  }
+
+  /**
    * 주소로 검색하여 장소(주소)에 대한 정보를 반환하는 함수
    * @param {*} addr 검색할 주소 ex)구의동
    * @returns promise [주소데이터1, 주소데이터2 ...]
@@ -42,7 +55,7 @@ export default class kakaoSearch {
   }
 
   /**
-   * 키워드로 검색하여 장소(주소)에 대한 정보를 반환하는 함수
+   * 키워드로 검색하여 주변(lat,lng)의 장소(주소)에 대한 정보를 반환하는 함수
    * @param {*} keyword 검색할 키워드 ex)롯데리아
    * @param {*} lat
    * @param {*} lng
@@ -70,6 +83,61 @@ export default class kakaoSearch {
       places.keywordSearch(keyword, getResult, option);
     });
     return placeList;
+  }
+
+  /**
+   * 자동완성용 키워드 검색, page를 입력받는다.
+   * @param {*} keyword
+   * @param {*} page
+   * @returns [promise] promise는 키워드와 일치하는 검색결과들
+   */
+  searchByKeyword_autoComplete(keyword, page) {
+    return new Promise((resolve, reject) => {
+      let places = new kakao.maps.services.Places();
+
+      const getResult = (result, status) => {
+        if (status === kakao.maps.services.Status.OK) {
+          let a = [];
+          result.forEach((item) => {
+            if (keyword == item.place_name.slice(0, keyword.length)) {
+              a.push(item.place_name);
+            }
+          });
+
+          resolve(a);
+        }
+      };
+
+      let option = {
+        size: this.SEARCH_DATA_LENGTH,
+        page: page,
+      };
+      places.keywordSearch(keyword, getResult, option);
+    });
+  }
+
+  /**
+   * 키워드로 검색을 하되, 키워드와 글자가 일치하는 값들을 우선적으로 리턴한다.
+   * @param {*} keyword 검색할 키워드 ex)롯데리아
+   * @param {*} lat
+   * @param {*} lng
+   * @returns promise [장소데이터1, 장소데이터2, ...]
+   */
+  async autoComplete(keyword) {
+    const promiseArr = [];
+    for (let i = 0; i < 10; i++) {
+      promiseArr.push(this.searchByKeyword_autoComplete(keyword, i + 1));
+    }
+
+    const data = await Promise.all(promiseArr);
+    let result = new Set();
+    data.forEach((item) => {
+      item.forEach((item_1) => {
+        if (result.size >= 10) return;
+        result.add(item_1);
+      });
+    });
+    return (result = [...result]);
   }
 
   /**

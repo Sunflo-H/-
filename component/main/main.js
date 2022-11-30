@@ -654,6 +654,9 @@ function displayOverlay_local_subway(localState, subwayState) {
 
 //* ============================================== 검색 기능 ========================================================
 
+/**
+ * enter key에 대한 이벤트 핸들러, 입력된 값으로 검색을 한다.
+ */
 function enterKey() {
   //* 엔터키입력
   //! 1. search-list에 active 제거
@@ -703,55 +706,39 @@ function displaySearchList(isTrue) {
   }
 }
 
+/**
+ * 검색리스트의 자동완성단어를 세팅하는 함수
+ * @param {*} addressData [주소명,주소명...]
+ * @param {*} keywordData [장소명,장소명...]
+ * @returns
+ */
 function setAutoComplete(addressData, keywordData) {
   console.log(addressData); // address_name
   console.log(keywordData); // place_name
   let element = "";
+
+  //자동완성 데이터가 없다면 검색리스트 창을 닫는다.
+  if (addressData.length === 0 && keywordData.length === 0) {
+    displaySearchList(false);
+    return;
+  }
 
   while (searchList.firstChild) {
     searchList.removeChild(searchList.firstChild);
   }
 
   addressData.forEach((data, index) => {
-    if (index > 5) return;
-    element = `<div class="search-list__item">${data.address_name}</div>`;
+    if (index >= 5) return;
+    element = `<div class="search-list__item">${data}</div>`;
     searchList.insertAdjacentHTML("beforeend", element);
   });
 
   keywordData.forEach((data, index) => {
-    if (index > 10) return;
-    element = `<div class="search-list__item">${data.place_name}</div>`;
+    if (index >= 10) return;
+    element = `<div class="search-list__item">${data}</div>`;
     searchList.insertAdjacentHTML("beforeend", element);
   });
-
-  /**
-   * 1. 검색결과를 받는다.
-   * 2. 결과를 토대로 search-list__item을 생성
-   * 2-1 item 생성전에 기존에 있던 item 다 지운다.
-   * 2-2 주소데이터로 item을 생성한다.
-   * 2-3 장소데이터로 item을 생성한다.
-   */
 }
-
-// /**
-//  * 자동완성 JSON파일에서 -keyword-와 글자가 일치하는 데이터들을 가져온다.
-//  * @param {*} keyword 일치하는지 찾아볼 단어
-//  * @returns [강남, 강남식당, 강남포차, ...]
-//  */
-// function getJsonData(keyword) {
-//   let result = fetch("./data/restaurant.json")
-//     .then((res) => res.json())
-//     .then((data) => {
-//       let list = [];
-//       const restList = data.results[0].items.filter(
-//         (restaurant) => restaurant.name.substring(0, keyword.length) === keyword
-//       );
-//       restList.forEach((data) => list.push(data.name));
-//       // 엄청 많이 찾음 100개 넘어감
-//       return list;
-//     });
-//   return result;
-// }
 
 /**
  * 장소 data를 받아 마커를 생성하고 이벤트를 적용하는 함수
@@ -858,19 +845,15 @@ searchInput.addEventListener("keyup", (e) => {
 
 /** 검색창에 값이 입력되면 검색창 아래에 리스트를 만들고 자동완성단어를 세팅한다. */
 searchInput.addEventListener("input", (e) => {
-  const lat = map.getCenter().Ma;
-  const lng = map.getCenter().La;
-
   if (searchInput.value === "") {
     displaySearchList(false);
     // setHistory();
     return;
   }
   displaySearchList(true);
-  console.log(searchInput.value);
-  // getJsonAddr(searchInput.value).then((data) => console.log(data));
-  kakaoSearch.search(searchInput.value, lat, lng).then((data) => {
-    const addressSearchData = data[0];
+  kakaoSearch.search_autoComplete(searchInput.value).then((data) => {
+    // 주소명, 장소명만 뽑아 자동완성을 세팅한다.
+    const addressSearchData = data[0].map((item) => item.address_name);
     const keywordSearchData = data[1];
 
     setAutoComplete(addressSearchData, keywordSearchData);
