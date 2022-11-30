@@ -103,7 +103,7 @@ let infoWindow = null;
 //   2-4 마커 클릭하면 정보 띄우자 인포윈도우 +
 //   2-5 인포윈도우 꾸미기 +
 //  3. 자동완성 +
-//  4. 자동완성 클릭, 엔터 이벤트
+//  4. 자동완성 클릭, 엔터 이벤트 +
 //  6. 검색중 위 아래키 입력
 //* 필터, 세권 만들기
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
@@ -658,24 +658,35 @@ function displayOverlay_local_subway(localState, subwayState) {
 function upKey() {
   const searchListItem = document.querySelectorAll(".search-list__item");
 
-  let current;
+  let current; // active인 item
+
+  // active가 존재하는지 체크 후 존재한다면 current = active인 item
   searchListItem.forEach((item) => {
     if (item.classList.contains("active")) current = item;
   });
 
+  // current가 없으면 마지막 item이 current
   if (!current) {
-    searchListItem[searchListItem.length - 1].classList.add("active");
+    current = searchListItem[searchListItem.length - 1];
+    current.classList.add("active");
+    searchInput.value = current.innerText;
     return;
   }
 
   current.classList.remove("active");
 
+  // current가 있고, 이전 item이 없다면 마지막 item이 current가 된다.
   if (!current.previousElementSibling) {
-    searchListItem[searchListItem.length - 1].classList.add("active");
+    current = searchListItem[searchListItem.length - 1];
+    current.classList.add("active");
+    searchInput.value = current.innerText;
     return;
   }
 
-  current.previousElementSibling.classList.add("active");
+  // current가 있고, 이전 item이 있다면 이전 item이 current가 된다.
+  current = current.previousElementSibling;
+  current.classList.add("active");
+  searchInput.value = current.innerText;
 }
 
 /**
@@ -931,23 +942,29 @@ document.addEventListener("click", (e) => {
   }
 });
 
-/** 검색창에 위, 아래, 엔터 각각의 함수를 이벤트로 등록한다. */
+/**
+ * 검색창에 위, 아래, 엔터 각각의 함수를 이벤트로 등록한다.
+ * 검색창에 값이 입력되면 검색창 아래에 리스트를 만들고 자동완성단어를 세팅한다.
+ */
 searchInput.addEventListener("keyup", (e) => {
-  if (e.keyCode === 13) enterKey();
-  else if (e.keyCode === 38) {
+  // 엔터, 방향키 입력시
+  if (e.keyCode === 13) {
+    enterKey();
+    return;
+  } else if (e.keyCode === 38) {
     if (searchList.classList.contains("active")) upKey();
+    return;
   } else if (e.keyCode === 40) {
     if (searchList.classList.contains("active")) downKey();
+    return;
   } else if (e.isComposing === false) return; //엔터키 중복입력을 막는다.
-});
 
-/** 검색창에 값이 입력되면 검색창 아래에 리스트를 만들고 자동완성단어를 세팅한다. */
-searchInput.addEventListener("input", (e) => {
+  // 그 외 입력시
   if (searchInput.value === "") {
     displaySearchList(false);
-    // setHistory();
     return;
   }
+
   displaySearchList(true);
   kakaoSearch.search_autoComplete(searchInput.value).then((data) => {
     // 주소명, 장소명만 뽑아 자동완성을 세팅한다.
