@@ -113,7 +113,6 @@ select::-ms-expand {
   position: absolute;
   top: 50px;
   left: 0;
-  /* margin-top: 10px; */
   width: 350px;
   border: 1px solid var(--primary);
   z-index: 2;
@@ -122,6 +121,10 @@ select::-ms-expand {
   background-color: #e9e9e9;
   overflow: hidden;
   cursor: default;
+}
+
+.filter__option-table.active {
+  display: block;
 }
 
 .filter__reset {

@@ -12,8 +12,6 @@ const nav = document.querySelector(".nav");
 const navbox = document.querySelector(".nav__item-box");
 const navItems = nav.querySelectorAll(".nav__item");
 
-const searchIcon = search.querySelector(".search__label");
-
 const CRITERIA_MAP_LEVEL = 7;
 const oneroom = new Oneroom();
 const kakaoSearch = new KakaoSearch();
@@ -104,8 +102,13 @@ let infoWindow = null;
 //   2-5 인포윈도우 꾸미기 +
 //  3. 자동완성 +
 //  4. 자동완성 클릭, 엔터 이벤트 +
-//  6. 검색중 위 아래키 입력
-//* 필터, 세권 만들기
+//  6. 검색중 위 아래키 입력 +
+//* 필터 만들기
+//  1. 필터 클릭시 활성화 +
+//  2. 필터 옵션창을 클릭했을때 필터가 비활성화됨 => 버블링 해제하면 될듯
+//  3. 각 nav별로 기능 만들어두고 원룸 위주로 완성
+//  4. 필터가 적용되게끔 하기
+//* 세권 만들기
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
 //* 카드 클릭시 디테일 정보 보여주기
 //* 각 페이지 별 기능 만들기
@@ -276,8 +279,6 @@ function createCluster(roomList) {
   });
   roomCluster.addMarkers(markers);
 
-  // * 생성된 클러스터에 적용하는 이벤트들
-
   // 처음 생성된 클러스터에 적용하는 이벤트 (clustered 이벤트핸들러와 기능은 같다.)
   roomCluster._clusters.forEach((cluster) => {
     let overlay = cluster.getClusterMarker().getContent();
@@ -395,7 +396,7 @@ function displayRoomCluster(boolean) {
 }
 
 /**
- * 카드리스트 정렬 버튼을 클릭했을때 사용되는 이벤트핸들러
+ * ^ 카드리스트 정렬 버튼을 클릭했을때 사용되는 이벤트핸들러
  * @param {*} event
  * @param {*} sort1 버튼에 해당하는 정렬값
  * @param {*} sort2 버튼에 해당하는 정렬값
@@ -406,7 +407,7 @@ function sortBtnClick(event, sort1, sort2) {
     alert("먼저 장소를 눌러 매물정보를 확인해주세요");
     return;
   }
-  //* 정렬버튼 상태변화 및 정렬기능
+
   let btn = event.currentTarget;
   let state = btn.dataset.state;
   const up = btn.querySelector(".fa-sort-up");
@@ -637,7 +638,7 @@ function getPyeong(size) {
 }
 
 /**
- * 지역 오버레이와 지하철 오버레이를 보이게 할지 안보이게 할지 정하는 함수
+ * ^ 지역 오버레이와 지하철 오버레이를 보이게 할지 안보이게 할지 정하는 함수
  * * map : 지도에 보이게한다.
  * * null : 안보이게 한다.
  * @param {*} localState map, null
@@ -653,7 +654,7 @@ function displayOverlay_local_subway(localState, subwayState) {
 //* ============================================== 검색 기능 관련 코드들 ========================================================
 
 /**
- * up key에 대한 이벤트 핸들러, 자동완성 리스트에서 위쪽으로 한칸씩 이동한다.
+ * ^ up key에 대한 이벤트 핸들러, 자동완성 리스트에서 위쪽으로 한칸씩 이동한다.
  */
 function upKey() {
   const searchListItem = document.querySelectorAll(".search-list__item");
@@ -690,7 +691,7 @@ function upKey() {
 }
 
 /**
- * down key에 대한 이벤트 핸들러, 자동완성 리스트에서 아래쪽으로 한칸씩 이동한다.
+ * ^ down key에 대한 이벤트 핸들러, 자동완성 리스트에서 아래쪽으로 한칸씩 이동한다.
  */
 function downKey() {
   const searchListItem = document.querySelectorAll(".search-list__item");
@@ -722,13 +723,9 @@ function downKey() {
 }
 
 /**
- * enter key에 대한 이벤트 핸들러, 입력된 값으로 검색을 한다.
+ * ^ enter key에 대한 이벤트 핸들러, 입력된 값으로 검색을 한다.
  */
 function enterKey() {
-  //* 엔터키입력
-  //! 1. search-list에 active 제거
-  //! 2. search에 active 제거
-  //! 3. 검색한 결과를 맵에 보이게 하기
   const lat = map.getCenter().Ma;
   const lng = map.getCenter().La;
 
@@ -762,8 +759,9 @@ function enterKey() {
   });
   displaySearchList(false);
 }
+
 /**
- * 자동완성 결과 창을 활성화, 비활성화 한다.
+ * ^ 자동완성 결과 창을 활성화, 비활성화 한다.
  * @param {*} isTrue
  */
 function displaySearchList(isTrue) {
@@ -775,7 +773,7 @@ function displaySearchList(isTrue) {
 }
 
 /**
- * 검색리스트의 자동완성단어를 세팅하는 함수
+ * ^ 검색리스트의 자동완성단어를 세팅하는 함수
  * @param {*} addressData [주소명,주소명...]
  * @param {*} keywordData [장소명,장소명...]
  * @returns
@@ -800,14 +798,12 @@ function setAutoComplete(addressData, keywordData) {
   });
 
   keywordData.forEach((data, index) => {
-    if (index >= 10) return;
     element = `<div class="search-list__item">${data}</div>`;
     searchList.insertAdjacentHTML("beforeend", element);
   });
 
   // 만들어진 자동완성 단어들에게 이벤트 등록
   const searchListItem = document.querySelectorAll(".search-list__item");
-
   searchListItem.forEach((item) => {
     // 클릭시 검색
     item.addEventListener("click", (e) => {
@@ -849,14 +845,11 @@ function setAutoComplete(addressData, keywordData) {
       });
       displaySearchList(false);
     });
-
-    //엔터를 누르면?
-    //방향키 위 아래 누르면 input의 value를 바뀌게 해서 엔터누르면 검색
   });
 }
 
 /**
- * 장소 data를 받아 마커를 생성하고 이벤트를 적용하는 함수
+ * ^ 장소 data를 받아 마커를 생성하고 이벤트를 적용하는 함수
  * @param {*} data
  */
 function createMarker(data) {
@@ -914,7 +907,7 @@ function createMarker(data) {
 }
 
 /**
- * 마커를 모두 삭제한다.
+ * ^ 마커를 모두 삭제한다.
  */
 function removeMarker() {
   markerList.forEach((obj) => {
@@ -924,13 +917,13 @@ function removeMarker() {
 }
 
 /**
- * 인포윈도우를 닫는다.
+ * ^ 인포윈도우를 닫는다.
  */
 function removeInfoWindow() {
   if (infoWindow) infoWindow.close();
 }
 
-// 검색창을 클릭하면 움직이게 하고, input에 포커스를 준다.
+// 검색창을 클릭하면 검색창(search)에 active를 주고, searchInput에 focus를 준다.
 search.addEventListener("click", (e) => {
   search.classList.add("active");
   searchInput.focus();
@@ -966,21 +959,36 @@ searchInput.addEventListener("keyup", (e) => {
   } else if (e.isComposing === false) return; //엔터키 중복입력을 막는다.
 
   // 그 외 입력시
-  if (searchInput.value === "") {
-    displaySearchList(false);
-    return;
-  }
 
   displaySearchList(true);
+
   kakaoSearch.search_autoComplete(searchInput.value).then((data) => {
     // 주소명, 장소명만 뽑아 자동완성을 세팅한다.
+
     const addressSearchData = data[0].map((item) => item.address_name);
     const keywordSearchData = data[1];
-
     setAutoComplete(addressSearchData, keywordSearchData);
   });
 });
 
+searchInput.addEventListener("input", (e) => {
+  if (searchInput.value === "") {
+    // 검색어를 지우다가 value === "" 이 됐을때, 이코드는 input에 적용해야 제대로 작동한다.
+    displaySearchList(false);
+    return;
+  }
+});
+
+//* ========================================== 필터 관련 코드들
+filter.forEach((item, index) => {
+  item.addEventListener("click", (e) => {
+    const filterOption = filter[index].querySelector(".filter__option-table");
+    filter[index].classList.toggle("active");
+    if (filter[index].classList.contains("active"))
+      filterOption.classList.add("active");
+    else filterOption.classList.remove("active");
+  });
+});
 //* ========================================== NAV 관련 코드들
 
 navItems.forEach((item, index) => {
@@ -1005,21 +1013,13 @@ kakao.maps.event.addListener(map, "click", function (mouseEvent) {
   removeInfoWindow();
 });
 
-// ! 오버레이에 이벤트를 등록해야하는 상황
-// !1.에서 처음부터 생성.. 사용자 위치를 기준으로 지도레벨 확대해서 지하철부터 보여줄까???????
-// 1. 새 오버레이 생성 (로컬의 경우 처음부터 생성되었기때문에 이때 적용함, subway랑 매물은 아님)
-// 2. 지도확대 축소후 새로 생긴 오버레이
-// 3. 지도 이동후 새로생긴 오버레이
-
 // 지도의 드래그가 끝났을때 화면에 보여지는 오버레이에 이벤트 등록
 kakao.maps.event.addListener(map, "dragend", function () {
   overlaySetEvent();
 });
 
-/**
- * 지도 레벨에 따라 지역, 지하철, 방을 보여준다.
- * 보여지는 오버레이에 클릭이벤트를 등록한다.
- */
+// 지도 레벨에 따라 지역, 지하철, 방을 보여준다.
+// 보여지는 오버레이에 클릭이벤트를 등록한다.
 kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   // 5이하 : 매물, 6~8 : 지하철, 9이상 : 지역
   if (5 < map.getLevel() && map.getLevel() < 8) {
