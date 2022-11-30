@@ -293,7 +293,11 @@ a {
 
 .search-list__item:hover {
   background-color: var(--disabled);
+  cursor: pointer;
+}
+
+.search-list__item.active {
+  background-color: var(--disabled);
   border-left: 3px solid var(--primary);
   padding-left: 47px;
-  cursor: pointer;
 }

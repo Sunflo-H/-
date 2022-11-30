@@ -650,7 +650,59 @@ function displayOverlay_local_subway(localState, subwayState) {
   );
 }
 
-//* ============================================== 검색 기능 ========================================================
+//* ============================================== 검색 기능 관련 코드들 ========================================================
+
+/**
+ * up key에 대한 이벤트 핸들러, 자동완성 리스트에서 위쪽으로 한칸씩 이동한다.
+ */
+function upKey() {
+  const searchListItem = document.querySelectorAll(".search-list__item");
+
+  let current;
+  searchListItem.forEach((item) => {
+    if (item.classList.contains("active")) current = item;
+  });
+
+  if (!current) {
+    searchListItem[searchListItem.length - 1].classList.add("active");
+    return;
+  }
+
+  current.classList.remove("active");
+
+  if (!current.previousElementSibling) {
+    searchListItem[searchListItem.length - 1].classList.add("active");
+    return;
+  }
+
+  current.previousElementSibling.classList.add("active");
+}
+
+/**
+ * down key에 대한 이벤트 핸들러, 자동완성 리스트에서 아래쪽으로 한칸씩 이동한다.
+ */
+function downKey() {
+  const searchListItem = document.querySelectorAll(".search-list__item");
+
+  let current;
+  searchListItem.forEach((item) => {
+    if (item.classList.contains("active")) current = item;
+  });
+
+  if (!current) {
+    searchListItem[0].classList.add("active");
+    return;
+  }
+
+  current.classList.remove("active");
+
+  if (!current.nextElementSibling) {
+    searchListItem[0].classList.add("active");
+    return;
+  }
+
+  current.nextElementSibling.classList.add("active");
+}
 
 /**
  * enter key에 대한 이벤트 핸들러, 입력된 값으로 검색을 한다.
@@ -693,14 +745,15 @@ function enterKey() {
   });
   displaySearchList(false);
 }
-
+/**
+ * 자동완성 결과 창을 활성화, 비활성화 한다.
+ * @param {*} isTrue
+ */
 function displaySearchList(isTrue) {
   if (isTrue) {
     searchList.classList.add("active");
-    // searchListState.setState(true);
   } else {
     searchList.classList.remove("active");
-    // searchListState.setState(false);
   }
 }
 
@@ -711,8 +764,6 @@ function displaySearchList(isTrue) {
  * @returns
  */
 function setAutoComplete(addressData, keywordData) {
-  console.log(addressData); // address_name
-  console.log(keywordData); // place_name
   let element = "";
 
   //자동완성 데이터가 없다면 검색리스트 창을 닫는다.
@@ -737,11 +788,12 @@ function setAutoComplete(addressData, keywordData) {
     searchList.insertAdjacentHTML("beforeend", element);
   });
 
+  // 만들어진 자동완성 단어들에게 이벤트 등록
   const searchListItem = document.querySelectorAll(".search-list__item");
 
   searchListItem.forEach((item) => {
+    // 클릭시 검색
     item.addEventListener("click", (e) => {
-      // 클릭하면 해당 value로 검색
       let text = e.currentTarget.innerText;
 
       const lat = map.getCenter().Ma;
@@ -783,7 +835,6 @@ function setAutoComplete(addressData, keywordData) {
 
     //엔터를 누르면?
     //방향키 위 아래 누르면 input의 value를 바뀌게 해서 엔터누르면 검색
-    //안바뀌게 하고, item중 active상태인게 있으면 그 값으로 검색
   });
 }
 
@@ -884,9 +935,9 @@ document.addEventListener("click", (e) => {
 searchInput.addEventListener("keyup", (e) => {
   if (e.keyCode === 13) enterKey();
   else if (e.keyCode === 38) {
-    if (searchListState.getState()) upKey();
+    if (searchList.classList.contains("active")) upKey();
   } else if (e.keyCode === 40) {
-    if (searchListState.getState()) downKey();
+    if (searchList.classList.contains("active")) downKey();
   } else if (e.isComposing === false) return; //엔터키 중복입력을 막는다.
 });
 
