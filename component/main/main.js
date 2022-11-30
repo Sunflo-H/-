@@ -701,18 +701,24 @@ function downKey() {
   });
 
   if (!current) {
-    searchListItem[0].classList.add("active");
+    current = searchListItem[0];
+    current.classList.add("active");
+    searchInput.value = current.innerText;
     return;
   }
 
   current.classList.remove("active");
 
   if (!current.nextElementSibling) {
-    searchListItem[0].classList.add("active");
+    current = searchListItem[0];
+    current.classList.add("active");
+    searchInput.value = current.innerText;
     return;
   }
 
-  current.nextElementSibling.classList.add("active");
+  current = current.nextElementSibling;
+  current.classList.add("active");
+  searchInput.value = current.innerText;
 }
 
 /**
