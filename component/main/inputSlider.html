@@ -1,26 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="inputSlider.css" />
     <title>Document</title>
-</head>
-<body>
-    
+  </head>
+  <body>
     <div class="slider-box">
       input[type=range] 2개와 보여질 track을 겹친뒤 input을 투명화하여 만들었다.
-        <div class="slider">
-          <input type="range" id="input-left" class="slider__input slider__intpu--left" min="0" max="100" value="0" />
-          <input type="range" id="input-right" class="slider__input slider__intpu--right" min="0" max="100" value="100"/>
-          <div class="slider__track">
-            <div class="slider__range"></div>
-            <div class="slider__thumb slider__thumb--left"></div>
-            <div class="slider__thumb slider__thumb--right"></div>
-          </div>
+      <div class="slider">
+        <input
+          type="range"
+          id="input-left"
+          class="slider__input slider__intpu--left"
+          min="0"
+          max="100"
+          value="0"
+        />
+        <input
+          type="range"
+          id="input-right"
+          class="slider__input slider__intpu--right"
+          min="0"
+          max="100"
+          value="100"
+        />
+        <div class="slider__track">
+          <div class="slider__range"></div>
+          <div class="slider__thumb slider__thumb--left"></div>
+          <div class="slider__thumb slider__thumb--right"></div>
         </div>
+      </div>
     </div>
     <script src="inputSlider.js"></script>
-</body>
+  </body>
 </html>

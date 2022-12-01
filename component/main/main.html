@@ -122,28 +122,6 @@
                     </div>
                     <div class="filter__option-main">
                       <div
-                        class="filter__option-btn filter__option-btn--25 active"
-                      >
-                        전체
-                      </div>
-                      <div class="filter__option-btn filter__option-btn--25">
-                        전세
-                      </div>
-                      <div class="filter__option-btn filter__option-btn--25">
-                        월세
-                      </div>
-                      <div class="filter__option-btn filter__option-btn--25">
-                        월세
-                      </div>
-                    </div>
-                  </div>
-                  <div class="filter__option">
-                    <div class="filter__option-top">
-                      <div class="filter__option-title">거래유형</div>
-                      <div class="filter__option-value">전체</div>
-                    </div>
-                    <div class="filter__option-main">
-                      <div
                         class="filter__option-btn filter__option-btn--30 active"
                       >
                         전체
@@ -167,32 +145,53 @@
                       <input
                         type="range"
                         id="input-left"
-                        class="slider__input slider__intpu--left"
+                        class="slider__input slider__input--left"
                         min="0"
                         max="100"
                         value="0"
-                        list="marks"
+                        step="3"
                       />
                       <input
                         type="range"
                         id="input-right"
-                        class="slider__input slider__intpu--right"
+                        class="slider__input slider__input--right"
                         min="0"
-                        max="100"
+                        max="102"
                         value="100"
-                        list="marks"
+                        step="3"
                       />
-                      <datalist id="tickmarks">
-                        <option value="0"></option>
-                        <option value="25"></option>
-                        <option value="50"></option>
-                        <option value="75"></option>
-                        <option value="100"></option>
-                      </datalist>
+
                       <div class="slider__track">
                         <div class="slider__range"></div>
                         <div class="slider__thumb slider__thumb--left"></div>
                         <div class="slider__thumb slider__thumb--right"></div>
+                      </div>
+                      <div class="slider__mark-box">
+                        <div class="slider__mark">
+                          <span class="slider__mark-icon">|</span
+                          ><span class="slider__mark-text">최소</span>
+                        </div>
+                        <div class="slider__mark slider__mark--middle">
+                          <span class="slider__mark-icon">|</span
+                          ><span
+                            class="slider__mark-text slider__mark-text--middle"
+                            >5천만</span
+                          >
+                        </div>
+                        <div class="slider__mark slider__mark--middle">
+                          <span class="slider__mark-icon">|</span
+                          ><span
+                            class="slider__mark-text slider__mark-text--middle"
+                            >2.5억</span
+                          >
+                        </div>
+                        <div class="slider__mark">
+                          <span class="slider__mark-icon">|</span
+                          ><span
+                            class="slider__mark-text slider__mark-text--max"
+                            >최대</span
+                          >
+                        </div>
                       </div>
                     </div>
                   </div>
