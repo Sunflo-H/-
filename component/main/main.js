@@ -105,9 +105,10 @@ let infoWindow = null;
 //  6. 검색중 위 아래키 입력 +
 //* 필터 만들기
 //  1. 필터 클릭시 활성화 +
-//  2. 필터 옵션창을 클릭했을때 필터가 비활성화됨 => 버블링 해제하면 될듯
-//  3. 각 nav별로 기능 만들어두고 원룸 위주로 완성
-//  4. 필터가 적용되게끔 하기
+//  2. 필터 안에 버튼 두개 (금액옵션, 구조·면적옵션)
+//  3. 필터 옵션창을 클릭했을때 필터가 비활성화됨 => 버블링 해제하면 될듯
+//  4. 각 nav별로 기능 만들어두고 원룸 위주로 완성
+//  5. 필터가 적용되게끔 하기
 //* 세권 만들기
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
 //* 카드 클릭시 디테일 정보 보여주기
@@ -268,6 +269,7 @@ function createCluster(roomList) {
     roomAndMarker.push({ roomData: room, marker: marker });
     return marker;
   });
+  console.log(roomAndMarker);
 
   roomCluster.setTexts((size) => {
     let text = "";
@@ -986,7 +988,7 @@ searchInput.addEventListener("keydown", (e) => {
 
 //* ========================================== 필터 관련 코드들
 filter.forEach((item, index) => {
-  const filterOption = item.querySelector(".filter__option-table");
+  const filterOption = item.querySelector(".filter__option");
   item.addEventListener("click", (e) => {
     e.stopPropagation();
     if (e.target !== item) return; // 자식 element들에게 이벤트 위임을 막음
