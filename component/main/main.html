@@ -107,18 +107,110 @@
         <!-- Filter -->
         <div class="filter-box">
           <div class="filter">
+            <!-- 원룸의 필터 -->
             <div class="filter__select">
-              <div class="filter__select-title">필터</div>
+              <div class="filter__select-title">유형·금액</div>
               <div class="filter__select-arrow">
                 <i class="fa-solid fa-sort-down"></i>
               </div>
               <div class="filter__content">
+                <div class="filter__option-box">
+                  <div class="filter__option">
+                    <div class="filter__option-top">
+                      <div class="filter__option-title">거래유형</div>
+                      <div class="filter__option-value">전체</div>
+                    </div>
+                    <div class="filter__option-main">
+                      <div
+                        class="filter__option-btn filter__option-btn--25 active"
+                      >
+                        전체
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--25">
+                        전세
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--25">
+                        월세
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--25">
+                        월세
+                      </div>
+                    </div>
+                  </div>
+                  <div class="filter__option">
+                    <div class="filter__option-top">
+                      <div class="filter__option-title">거래유형</div>
+                      <div class="filter__option-value">전체</div>
+                    </div>
+                    <div class="filter__option-main">
+                      <div
+                        class="filter__option-btn filter__option-btn--30 active"
+                      >
+                        전체
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--30">
+                        전세
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--30">
+                        월세
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="filter__slider">
+                  <div class="filter__slider-top">
+                    <div class="filter__slider-title">보증금</div>
+                    <div class="filter__slider-value">전체</div>
+                  </div>
+                  <div class="slider-box">
+                    <div class="slider">
+                      <input
+                        type="range"
+                        id="input-left"
+                        class="slider__input slider__intpu--left"
+                        min="0"
+                        max="100"
+                        value="0"
+                        list="marks"
+                      />
+                      <input
+                        type="range"
+                        id="input-right"
+                        class="slider__input slider__intpu--right"
+                        min="0"
+                        max="100"
+                        value="100"
+                        list="marks"
+                      />
+                      <datalist id="tickmarks">
+                        <option value="0"></option>
+                        <option value="25"></option>
+                        <option value="50"></option>
+                        <option value="75"></option>
+                        <option value="100"></option>
+                      </datalist>
+                      <div class="slider__track">
+                        <div class="slider__range"></div>
+                        <div class="slider__thumb slider__thumb--left"></div>
+                        <div class="slider__thumb slider__thumb--right"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="filter__btn-box">
+                  <div class="filter__btn filter__btn--reset">초기화</div>
+                  <div class="filter__btn filter__btn--apply">
+                    <i class="fa-solid fa-check"></i>적용
+                  </div>
+                </div>
+                <!-- 아파트용 필터 -->
+                <!-- <div class="filter__btn-box">
                   <div class="filter__btn filter__btn--category active">
                     금액
                   </div>
                   <div class="filter__btn filter__btn--category">구조·면적</div>
-                </div>
+                </div> -->
                 <!-- <div class="filter__table-box">
                   <div class="filter__table-item">
                     <div class="filter__table-title">
@@ -181,60 +273,94 @@
                     </table>
                   </div>
                 </div> -->
+              </div>
+            </div>
+
+            <div class="filter__select">
+              <div class="filter__select-title">구조·면적</div>
+              <div class="filter__select-arrow">
+                <i class="fa-solid fa-sort-down"></i>
+              </div>
+              <div class="filter__content">
                 <div class="filter__option-box">
                   <div class="filter__option">
                     <div class="filter__option-top">
-                      <div class="filter__option-title">거래유형</div>
+                      <div class="filter__option-title">구조</div>
+                      <div class="filter__option-value">전체</div>
+                    </div>
+                    <div class="filter__option-main filter__option-main--43">
+                      <div
+                        class="filter__option-btn filter__option-btn--43 active"
+                      >
+                        전체
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--43">
+                        오픈형(방1)
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--43">
+                        분리형(방1,거실1)
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--43">
+                        복층형
+                      </div>
+                    </div>
+                  </div>
+                  <div class="filter__option">
+                    <div class="filter__option-top">
+                      <div class="filter__option-title">층</div>
                       <div class="filter__option-value">전체</div>
                     </div>
                     <div class="filter__option-main">
-                      <div class="filter__option-btn">전체</div>
-                      <div class="filter__option-btn">전세</div>
-                      <div class="filter__option-btn">월세</div>
+                      <div
+                        class="filter__option-btn filter__option-btn--25 active"
+                      >
+                        전체
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--25">
+                        지상
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--25">
+                        반지하
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--25">
+                        옥탑
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="filter__slider">
-                  <div class="filter__slider-top">
-                    <div class="filter__slider-title">보증금</div>
-                    <div class="filter__slider-value">전체</div>
-                  </div>
-                  <div class="slider-box">
-                    <div class="slider">
-                      <input
-                        type="range"
-                        id="input-left"
-                        class="slider__input slider__intpu--left"
-                        min="0"
-                        max="100"
-                        value="0"
-                        list="marks"
-                      />
-                      <input
-                        type="range"
-                        id="input-right"
-                        class="slider__input slider__intpu--right"
-                        min="0"
-                        max="100"
-                        value="100"
-                        list="marks"
-                      />
-                      <datalist id="tickmarks">
-                        <option value="0"></option>
-                        <option value="25"></option>
-                        <option value="50"></option>
-                        <option value="75"></option>
-                        <option value="100"></option>
-                      </datalist>
-                      <div class="slider__track">
-                        <div class="slider__range"></div>
-                        <div class="slider__thumb slider__thumb--left"></div>
-                        <div class="slider__thumb slider__thumb--right"></div>
+
+                  <!-- 이건 테이블로 -->
+                  <div class="filter__option">
+                    <div class="filter__option-top">
+                      <div class="filter__option-title">면적</div>
+                      <div class="filter__option-value">전체</div>
+                    </div>
+                    <div class="filter__option-main">
+                      <div
+                        class="filter__option-btn filter__option-btn--25 active"
+                      >
+                        전체
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--25">
+                        지상
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--25">
+                        반지하
+                      </div>
+                      <div class="filter__option-btn filter__option-btn--25">
+                        옥탑
                       </div>
                     </div>
                   </div>
                 </div>
-
+                <div class="filter__option filter__toggle">
+                  <div class="filter__toggle-main">
+                    주가 가능만 보기
+                    <input type="checkbox" id="toggle" hidden />
+                    <label for="toggle" class="toggleSwitch">
+                      <span class="toggleButton"></span>
+                    </label>
+                  </div>
+                </div>
                 <div class="filter__btn-box">
                   <div class="filter__btn filter__btn--reset">초기화</div>
                   <div class="filter__btn filter__btn--apply">
@@ -243,18 +369,12 @@
                 </div>
               </div>
             </div>
-
             <div class="filter__select">
               <div class="filter__select-title">세권</div>
               <div class="filter__select-arrow">
                 <i class="fa-solid fa-sort-down"></i>
               </div>
               <div class="filter__content">
-                <div class="filter__btn-box">
-                  <div class="filter__btn filter__btn--reset">
-                    <i class="fa-solid fa-arrow-rotate-right"></i>
-                  </div>
-                </div>
                 <div class="filter__table-box">
                   <div class="filter__table-item">
                     <div class="filter__table-title">
