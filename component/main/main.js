@@ -105,11 +105,12 @@ let infoWindow = null;
 //  6. 검색중 위 아래키 입력 +
 //* 필터 만들기
 //  1. 필터 클릭시 활성화 +
-//  2. 필터 안에 버튼 두개 (금액옵션, 구조·면적옵션)
+//  2. 필터 안에 버튼 두개 (금액옵션, 구조·면적옵션) +
 //  3. 필터 옵션창을 클릭했을때 필터가 비활성화됨 => 버블링 해제하면 될듯
 //  4. 각 nav별로 기능 만들어두고 원룸 위주로 완성
 //  5. 필터가 적용되게끔 하기
 //  6. 슬라이더 만들기
+//  7. filter__table의 경우에는 범위 선택, filter__content-btn?의 경우에는 단일선택
 //* 세권 만들기
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
 //* 카드 클릭시 디테일 정보 보여주기
@@ -989,13 +990,16 @@ searchInput.addEventListener("keydown", (e) => {
 
 //* ========================================== 필터 관련 코드들
 filter.forEach((item, index) => {
-  const filterOption = item.querySelector(".filter__option");
+  const filterContent = item.querySelector(".filter__content");
+  const title = item.querySelector(".filter__select-title");
+  const arrow = item.querySelector(".filter__select-arrow");
   item.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (e.target !== item) return; // 자식 element들에게 이벤트 위임을 막음
+    //필터 컨텐츠에 이벤트 위임을 막음
+    if (e.target !== item && e.target !== title && e.target !== arrow) return; // 자식 element들에게 이벤트 위임을 막음
     item.classList.toggle("active");
-    if (item.classList.contains("active")) filterOption.classList.add("active");
-    else filterOption.classList.remove("active");
+    if (item.classList.contains("active"))
+      filterContent.classList.add("active");
+    else filterContent.classList.remove("active");
   });
 });
 //* ========================================== NAV 관련 코드들

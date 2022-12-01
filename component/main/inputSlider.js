@@ -6,7 +6,7 @@ const thumbRight = document.querySelector(".slider__thumb--right");
 
 const range = document.querySelector(".slider__range");
 
-const setLeftValue = e => {
+const setLeftValue = (e) => {
   const _this = e.target;
   const { value, min, max } = _this;
 
@@ -16,12 +16,11 @@ const setLeftValue = e => {
 
   const percent = ((_this.value - min) / (max - min)) * 100;
 
-  thumbLeft.style.left = `${percent*0.97}%`;
-  range.style.left = `${percent*0.97}%`;
-
+  thumbLeft.style.left = `${percent * 0.9}%`;
+  range.style.left = `${percent * 0.9}%`;
 };
 
-const setRightValue = e => {
+const setRightValue = (e) => {
   const _this = e.target;
   const { value, min, max } = _this;
 
@@ -31,8 +30,8 @@ const setRightValue = e => {
 
   const percent = ((_this.value - min) / (max - min)) * 100;
   console.log(percent);
-  thumbRight.style.right = `${(100 - percent) * 0.97}%`;
-  range.style.right = `${(100 - percent) * 0.97}%`;
+  thumbRight.style.right = `${(100 - percent) * 0.9}%`;
+  range.style.right = `${(100 - percent) * 0.9}%`;
 };
 
 if (inputLeft && inputRight) {

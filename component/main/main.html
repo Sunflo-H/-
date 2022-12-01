@@ -108,19 +108,18 @@
         <div class="filter-box">
           <div class="filter">
             <div class="filter__select">
-              <div class="filter__select-checked">필터</div>
+              <div class="filter__select-title">필터</div>
               <div class="filter__select-arrow">
                 <i class="fa-solid fa-sort-down"></i>
               </div>
-              <div class="filter__option">
+              <div class="filter__content">
                 <div class="filter__btn-box">
-                  <div class="filter__btn filter__btn--category">금액</div>
-                  <div class="filter__btn filter__btn--category">구조·면적</div>
-                  <div class="filter__btn filter__btn--reset">
-                    <i class="fa-solid fa-arrow-rotate-right"></i>
+                  <div class="filter__btn filter__btn--category active">
+                    금액
                   </div>
+                  <div class="filter__btn filter__btn--category">구조·면적</div>
                 </div>
-                <div class="filter__table-box">
+                <!-- <div class="filter__table-box">
                   <div class="filter__table-item">
                     <div class="filter__table-title">
                       <span>면적</span>
@@ -181,6 +180,19 @@
                       </tbody>
                     </table>
                   </div>
+                </div> -->
+                <div class="filter__option-box">
+                  <div class="filter__option">
+                    <div class="filter__option-top">
+                      <div class="filter__option-title">거래유형</div>
+                      <div class="filter__option-value">전체</div>
+                    </div>
+                    <div class="filter__option-main">
+                      <div class="filter__option-btn">전체</div>
+                      <div class="filter__option-btn">전세</div>
+                      <div class="filter__option-btn">월세</div>
+                    </div>
+                  </div>
                 </div>
                 <div class="filter__slider">
                   <div class="filter__slider-top">
@@ -196,6 +208,7 @@
                         min="0"
                         max="100"
                         value="0"
+                        list="marks"
                       />
                       <input
                         type="range"
@@ -204,7 +217,15 @@
                         min="0"
                         max="100"
                         value="100"
+                        list="marks"
                       />
+                      <datalist id="tickmarks">
+                        <option value="0"></option>
+                        <option value="25"></option>
+                        <option value="50"></option>
+                        <option value="75"></option>
+                        <option value="100"></option>
+                      </datalist>
                       <div class="slider__track">
                         <div class="slider__range"></div>
                         <div class="slider__thumb slider__thumb--left"></div>
@@ -214,18 +235,21 @@
                   </div>
                 </div>
 
-                <div class="filter__btn filter__btn--apply">
-                  <i class="fa-solid fa-check"></i>적용
+                <div class="filter__btn-box">
+                  <div class="filter__btn filter__btn--reset">초기화</div>
+                  <div class="filter__btn filter__btn--apply">
+                    <i class="fa-solid fa-check"></i>적용
+                  </div>
                 </div>
               </div>
             </div>
 
             <div class="filter__select">
-              <div class="filter__select-checked">세권</div>
+              <div class="filter__select-title">세권</div>
               <div class="filter__select-arrow">
                 <i class="fa-solid fa-sort-down"></i>
               </div>
-              <div class="filter__option">
+              <div class="filter__content">
                 <div class="filter__btn-box">
                   <div class="filter__btn filter__btn--reset">
                     <i class="fa-solid fa-arrow-rotate-right"></i>
