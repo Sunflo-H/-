@@ -2,6 +2,7 @@ import Oneroom from "./oneroomModule.js";
 import KakaoSearch from "./kakaoSearchModule.js";
 
 const filter = document.querySelectorAll(".filter__select");
+
 const sortBtn = document.querySelectorAll(".sort-btn");
 const layoutBtn = document.querySelectorAll(".layout-btn");
 
@@ -997,12 +998,37 @@ filter.forEach((item, index) => {
   const filterContent = item.querySelector(".filter__content");
   const title = item.querySelector(".filter__select-title");
   const arrow = item.querySelector(".filter__select-arrow");
+  const optionTitle = item.querySelectorAll(".filter__option-title");
   const optionBtn = item.querySelectorAll(".filter__option-btn");
-  console.log(optionBtn);
+  const optionTable = item.querySelectorAll(".filter__table");
+  console.log(item);
   // const optionBtn = item.querySelector("");
+  if (item.dataset.filterCategory === "유형·금액") {
+    console.log(item.dataset.filterCategory);
+  }
+  if (item.dataset.filterCategory === "구조·면적") {
+    console.log(item.dataset.filterCategory);
+  }
+  if (item.dataset.filterCategory === "세권") {
+    console.log(item.dataset.filterCategory);
+  }
+
+  // 모든 filter__select에 클릭시 필터옵션창을 여는 이벤트
   item.addEventListener("click", (e) => {
-    //필터 컨텐츠에 이벤트 위임을 막음
-    if (e.target !== item && e.target !== title && e.target !== arrow) return; // 자식 element들에게 이벤트 위임을 막음
+    //이벤트 위임을 막음
+    if (e.target !== item && e.target !== title && e.target !== arrow) return;
+
+    // 한번에 하나의 필터 옵션창만 열리게 하기 위해 열려있는지 확인하고 닫는다.
+    // 열려있는게 자신이라면 닫지않는다. (forEach 아래의 코드에서 toggle로 닫을거임)
+    filter.forEach((filterSelect) => {
+      const filterContent = filterSelect.querySelector(".filter__content");
+      if (filterSelect.classList.contains("active")) {
+        if (item === filterSelect) return;
+        filterSelect.classList.remove("active");
+        filterContent.classList.remove("active");
+      }
+    });
+
     item.classList.toggle("active");
     if (item.classList.contains("active"))
       filterContent.classList.add("active");
@@ -1018,14 +1044,41 @@ filter.forEach((item, index) => {
    * 버튼에 data-option= 전세,월세 를 준뒤
    * 클릭한 버튼의 data-option 에 따라 기능을 다르게
    *
+   * 유형·금액 필터 클릭
+   * 전체일때 => 보증금, 월세, 관리비 생성
+   * 전세일때 => 보증금 생성
+   * 월세일때 => 보증금, 월세,관리비 생성
+   * => 생성한 옵션에 보증금, 월세, 관리비 옵션 설정했을때 이벤트를 달아서 기능적용
+   *
+   * 구조·면적 필터 클릭
+   * 구조일때
+   * 층일때
+   * 면적일때
+   *
    */
-
-  switch (optionBtn.dataset) {
-    case "전세":
-    case "월세":
-    case "오픈형(방1)":
+  // console.log(optionTitle.innerText);
+  if (optionTitle.innerText === "거래유형") {
+    switch (optionBtn.dataset) {
+      case "전체":
+      case "전세":
+      case "월세":
+      case "오픈형(방1)":
+    }
+  }
+  if (optionTitle.innerText === "구조") {
+    console.log("하이");
+    optionTitle.addEventListener("click", (e) => {
+      console.log(e.target);
+    });
+  }
+  if (optionTitle.innerText === "층") {
+    optionTitle.addEventListener("click", (e) => {
+      console.log(e.target);
+    });
   }
 });
+
+function 전세핸들러() {}
 
 //* ========================================== NAV 관련 코드들
 
