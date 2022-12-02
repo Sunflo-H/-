@@ -1033,9 +1033,9 @@ filterCategories.forEach((filterCategory, index) => {
   });
 });
 
-// 필터 : 유형·금액
+//* 필터 : 유형·금액
 const optionBtns_price = filterCategory_price.querySelectorAll(
-  ".filter__option-top .filter__option-btn"
+  ".filter__option--price .filter__option-btn"
 );
 
 optionBtns_price.forEach((optionBtn) => {
@@ -1048,7 +1048,7 @@ optionBtns_price.forEach((optionBtn) => {
     // 클릭한 옵션버튼에 active 추가
     e.currentTarget.classList.add("active");
 
-    // 클릭한 거래 유형이 보여지는 element (filter__option-checked)
+    // 클릭한 거래 유형이 보여지는 element (filter__option-value)
     const categoryValue = filterCategory_price.querySelector(
       ".filter__option-checked"
     );
@@ -1065,7 +1065,91 @@ optionBtns_price.forEach((optionBtn) => {
   });
 });
 
-// //필터: 구조·면적;
+//* 필터: 구조·면적;
+const optionBtns_structure = filterCategory_size.querySelectorAll(
+  ".filter__option--structure .filter__option-btn"
+);
+console.log(optionBtns_structure);
+optionBtns_structure.forEach((optionBtn) => {
+  optionBtn.addEventListener("click", (e) => {
+    let totalBtn = optionBtns_structure[0];
+    /**
+     * 전체 클릭 => 전체 빼고 모두 비활성화 +
+     * option[1,2,3] 클릭하는 순간 모두 비활성화후 전체만 활성화 +
+     * option 2개 만 클릭되어있어면
+     *
+     
+     * 
+     * 클릭하면 일단 토글해
+     * 그리고 active를 모두 찾아
+     * 
+     * //전체인경우
+     * 한개인경우 (동일 버튼 클릭하면 전체로)
+     * 두개인경우
+     * 3개면 전체로
+     * 
+     * 전체 외의것이 액티브면 전체는 비활성화
+     * 
+     * active중인것들 찾아서 dataset-option 을 합쳐서 categoryValue.innerText에 저장
+     */
+
+    // "전체"가 활성화 중일때 "전체"를 클릭시 아무것도 하지 않는다.
+    if (e.currentTarget === totalBtn && totalBtn.classList.contains("active")) {
+      // console.log("전체 활성화중 전체 클릭");
+      return;
+    }
+
+    // "전체"가 비활성화 중일때 "전체"를 클릭시 전체 활성화, 그 외 모든 버튼 비활성화
+    if (
+      e.currentTarget === totalBtn &&
+      !totalBtn.classList.contains("active")
+    ) {
+      console.log("전체 비활성화중 전체 클릭");
+      optionBtns_structure.forEach((btn) => btn.classList.remove("active"));
+      totalBtn.classList.add("active");
+    }
+
+    // "전체" 외의 버튼 클릭시 "전체"비활성화, 클릭버튼 토글
+    // 만약 모든 버튼이 비활성화면 "전체" 활성화
+    if (e.currentTarget !== totalBtn) {
+      totalBtn.classList.remove("active");
+      e.currentTarget.classList.toggle("active");
+
+      // if (
+      //   !optionBtns_structure.forEach((btn) => btn.classList.contains("active"))
+      // )
+      //   totalBtn.classList.add("active");
+    }
+
+    // 3개옵션 모두 선택시 "전체" 활성화
+    if (
+      optionBtns_structure[1].classList.contains("active") &&
+      optionBtns_structure[2].classList.contains("active") &&
+      optionBtns_structure[3].classList.contains("active")
+    ) {
+      optionBtns_structure.forEach((btn) => btn.classList.remove("active"));
+      totalBtn.classList.add("active");
+    }
+
+    // 노드리스트를 배열로 변환하는 코드
+    let div_array = Array.prototype.slice.call(optionBtns_structure);
+
+    // 아무것도 선택하지 않았다면 "전체 활성화"
+    if (!div_array.find((btn) => btn.classList.contains("active"))) {
+      totalBtn.classList.add("active");
+    }
+
+    const categoryValue = filterCategory_size.querySelector(
+      ".filter__option--structure .filter__option-value"
+    );
+    let valueArr = [];
+    categoryValue.innerText = "";
+    div_array.forEach((btn) => {
+      if (btn.classList.contains("active")) valueArr.push(btn.dataset.option);
+    });
+    categoryValue.innerText = valueArr.join(", ");
+  });
+});
 
 /**
  * 필터 중 거래유형(전체,월세, 전세)에 대한 보증금, 월세, 관리비 option-content element를 생성하고 이벤트를 등록하는 함수

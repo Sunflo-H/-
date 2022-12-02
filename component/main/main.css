@@ -160,7 +160,7 @@ select::-ms-expand {
   font-weight: bold;
 }
 
-.filter__option-checked {
+.filter__option-value {
   margin-bottom: 10px;
   font-size: 1.1rem;
   font-weight: bold;
