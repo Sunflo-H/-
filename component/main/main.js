@@ -1,10 +1,10 @@
 import Oneroom from "./oneroomModule.js";
 import KakaoSearch from "./kakaoSearchModule.js";
 
-const filter = document.querySelectorAll(".filter__select");
+const filterCategories = document.querySelectorAll(".filter__category");
 
-const sortBtn = document.querySelectorAll(".sort-btn");
-const layoutBtn = document.querySelectorAll(".layout-btn");
+const sortBtns = document.querySelectorAll(".sort-btn");
+const layoutBtns = document.querySelectorAll(".layout-btn");
 
 const search = document.querySelector(".search");
 const searchInput = search.querySelector(".search__input");
@@ -352,7 +352,7 @@ function createCluster(roomList) {
 
     createCardList(roomList);
 
-    sortBtn.forEach((btn) => {
+    sortBtns.forEach((btn) => {
       const up = btn.querySelector(".fa-sort-up");
       const down = btn.querySelector(".fa-sort-down");
       btn.dataset.state = "basic";
@@ -445,17 +445,17 @@ function sortBtnClick(event, sort1, sort2) {
 
       // 보증금을 누르면 월세는 항상 basic이 되게
       // 월세를 누르면 보증금은 항상 basic이 되게, 이 코드는 흐름상 down일때만 적용하면 된다.
-      if (btn === sortBtn[0]) {
-        sortBtn[1].dataset.state = "basic";
-        sortBtn[1].querySelector(".fa-sort-up").classList.add("active");
-        sortBtn[1].querySelector(".fa-sort-down").classList.add("active");
+      if (btn === sortBtns[0]) {
+        sortBtns[1].dataset.state = "basic";
+        sortBtns[1].querySelector(".fa-sort-up").classList.add("active");
+        sortBtns[1].querySelector(".fa-sort-down").classList.add("active");
       } else {
-        sortBtn[0].dataset.state = "basic";
-        sortBtn[0].querySelector(".fa-sort-up").classList.add("active");
-        sortBtn[0].querySelector(".fa-sort-down").classList.add("active");
+        sortBtns[0].dataset.state = "basic";
+        sortBtns[0].querySelector(".fa-sort-up").classList.add("active");
+        sortBtns[0].querySelector(".fa-sort-down").classList.add("active");
       }
 
-      btn === sortBtn[0]
+      btn === sortBtns[0]
         ? sortOneroomList.sort(
             (a, b) => Number(a.item[sort1]) - Number(b.item[sort1])
           )
@@ -471,7 +471,7 @@ function sortBtnClick(event, sort1, sort2) {
       btn.dataset.state = "up";
       up.classList.add("active");
       down.classList.remove("active");
-      btn === sortBtn[0]
+      btn === sortBtns[0]
         ? sortOneroomList.sort(
             (a, b) => Number(b.item[sort1]) - Number(a.item[sort1])
           )
@@ -485,7 +485,7 @@ function sortBtnClick(event, sort1, sort2) {
   }
 }
 
-sortBtn.forEach((btn) => {
+sortBtns.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     sortBtnClick(e, "보증금액", "월세금액");
     // 아파트 : 매매, 보증금액(전세)
@@ -495,7 +495,7 @@ sortBtn.forEach((btn) => {
   });
 });
 
-layoutBtn.forEach((btn) => {
+layoutBtns.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     if (!currentOneroomList) {
       alert("먼저 장소를 눌러 매물정보를 확인해주세요");
@@ -503,14 +503,14 @@ layoutBtn.forEach((btn) => {
     }
 
     //이미 card레이아웃상태에서 또 card를 누르면 함수 종료
-    if (cardListLayout === "card" && btn === layoutBtn[0]) return;
-    if (cardListLayout === "short" && btn === layoutBtn[1]) return;
+    if (cardListLayout === "card" && btn === layoutBtns[0]) return;
+    if (cardListLayout === "short" && btn === layoutBtns[1]) return;
 
-    if (btn === layoutBtn[0]) cardListLayout = "card";
+    if (btn === layoutBtns[0]) cardListLayout = "card";
     else cardListLayout = "short";
 
-    layoutBtn[0].classList.remove("active");
-    layoutBtn[1].classList.remove("active");
+    layoutBtns[0].classList.remove("active");
+    layoutBtns[1].classList.remove("active");
     btn.classList.add("active");
 
     createCardList(currentOneroomList);
@@ -993,37 +993,36 @@ searchInput.addEventListener("keydown", (e) => {
   if (e.keyCode === 38 || e.keyCode === 40) e.preventDefault();
 });
 
-//* ========================================== 필터 관련 코드들
-filter.forEach((item, index) => {
-  const filterContent = item.querySelector(".filter__content");
-  const title = item.querySelector(".filter__select-title");
-  const arrow = item.querySelector(".filter__select-arrow");
-  const optionTitle = item.querySelectorAll(".filter__option-title");
-  const optionBtn = item.querySelectorAll(".filter__option-btn");
-  const optionTable = item.querySelectorAll(".filter__table");
-  const filterOptionContent = item.querySelector(".filter__option-content");
+//* ========================================== 필터 관련 코드들 ================================================
+filterCategories.forEach((filterCategory, index) => {
+  const filterContent = filterCategory.querySelector(".filter__content");
+  const title = filterCategory.querySelector(".filter__category-title");
+  const arrow = filterCategory.querySelector(".filter__category-arrow");
+  const optionBtn = filterCategory.querySelectorAll(".filter__option-btn");
+  const optionTable = filterCategory.querySelectorAll(".filter__table");
+  const filterOptionContent = filterCategory.querySelector(
+    ".filter__option-content"
+  );
 
-  console.log(item);
-  console.log(filterOptionContent);
-
-  // 모든 filter__select에 클릭시 필터옵션창을 여는 이벤트
-  item.addEventListener("click", (e) => {
+  // 모든 filter__category에 클릭시 필터옵션창을 여는 이벤트
+  filterCategory.addEventListener("click", (e) => {
     //이벤트 위임을 막음
-    if (e.target !== item && e.target !== title && e.target !== arrow) return;
+    if (e.target !== filterCategory && e.target !== title && e.target !== arrow)
+      return;
 
     // 한번에 하나의 필터 옵션창만 열리게 하기 위해 열려있는지 확인하고 닫는다.
     // 열려있는게 자신이라면 닫지않는다. (forEach 아래의 코드에서 toggle로 닫을거임)
-    filter.forEach((filterSelect) => {
+    filterCategories.forEach((filterSelect) => {
       const filterContent = filterSelect.querySelector(".filter__content");
       if (filterSelect.classList.contains("active")) {
-        if (item === filterSelect) return;
+        if (filterCategory === filterSelect) return;
         filterSelect.classList.remove("active");
         filterContent.classList.remove("active");
       }
     });
 
-    item.classList.toggle("active");
-    if (item.classList.contains("active"))
+    filterCategory.classList.toggle("active");
+    if (filterCategory.classList.contains("active"))
       filterContent.classList.add("active");
     else filterContent.classList.remove("active");
   });
@@ -1060,16 +1059,18 @@ filter.forEach((item, index) => {
                         <input
                           class="filter__input filter__input-min"
                           type="number"
-                          placeholder="최소금액 (만원단위)"
+                          min="0"
                           step="100"
+                          placeholder="최소금액 (만원단위)"
                           data-type="보증금"
                         />
                         <span>~</span>
                         <input
                           class="filter__input filter__input-max"
                           type="number"
-                          placeholder="최대금액 (만원단위)"
+                          min="0"
                           step="100"
+                          placeholder="최대금액 (만원단위)"
                           data-type="보증금"
                         />
                       </div>
@@ -1084,16 +1085,18 @@ filter.forEach((item, index) => {
                         <input
                           class="filter__input filter__input-min"
                           type="number"
-                          placeholder="최소금액 (만원단위)"
+                          min="0"
                           step="10"
+                          placeholder="최소금액 (만원단위)"
                           data-type="월세"
                         />
                         <span>~</span>
                         <input
                           class="filter__input filter__input-max"
                           type="number"
-                          placeholder="최대금액 (만원단위)"
+                          min="0"
                           step="10"
+                          placeholder="최대금액 (만원단위)"
                           data-type="월세"
                         />
                       </div>
@@ -1120,16 +1123,18 @@ filter.forEach((item, index) => {
                         <input
                           class="filter__input filter__input-min"
                           type="number"
-                          placeholder="최소금액 (만원단위)"
+                          min="0"
                           step="100"
+                          placeholder="최소금액 (만원단위)"
                           data-type="보증금"
                         />
                         <span>~</span>
                         <input
                           class="filter__input filter__input-max"
                           type="number"
-                          placeholder="최대금액 (만원단위)"
+                          min="0"
                           step="100"
+                          placeholder="최대금액 (만원단위)"
                           data-type="보증금"
                         />
                       </div>
@@ -1141,8 +1146,6 @@ filter.forEach((item, index) => {
   });
   console.log("=========================================================");
 });
-
-function 전세핸들러() {}
 
 //* ========================================== NAV 관련 코드들
 
