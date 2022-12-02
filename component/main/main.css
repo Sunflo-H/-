@@ -160,7 +160,7 @@ select::-ms-expand {
   font-weight: bold;
 }
 
-.filter__option-value {
+.filter__option-checked {
   margin-bottom: 10px;
   font-size: 1.1rem;
   font-weight: bold;
@@ -216,6 +216,7 @@ select::-ms-expand {
 .filter__input:focus {
   outline: 1px solid var(--primary);
 }
+
 .filter__table-item {
   background-color: #f5f5f5;
   margin-top: 10px;

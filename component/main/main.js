@@ -1001,17 +1001,10 @@ filter.forEach((item, index) => {
   const optionTitle = item.querySelectorAll(".filter__option-title");
   const optionBtn = item.querySelectorAll(".filter__option-btn");
   const optionTable = item.querySelectorAll(".filter__table");
+  const filterOptionContent = item.querySelector(".filter__option-content");
+
   console.log(item);
-  // const optionBtn = item.querySelector("");
-  if (item.dataset.filterCategory === "유형·금액") {
-    console.log(item.dataset.filterCategory);
-  }
-  if (item.dataset.filterCategory === "구조·면적") {
-    console.log(item.dataset.filterCategory);
-  }
-  if (item.dataset.filterCategory === "세권") {
-    console.log(item.dataset.filterCategory);
-  }
+  console.log(filterOptionContent);
 
   // 모든 filter__select에 클릭시 필터옵션창을 여는 이벤트
   item.addEventListener("click", (e) => {
@@ -1034,48 +1027,119 @@ filter.forEach((item, index) => {
       filterContent.classList.add("active");
     else filterContent.classList.remove("active");
   });
-  /**
-   * 옵션에 대한 버튼이 아주 많아
-   * 거래유형(전세,월세)에 따른 전체,보증금, 월세
-   * 구조(전체, 오픈형,분리형,복층형)
-   * 층(전체,지상,반지하,옥탑)
-   * 면적(table)
-   *
-   * 버튼에 data-option= 전세,월세 를 준뒤
-   * 클릭한 버튼의 data-option 에 따라 기능을 다르게
-   *
-   * 유형·금액 필터 클릭
-   * 전체일때 => 보증금, 월세, 관리비 생성
-   * 전세일때 => 보증금 생성
-   * 월세일때 => 보증금, 월세,관리비 생성
-   * => 생성한 옵션에 보증금, 월세, 관리비 옵션 설정했을때 이벤트를 달아서 기능적용
-   *
-   * 구조·면적 필터 클릭
-   * 구조일때
-   * 층일때
-   * 면적일때
-   *
-   */
-  // console.log(optionTitle.innerText);
-  if (optionTitle.innerText === "거래유형") {
-    switch (optionBtn.dataset) {
-      case "전체":
-      case "전세":
-      case "월세":
-      case "오픈형(방1)":
-    }
-  }
-  if (optionTitle.innerText === "구조") {
-    console.log("하이");
-    optionTitle.addEventListener("click", (e) => {
-      console.log(e.target);
+
+  optionBtn.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      // 옵션버튼을 순회하면서 모든 active를 지움
+      optionBtn.forEach((btn_inner) => btn_inner.classList.remove("active"));
+      // 클릭한 옵션버튼에 active 추가
+      e.currentTarget.classList.add("active");
+      const categoryValue =
+        e.currentTarget.parentNode.previousElementSibling.lastElementChild;
+
+      // 클릭한 거래유형에 따라 거래유형의 filter__option-checked의 값을 변경한다.
+      if (categoryValue.innerText !== e.currentTarget.dataset.option) {
+        categoryValue.innerText = e.currentTarget.dataset.option;
+      } else return;
+
+      console.log("hi");
+      // 클릭한 거래 유형에 따라 보여질 옵션 컨텐츠를 생성한다.
+      let element = "";
+      while (filterOptionContent.firstChild) {
+        filterOptionContent.removeChild(filterOptionContent.firstChild);
+      }
+      switch (e.currentTarget.dataset.option) {
+        case "전체":
+        case "월세":
+          element = `<div class="filter__option">
+                      <div class="filter__option-top">
+                        <div class="filter__option-title">보증금</div>
+                        <div class="filter__option-value">전체</div>
+                      </div>
+                      <div class="filter__option-main">
+                        <input
+                          class="filter__input filter__input-min"
+                          type="number"
+                          placeholder="최소금액 (만원단위)"
+                          step="100"
+                          data-type="보증금"
+                        />
+                        <span>~</span>
+                        <input
+                          class="filter__input filter__input-max"
+                          type="number"
+                          placeholder="최대금액 (만원단위)"
+                          step="100"
+                          data-type="보증금"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="filter__option">
+                      <div class="filter__option-top">
+                        <div class="filter__option-title">월세</div>
+                        <div class="filter__option-value">전체</div>
+                      </div>
+                      <div class="filter__option-main">
+                        <input
+                          class="filter__input filter__input-min"
+                          type="number"
+                          placeholder="최소금액 (만원단위)"
+                          step="10"
+                          data-type="월세"
+                        />
+                        <span>~</span>
+                        <input
+                          class="filter__input filter__input-max"
+                          type="number"
+                          placeholder="최대금액 (만원단위)"
+                          step="10"
+                          data-type="월세"
+                        />
+                      </div>
+                    </div>
+                    <div class="filter__option filter__toggle">
+                      <div class="filter__toggle-main">
+                        관리비 포함
+                        <input type="checkbox" id="toggle" hidden />
+                        <label for="toggle" class="toggleSwitch">
+                          <span class="toggleButton"></span>
+                        </label>
+                      </div>
+                    </div>`;
+          filterOptionContent.insertAdjacentHTML("beforeend", element);
+          break;
+
+        case "전세":
+          element = `<div class="filter__option">
+                      <div class="filter__option-top">
+                        <div class="filter__option-title">보증금</div>
+                        <div class="filter__option-value">전체</div>
+                      </div>
+                      <div class="filter__option-main">
+                        <input
+                          class="filter__input filter__input-min"
+                          type="number"
+                          placeholder="최소금액 (만원단위)"
+                          step="100"
+                          data-type="보증금"
+                        />
+                        <span>~</span>
+                        <input
+                          class="filter__input filter__input-max"
+                          type="number"
+                          placeholder="최대금액 (만원단위)"
+                          step="100"
+                          data-type="보증금"
+                        />
+                      </div>
+                    </div>`;
+          filterOptionContent.insertAdjacentHTML("beforeend", element);
+          break;
+      }
     });
-  }
-  if (optionTitle.innerText === "층") {
-    optionTitle.addEventListener("click", (e) => {
-      console.log(e.target);
-    });
-  }
+  });
+  console.log("=========================================================");
 });
 
 function 전세핸들러() {}

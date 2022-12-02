@@ -121,84 +121,86 @@
                   <div class="filter__option">
                     <div class="filter__option-top">
                       <div class="filter__option-title">거래유형</div>
-                      <div class="filter__option-value">전체</div>
+                      <div class="filter__option-checked">전체</div>
                     </div>
                     <div class="filter__option-main">
                       <div
                         class="filter__option-btn filter__option-btn--30 active"
-                        data-option="거래유형"
+                        data-option="전체"
                       >
                         전체
                       </div>
                       <div
                         class="filter__option-btn filter__option-btn--30"
-                        data-option="거래유형"
+                        data-option="전세"
                       >
                         전세
                       </div>
                       <div
                         class="filter__option-btn filter__option-btn--30"
-                        data-option="거래유형"
+                        data-option="월세"
                       >
                         월세
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="filter__option">
-                  <div class="filter__option-top">
-                    <div class="filter__option-title">보증금</div>
-                    <div class="filter__option-value">전체</div>
+                <div class="filter__option-content">
+                  <div class="filter__option">
+                    <div class="filter__option-top">
+                      <div class="filter__option-title">보증금</div>
+                      <div class="filter__option-value">전체</div>
+                    </div>
+                    <div class="filter__option-main">
+                      <input
+                        class="filter__input filter__input-min"
+                        type="number"
+                        placeholder="최소금액 (만원단위)"
+                        step="100"
+                        data-type="보증금"
+                      />
+                      <span>~</span>
+                      <input
+                        class="filter__input filter__input-max"
+                        type="number"
+                        placeholder="최대금액 (만원단위)"
+                        step="100"
+                        data-type="보증금"
+                      />
+                    </div>
                   </div>
-                  <div class="filter__option-main">
-                    <input
-                      class="filter__input filter__input-min"
-                      type="number"
-                      placeholder="최소금액 (만원단위)"
-                      step="100"
-                      data-type="보증금"
-                    />
-                    <span>~</span>
-                    <input
-                      class="filter__input filter__input-max"
-                      type="number"
-                      placeholder="최대금액 (만원단위)"
-                      step="100"
-                      data-type="보증금"
-                    />
-                  </div>
-                </div>
 
-                <div class="filter__option">
-                  <div class="filter__option-top">
-                    <div class="filter__option-title">월세</div>
-                    <div class="filter__option-value">전체</div>
+                  <div class="filter__option">
+                    <div class="filter__option-top">
+                      <div class="filter__option-title">월세</div>
+                      <div class="filter__option-value">전체</div>
+                    </div>
+                    <div class="filter__option-main">
+                      <input
+                        class="filter__input filter__input-min"
+                        type="number"
+                        placeholder="최소금액 (만원단위)"
+                        step="10"
+                        data-type="월세"
+                      />
+                      <span>~</span>
+                      <input
+                        class="filter__input filter__input-max"
+                        type="number"
+                        placeholder="최대금액 (만원단위)"
+                        step="10"
+                        data-type="월세"
+                      />
+                    </div>
                   </div>
-                  <div class="filter__option-main">
-                    <input
-                      class="filter__input filter__input-min"
-                      type="number"
-                      placeholder="최소금액 (만원단위)"
-                      step="10"
-                      data-type="월세"
-                    />
-                    <span>~</span>
-                    <input
-                      class="filter__input filter__input-max"
-                      type="number"
-                      placeholder="최대금액 (만원단위)"
-                      step="10"
-                      data-type="월세"
-                    />
-                  </div>
-                </div>
-                <div class="filter__option filter__toggle">
-                  <div class="filter__toggle-main">
-                    관리비 포함
-                    <input type="checkbox" id="toggle" hidden />
-                    <label for="toggle" class="toggleSwitch">
-                      <span class="toggleButton"></span>
-                    </label>
+                  <div class="filter__option filter__toggle">
+                    <div class="filter__toggle-main">
+                      관리비 포함
+                      <input type="checkbox" id="toggle" hidden />
+                      <label for="toggle" class="toggleSwitch">
+                        <span class="toggleButton"></span>
+                      </label>
+                    </div>
                   </div>
                 </div>
                 <div class="filter__btn-box">
