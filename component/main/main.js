@@ -15,7 +15,6 @@ const navItems = nav.querySelectorAll(".nav__item");
 const CRITERIA_MAP_LEVEL = 7;
 const oneroom = new Oneroom();
 const kakaoSearch = new KakaoSearch();
-
 /**
  * * id :
  * * name : 오버레이에 보여질 이름
@@ -73,8 +72,13 @@ let originalOneroomList = [];
  */
 let cardListLayout = "card";
 
+/**
+ * 검색 결과 정보와 마커를 담은 배열
+ */
 let markerList = [];
-
+/**
+ * 마커를 클릭시 열리는 창
+ */
 let infoWindow = null;
 
 /**
@@ -993,6 +997,9 @@ filter.forEach((item, index) => {
   const filterContent = item.querySelector(".filter__content");
   const title = item.querySelector(".filter__select-title");
   const arrow = item.querySelector(".filter__select-arrow");
+  const optionBtn = item.querySelectorAll(".filter__option-btn");
+  console.log(optionBtn);
+  // const optionBtn = item.querySelector("");
   item.addEventListener("click", (e) => {
     //필터 컨텐츠에 이벤트 위임을 막음
     if (e.target !== item && e.target !== title && e.target !== arrow) return; // 자식 element들에게 이벤트 위임을 막음
@@ -1001,7 +1008,25 @@ filter.forEach((item, index) => {
       filterContent.classList.add("active");
     else filterContent.classList.remove("active");
   });
+  /**
+   * 옵션에 대한 버튼이 아주 많아
+   * 거래유형(전세,월세)에 따른 전체,보증금, 월세
+   * 구조(전체, 오픈형,분리형,복층형)
+   * 층(전체,지상,반지하,옥탑)
+   * 면적(table)
+   *
+   * 버튼에 data-option= 전세,월세 를 준뒤
+   * 클릭한 버튼의 data-option 에 따라 기능을 다르게
+   *
+   */
+
+  switch (optionBtn.dataset) {
+    case "전세":
+    case "월세":
+    case "오픈형(방1)":
+  }
 });
+
 //* ========================================== NAV 관련 코드들
 
 navItems.forEach((item, index) => {
