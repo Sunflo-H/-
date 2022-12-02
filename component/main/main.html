@@ -111,7 +111,7 @@
         <div class="filter-box">
           <div class="filter">
             <!-- 원룸의 필터 -->
-            <div class="filter__category" data-filter-category="유형·금액">
+            <div class="filter__category">
               <div class="filter__category-title">유형·금액</div>
               <div class="filter__category-arrow">
                 <i class="fa-solid fa-sort-down"></i>
@@ -146,69 +146,8 @@
                   </div>
                 </div>
 
-                <!-- 거래유형 옵션 선택에 따라 js로 변경하는 내용들을 content로 명명 -->
-                <div class="filter__option-content">
-                  <div class="filter__option">
-                    <div class="filter__option-top">
-                      <div class="filter__option-title">보증금</div>
-                      <div class="filter__option-value">전체</div>
-                    </div>
-                    <div class="filter__option-main">
-                      <input
-                        class="filter__input filter__input-min"
-                        type="number"
-                        min="0"
-                        step="100"
-                        placeholder="최소금액 (만원단위)"
-                        data-type="보증금"
-                      />
-                      <span>~</span>
-                      <input
-                        class="filter__input filter__input-max"
-                        type="number"
-                        min="0"
-                        step="100"
-                        placeholder="최대금액 (만원단위)"
-                        data-type="보증금"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="filter__option">
-                    <div class="filter__option-top">
-                      <div class="filter__option-title">월세</div>
-                      <div class="filter__option-value">전체</div>
-                    </div>
-                    <div class="filter__option-main">
-                      <input
-                        class="filter__input filter__input-min"
-                        type="number"
-                        min="0"
-                        step="10"
-                        placeholder="최소금액 (만원단위)"
-                        data-type="월세"
-                      />
-                      <span>~</span>
-                      <input
-                        class="filter__input filter__input-max"
-                        type="number"
-                        min="0"
-                        step="10"
-                        placeholder="최대금액 (만원단위)"
-                        data-type="월세"
-                      />
-                    </div>
-                  </div>
-                  <div class="filter__option filter__toggle">
-                    <div class="filter__toggle-main">
-                      관리비 포함
-                      <input type="checkbox" id="toggle" hidden />
-                      <label for="toggle" class="toggleSwitch">
-                        <span class="toggleButton"></span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
+                <!-- 거래유형 옵션 선택에 따라 js로 변경하는 내용들을 option-content로 명명 -->
+                <div class="filter__option-content"></div>
                 <div class="filter__btn-box">
                   <div class="filter__btn filter__btn--reset">초기화</div>
                   <div class="filter__btn filter__btn--apply">
@@ -218,7 +157,7 @@
               </div>
             </div>
 
-            <div class="filter__category" data-filter-category="구조·면적">
+            <div class="filter__category">
               <div class="filter__category-title">구조·면적</div>
               <div class="filter__category-arrow">
                 <i class="fa-solid fa-sort-down"></i>

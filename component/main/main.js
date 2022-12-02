@@ -2,6 +2,9 @@ import Oneroom from "./oneroomModule.js";
 import KakaoSearch from "./kakaoSearchModule.js";
 
 const filterCategories = document.querySelectorAll(".filter__category");
+const filterCategory_price = filterCategories[0];
+const filterCategory_size = filterCategories[1];
+const filterCategory_around = filterCategories[2];
 
 const sortBtns = document.querySelectorAll(".sort-btn");
 const layoutBtns = document.querySelectorAll(".layout-btn");
@@ -994,63 +997,92 @@ searchInput.addEventListener("keydown", (e) => {
 });
 
 //* ========================================== 필터 관련 코드들 ================================================
+// const filterCategory_price = filterCategories[0];
+// const filterCategory_size = filterCategories[1];
+// const filterCategory_around = filterCategories[2];
+
+// 모든 filter__category에 클릭시 필터옵션창을 여는 이벤트
 filterCategories.forEach((filterCategory, index) => {
   const filterContent = filterCategory.querySelector(".filter__content");
   const title = filterCategory.querySelector(".filter__category-title");
   const arrow = filterCategory.querySelector(".filter__category-arrow");
-  const optionBtn = filterCategory.querySelectorAll(".filter__option-btn");
-  const optionTable = filterCategory.querySelectorAll(".filter__table");
-  const filterOptionContent = filterCategory.querySelector(
-    ".filter__option-content"
-  );
 
-  // 모든 filter__category에 클릭시 필터옵션창을 여는 이벤트
   filterCategory.addEventListener("click", (e) => {
     //이벤트 위임을 막음
     if (e.target !== filterCategory && e.target !== title && e.target !== arrow)
       return;
 
-    // 한번에 하나의 필터 옵션창만 열리게 하기 위해 열려있는지 확인하고 닫는다.
-    // 열려있는게 자신이라면 닫지않는다. (forEach 아래의 코드에서 toggle로 닫을거임)
-    filterCategories.forEach((filterSelect) => {
-      const filterContent = filterSelect.querySelector(".filter__content");
-      if (filterSelect.classList.contains("active")) {
-        if (filterCategory === filterSelect) return;
-        filterSelect.classList.remove("active");
+    // 한번에 하나의 필터 카테고리만 활성화하기 위한 코드
+    filterCategories.forEach((filterCategory_inner) => {
+      const filterContent =
+        filterCategory_inner.querySelector(".filter__content");
+      if (filterCategory_inner.classList.contains("active")) {
+        // 열려있는게 자신이라면 닫지않는다. (forEach 이후의 코드에서 toggle로 닫을거임)
+        if (filterCategory === filterCategory_inner) return;
+        filterCategory_inner.classList.remove("active");
         filterContent.classList.remove("active");
       }
     });
-
+    // 필터 카테고리 토글
     filterCategory.classList.toggle("active");
+
+    // 활성화 여부에 따라 필터 컨텐츠창 열기, 닫기
     if (filterCategory.classList.contains("active"))
       filterContent.classList.add("active");
     else filterContent.classList.remove("active");
   });
+});
 
-  optionBtn.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      // 옵션버튼을 순회하면서 모든 active를 지움
-      optionBtn.forEach((btn_inner) => btn_inner.classList.remove("active"));
-      // 클릭한 옵션버튼에 active 추가
-      e.currentTarget.classList.add("active");
-      const categoryValue =
-        e.currentTarget.parentNode.previousElementSibling.lastElementChild;
+// 필터 : 유형·금액
+const optionBtns_price = filterCategory_price.querySelectorAll(
+  ".filter__option-top .filter__option-btn"
+);
 
-      // 클릭한 거래유형에 따라 거래유형의 filter__option-checked의 값을 변경한다.
-      if (categoryValue.innerText !== e.currentTarget.dataset.option) {
-        categoryValue.innerText = e.currentTarget.dataset.option;
-      } else return;
+optionBtns_price.forEach((optionBtn) => {
+  optionBtn.addEventListener("click", (e) => {
+    // 옵션버튼들을 순회하면서 모든 active를 지움
+    optionBtns_price.forEach((optionBtn_inner) =>
+      optionBtn_inner.classList.remove("active")
+    );
 
-      console.log("hi");
-      // 클릭한 거래 유형에 따라 보여질 옵션 컨텐츠를 생성한다.
-      let element = "";
-      while (filterOptionContent.firstChild) {
-        filterOptionContent.removeChild(filterOptionContent.firstChild);
-      }
-      switch (e.currentTarget.dataset.option) {
-        case "전체":
-        case "월세":
-          element = `<div class="filter__option">
+    // 클릭한 옵션버튼에 active 추가
+    e.currentTarget.classList.add("active");
+
+    // 클릭한 거래 유형이 보여지는 element (filter__option-checked)
+    const categoryValue = filterCategory_price.querySelector(
+      ".filter__option-checked"
+    );
+    // e.currentTarget.parentNode.previousElementSibling.lastElementChild;
+    // 클릭한 거래유형 버튼의 값
+    const currentDealCategory = e.currentTarget.dataset.option;
+
+    // 클릭한 거래유형에 따라 거래유형의 filter__option-checked의 값을 변경한다.
+    if (categoryValue.innerText !== e.currentTarget.dataset.option) {
+      categoryValue.innerText = currentDealCategory;
+    } else return;
+
+    createFilterOptionContent(currentDealCategory);
+  });
+});
+
+// //필터: 구조·면적;
+
+/**
+ * 필터 중 거래유형(전체,월세, 전세)에 대한 보증금, 월세, 관리비 option-content element를 생성하고 이벤트를 등록하는 함수
+ * @param {*} option "전체" or "월세" or "전세"
+ */
+
+function createFilterOptionContent(option) {
+  const filterOptionContent = document.querySelector(".filter__option-content");
+  let element = "";
+
+  while (filterOptionContent.firstChild) {
+    filterOptionContent.removeChild(filterOptionContent.firstChild);
+  }
+  switch (option) {
+    case "전체":
+    case "월세":
+      element = `<div class="filter__option">
                       <div class="filter__option-top">
                         <div class="filter__option-title">보증금</div>
                         <div class="filter__option-value">전체</div>
@@ -1110,11 +1142,11 @@ filterCategories.forEach((filterCategory, index) => {
                         </label>
                       </div>
                     </div>`;
-          filterOptionContent.insertAdjacentHTML("beforeend", element);
-          break;
+      filterOptionContent.insertAdjacentHTML("beforeend", element);
+      break;
 
-        case "전세":
-          element = `<div class="filter__option">
+    case "전세":
+      element = `<div class="filter__option">
                       <div class="filter__option-top">
                         <div class="filter__option-title">보증금</div>
                         <div class="filter__option-value">전체</div>
@@ -1139,13 +1171,10 @@ filterCategories.forEach((filterCategory, index) => {
                         />
                       </div>
                     </div>`;
-          filterOptionContent.insertAdjacentHTML("beforeend", element);
-          break;
-      }
-    });
-  });
-  console.log("=========================================================");
-});
+      filterOptionContent.insertAdjacentHTML("beforeend", element);
+      break;
+  }
+}
 
 //* ========================================== NAV 관련 코드들
 
@@ -1223,6 +1252,7 @@ function init() {
   createOverlay_subway();
   createOverlay_local(local);
   createCardList();
+  createFilterOptionContent("전체");
 }
 
 init();
