@@ -1050,7 +1050,7 @@ optionBtns_price.forEach((optionBtn) => {
 
     // 클릭한 거래 유형이 보여지는 element (filter__option-value)
     const categoryValue = filterCategory_price.querySelector(
-      ".filter__option-checked"
+      ".filter__option-value"
     );
     // e.currentTarget.parentNode.previousElementSibling.lastElementChild;
     // 클릭한 거래유형 버튼의 값
