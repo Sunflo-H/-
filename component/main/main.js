@@ -117,8 +117,13 @@ let infoWindow = null;
 //  3. 필터 옵션창을 클릭했을때 필터가 비활성화됨 => 이벤트 위임을 막음 +
 //  4. 각 nav별로 기능 만들어두고 원룸 위주로 완성
 //  5. 필터가 적용되게끔 하기
-//  6. 슬라이더 만들기
+//  5-1 거래유형 버튼 : 버튼에 따라 보증금과 월세를 보여줌 +
+//  5-2 금액 최소~최대 기능 : 최소(대)만 입력되었을때, 최대가 최소보다 작을때 +
+//  5-3 적용 버튼 클릭 : 모든 필터 옵션들이 적용
+//  5-4 초기화 버튼 클릭: 모든 필터 옵션 초기화
+
 //  7. filter__table의 경우에는 범위 선택, filter__option-btn?의 경우에는 단일선택
+
 //* 세권 만들기
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
 //* 카드 클릭시 디테일 정보 보여주기
@@ -1065,11 +1070,11 @@ optionBtns_price.forEach((optionBtn) => {
   });
 });
 
-//* 필터: 구조·면적;
+//* 필터 : 구조·면적; (원룸, 빌라)
 const optionBtns_structure = filterCategory_size.querySelectorAll(
   ".filter__option--structure .filter__option-btn"
 );
-console.log(optionBtns_structure);
+
 optionBtns_structure.forEach((optionBtn) => {
   optionBtn.addEventListener("click", (e) => {
     let totalBtn = optionBtns_structure[0];
@@ -1166,14 +1171,14 @@ function createFilterOptionContent(option) {
   switch (option) {
     case "전체":
     case "월세":
-      element = `<div class="filter__option">
+      element = `<div class="filter__option filter__option--deposit">
                       <div class="filter__option-top">
                         <div class="filter__option-title">보증금</div>
                         <div class="filter__option-value">전체</div>
                       </div>
                       <div class="filter__option-main">
                         <input
-                          class="filter__input filter__input-min"
+                          class="filter__input filter__input-deposit filter__input-deposit--min"
                           type="number"
                           min="0"
                           step="100"
@@ -1182,7 +1187,7 @@ function createFilterOptionContent(option) {
                         />
                         <span>~</span>
                         <input
-                          class="filter__input filter__input-max"
+                          class="filter__input filter__input-deposit filter__input-deposit--max"
                           type="number"
                           min="0"
                           step="100"
@@ -1192,14 +1197,14 @@ function createFilterOptionContent(option) {
                       </div>
                     </div>
 
-                    <div class="filter__option">
+                    <div class="filter__option filter__option--rent">
                       <div class="filter__option-top">
                         <div class="filter__option-title">월세</div>
                         <div class="filter__option-value">전체</div>
                       </div>
                       <div class="filter__option-main">
                         <input
-                          class="filter__input filter__input-min"
+                          class="filter__input filter__input-rent--min"
                           type="number"
                           min="0"
                           step="10"
@@ -1208,7 +1213,7 @@ function createFilterOptionContent(option) {
                         />
                         <span>~</span>
                         <input
-                          class="filter__input filter__input-max"
+                          class="filter__input filter__input-rent--max"
                           type="number"
                           min="0"
                           step="10"
@@ -1230,14 +1235,14 @@ function createFilterOptionContent(option) {
       break;
 
     case "전세":
-      element = `<div class="filter__option">
+      element = `<div class="filter__option filter__option--deposit">
                       <div class="filter__option-top">
                         <div class="filter__option-title">보증금</div>
                         <div class="filter__option-value">전체</div>
                       </div>
                       <div class="filter__option-main">
                         <input
-                          class="filter__input filter__input-min"
+                          class="filter__input filter__input-deposit--min"
                           type="number"
                           min="0"
                           step="100"
@@ -1246,7 +1251,7 @@ function createFilterOptionContent(option) {
                         />
                         <span>~</span>
                         <input
-                          class="filter__input filter__input-max"
+                          class="filter__input filter__input-deposit--max"
                           type="number"
                           min="0"
                           step="100"
@@ -1257,6 +1262,79 @@ function createFilterOptionContent(option) {
                     </div>`;
       filterOptionContent.insertAdjacentHTML("beforeend", element);
       break;
+  }
+
+  //보증금
+
+  const divDepositValue = filterCategory_price.querySelector(
+    ".filter__option--deposit .filter__option-value"
+  );
+  const depositMin =
+    filterCategory_price.querySelector(".filter__input-deposit--min") || null;
+  const depositMax =
+    filterCategory_price.querySelector(".filter__input-deposit--max") || null;
+  //월세
+
+  const divRentValue = filterCategory_price.querySelector(
+    ".filter__option--rent .filter__option-value"
+  );
+  const rentMin =
+    filterCategory_price.querySelector(".filter__input-rent--min") || null;
+  const rentMax =
+    filterCategory_price.querySelector(".filter__input-rent--max") || null;
+
+  if (depositMin) {
+    depositMin.addEventListener("change", (e) => {
+      divDepositValue.innerText = depositMin.value + "부터";
+      if (depositMax.value) {
+        if (Number(depositMin.value) >= Number(depositMax.value)) {
+          alert("최소금액은 최대금액보다 작아야합니다.");
+          depositMin.value = Number(depositMax.value) - 100;
+        }
+
+        divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
+      }
+    });
+  }
+
+  if (depositMax) {
+    depositMax.addEventListener("change", (e) => {
+      divDepositValue.innerText = depositMax.value + "까지";
+      if (depositMin.value) {
+        if (Number(depositMin.value) >= Number(depositMax.value)) {
+          alert("최대금액은 최소금액보다 커야합니다.");
+          depositMax.value = Number(depositMin.value) + 100;
+        }
+
+        divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
+      }
+    });
+  }
+
+  if (rentMin) {
+    rentMin.addEventListener("change", (e) => {
+      divRentValue.innerText = rentMin.value + "부터";
+      if (rentMax.value) {
+        if (Number(rentMin.value) >= Number(rentMax.value)) {
+          alert("최소금액은 최대금액보다 작아야합니다.");
+          rentMin.value = Number(rentMax.value) - 10;
+        }
+        divRentValue.innerText = `${rentMin.value} ~ ${rentMax.value}`;
+      }
+    });
+  }
+
+  if (rentMax) {
+    rentMax.addEventListener("change", (e) => {
+      divRentValue.innerText = rentMax.value + "까지";
+      if (rentMin.value) {
+        if (Number(rentMin.value) >= Number(rentMax.value)) {
+          alert("최대금액은 최소금액보다 커야합니다.");
+          rentMax.value = Number(rentMin.value) + 10;
+        }
+        divRentValue.innerText = `${rentMin.value} ~ ${rentMax.value}`;
+      }
+    });
   }
 }
 
