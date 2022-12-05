@@ -1060,18 +1060,8 @@ optionBtns_price.forEach((optionBtn) => {
     // 클릭한 옵션버튼에 active 추가
     e.currentTarget.classList.add("active");
 
-    // 클릭한 거래 유형이 보여지는 element (filter__option-value)
-    const categoryValue = filterCategory_price.querySelector(
-      ".filter__option-value"
-    );
-    // e.currentTarget.parentNode.previousElementSibling.lastElementChild;
     // 클릭한 거래유형 버튼의 값
     const currentSalesType = e.currentTarget.dataset.option;
-
-    // 클릭한 거래유형에 따라 거래유형의 filter__option-checked의 값을 변경한다.
-    if (categoryValue.innerText !== e.currentTarget.dataset.option) {
-      categoryValue.innerText = currentSalesType;
-    } else return;
 
     createFilterOptionContent_price(currentSalesType);
   });
@@ -1145,7 +1135,13 @@ optionBtns_structure.forEach((optionBtn) => {
  */
 function createFilterOptionContent_price(option) {
   const filterOptionContent = document.querySelector(".filter__option-content");
+  const categoryValue = filterCategory_price.querySelector(
+    ".filter__option-value"
+  );
+  categoryValue.innerText = option;
   let element = "";
+
+  // 일단 클릭한 값으로 밸류부터 바꾸자.
 
   while (filterOptionContent.firstChild) {
     filterOptionContent.removeChild(filterOptionContent.firstChild);
@@ -1333,11 +1329,10 @@ function createFilterOptionContent_price(option) {
   const applyBtn = filterCategory_price.querySelector(".filter__btn--apply");
 
   const resetBtnHandler = () => {
-    optionBtns_price.forEach((optionBtn) =>
-      optionBtn.classList.remove("active")
-    );
-    optionBtns_price[0].classList.add("active");
-    roomAndMarker = [...originalRoomAndMarker];
+    optionBtns_price.forEach((optionBtn) => {
+      optionBtn.classList.remove("active");
+      if (optionBtn.innerText === "전체") optionBtn.classList.add("active");
+    });
     createFilterOptionContent_price("전체");
   };
 
