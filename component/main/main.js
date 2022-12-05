@@ -1002,11 +1002,8 @@ searchInput.addEventListener("keydown", (e) => {
 });
 
 //* ========================================== 필터 관련 코드들 ================================================
-// const filterCategory_price = filterCategories[0];
-// const filterCategory_size = filterCategories[1];
-// const filterCategory_around = filterCategories[2];
 
-// 모든 filter__category에 클릭시 필터옵션창을 여는 이벤트
+// 모든 filter__category 클릭시 필터옵션창을 여는 이벤트
 filterCategories.forEach((filterCategory, index) => {
   const filterContent = filterCategory.querySelector(".filter__content");
   const title = filterCategory.querySelector(".filter__category-title");
@@ -1059,14 +1056,14 @@ optionBtns_price.forEach((optionBtn) => {
     );
     // e.currentTarget.parentNode.previousElementSibling.lastElementChild;
     // 클릭한 거래유형 버튼의 값
-    const currentDealCategory = e.currentTarget.dataset.option;
+    const currentSalesType = e.currentTarget.dataset.option;
 
     // 클릭한 거래유형에 따라 거래유형의 filter__option-checked의 값을 변경한다.
     if (categoryValue.innerText !== e.currentTarget.dataset.option) {
-      categoryValue.innerText = currentDealCategory;
+      categoryValue.innerText = currentSalesType;
     } else return;
 
-    createFilterOptionContent(currentDealCategory);
+    createFilterOptionContent_price(currentSalesType);
   });
 });
 
@@ -1078,25 +1075,6 @@ const optionBtns_structure = filterCategory_size.querySelectorAll(
 optionBtns_structure.forEach((optionBtn) => {
   optionBtn.addEventListener("click", (e) => {
     let totalBtn = optionBtns_structure[0];
-    /**
-     * 전체 클릭 => 전체 빼고 모두 비활성화 +
-     * option[1,2,3] 클릭하는 순간 모두 비활성화후 전체만 활성화 +
-     * option 2개 만 클릭되어있어면
-     *
-     
-     * 
-     * 클릭하면 일단 토글해
-     * 그리고 active를 모두 찾아
-     * 
-     * //전체인경우
-     * 한개인경우 (동일 버튼 클릭하면 전체로)
-     * 두개인경우
-     * 3개면 전체로
-     * 
-     * 전체 외의것이 액티브면 전체는 비활성화
-     * 
-     * active중인것들 찾아서 dataset-option 을 합쳐서 categoryValue.innerText에 저장
-     */
 
     // "전체"가 활성화 중일때 "전체"를 클릭시 아무것도 하지 않는다.
     if (e.currentTarget === totalBtn && totalBtn.classList.contains("active")) {
@@ -1119,11 +1097,6 @@ optionBtns_structure.forEach((optionBtn) => {
     if (e.currentTarget !== totalBtn) {
       totalBtn.classList.remove("active");
       e.currentTarget.classList.toggle("active");
-
-      // if (
-      //   !optionBtns_structure.forEach((btn) => btn.classList.contains("active"))
-      // )
-      //   totalBtn.classList.add("active");
     }
 
     // 3개옵션 모두 선택시 "전체" 활성화
@@ -1160,14 +1133,14 @@ optionBtns_structure.forEach((optionBtn) => {
  * 필터 중 거래유형(전체,월세, 전세)에 대한 보증금, 월세, 관리비 option-content element를 생성하고 이벤트를 등록하는 함수
  * @param {*} option "전체" or "월세" or "전세"
  */
-
-function createFilterOptionContent(option) {
+function createFilterOptionContent_price(option) {
   const filterOptionContent = document.querySelector(".filter__option-content");
   let element = "";
 
   while (filterOptionContent.firstChild) {
     filterOptionContent.removeChild(filterOptionContent.firstChild);
   }
+  // 엘리먼트 생성
   switch (option) {
     case "전체":
     case "월세":
@@ -1263,9 +1236,16 @@ function createFilterOptionContent(option) {
       filterOptionContent.insertAdjacentHTML("beforeend", element);
       break;
   }
+  element = `<div class="filter__btn-box">
+              <div class="filter__btn filter__btn--reset">초기화</div>
+              <div class="filter__btn filter__btn--apply">
+                <i class="fa-solid fa-check"></i>적용
+              </div>
+            </div>`;
+  filterOptionContent.insertAdjacentHTML("beforeend", element);
 
+  // * 생성한 엘리먼트에 이벤트 등록
   //보증금
-
   const divDepositValue = filterCategory_price.querySelector(
     ".filter__option--deposit .filter__option-value"
   );
@@ -1273,8 +1253,8 @@ function createFilterOptionContent(option) {
     filterCategory_price.querySelector(".filter__input-deposit--min") || null;
   const depositMax =
     filterCategory_price.querySelector(".filter__input-deposit--max") || null;
-  //월세
 
+  //월세
   const divRentValue = filterCategory_price.querySelector(
     ".filter__option--rent .filter__option-value"
   );
@@ -1336,6 +1316,131 @@ function createFilterOptionContent(option) {
       }
     });
   }
+
+  // * 초기화, 적용 버튼 (버튼도 새로 생성할지, 아니면 html로 만들어둘지 염두)
+
+  const resetBtn = filterCategory_price.querySelector(".filter__btn--reset");
+  const applyBtn = filterCategory_price.querySelector(".filter__btn--apply");
+
+  const resetBtnHandler = () => {
+    optionBtns_price.forEach((optionBtn) =>
+      optionBtn.classList.remove("active")
+    );
+    optionBtns_price[0].classList.add("active");
+    createFilterOptionContent_price("전체");
+  };
+
+  const applyBtnHandler = () => {
+    // 매물데이터가 있으면 진행, 없으면 경고??
+
+    console.log(roomAndMarker);
+    // console.log(depositMin);
+    // console.log(depositMax);
+    // console.log(rentMin);
+    // console.log(rentMax);
+    let array_optionBtns_price = Array.prototype.slice.call(optionBtns_price);
+    let salesType = array_optionBtns_price.find((optionBtn) =>
+      optionBtn.classList.contains("active")
+    ).innerText;
+
+    // 전체, 전세, 월세 필터
+    let result = roomAndMarker.filter((item) => {
+      // 전체이면 모든 아이템을 리턴
+      if (salesType === "전체") {
+        return item;
+      }
+      // 전세, 월세인경우 일치하는 아이템을 리턴
+      else if (item.roomData.item.sales_type === salesType) return item;
+      // console.log(item.roomData.item.월세금액);
+      // console.log(item.roomData.item.manage_cost);
+    });
+
+    // 보증금 최소금액, 최대금액 필터
+    if (depositMin.value || depositMax.value) {
+      result = result.filter((item) => {
+        // 최소값만 있을때
+        if (depositMin.value && !depositMax.value) {
+          if (depositMin.value <= item.roomData.item.보증금액) return item;
+        }
+        // 최대값만 있을때
+        else if (depositMax.value && !depositMin.value) {
+          if (depositMax.value >= item.roomData.item.보증금액) return item;
+        }
+        // 모두 있을때
+        else {
+          if (
+            depositMin.value <= item.roomData.item.보증금액 &&
+            item.roomData.item.보증금액 <= depositMax.value
+          )
+            return item;
+        }
+      });
+    }
+    // 월세 최소금액, 최대금액 필터 + 관리비 포함여부
+    if (rentMin.value || rentMax.value) {
+      const manageCost = filterCategory_price.querySelector("#toggle");
+      result = result.filter((item) => {
+        // 최소값만 있을때
+        if (rentMin.value && !rentMax.value) {
+          if (
+            !manageCost.checked &&
+            rentMin.value <= item.roomData.item.월세금액
+          )
+            return item;
+          else if (
+            manageCost.checked &&
+            rentMin.value <=
+              Number(item.roomData.item.월세금액) +
+                Number(item.roomData.item.manage_cost)
+          )
+            return item;
+        }
+        // 최대값만 있을때
+        else if (rentMax.value && !rentMin.value) {
+          if (
+            !manageCost.checked &&
+            rentMax.value >= item.roomData.item.월세금액
+          )
+            return item;
+          else if (
+            manageCost.checked &&
+            rentMax.value >=
+              Number(item.roomData.item.월세금액) +
+                Number(item.roomData.item.manageCost)
+          )
+            return item;
+        }
+        // 모두 있을때
+        else {
+          if (
+            !manageCost.checked &&
+            rentMin.value <= item.roomData.item.월세금액 &&
+            item.roomData.item.월세금액 <= rentMax.value
+          )
+            return item;
+          else if (
+            manageCost.checked &&
+            rentMin.value <=
+              Number(item.roomData.item.월세금액.value) +
+                Number(item.roomData.item.manage_cost) &&
+            Number(item.roomData.item.월세금액) +
+              Number(item.roomData.item.manage_cost) <=
+              rentMax.value
+          )
+            return item;
+        }
+      });
+    }
+    console.log(result);
+    result = result.map((item) => item.roomData);
+    console.log(result);
+    // 마지막으로 모든 필터링 후 클러스터를 새로 만들기
+    if (roomCluster) roomCluster.clear();
+    createCluster(result);
+  };
+
+  resetBtn.addEventListener("click", resetBtnHandler);
+  applyBtn.addEventListener("click", applyBtnHandler);
 }
 
 //* ========================================== NAV 관련 코드들
@@ -1414,7 +1519,7 @@ function init() {
   createOverlay_subway();
   createOverlay_local(local);
   createCardList();
-  createFilterOptionContent("전체");
+  createFilterOptionContent_price("전체");
 }
 
 init();
