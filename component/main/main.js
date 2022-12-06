@@ -377,6 +377,10 @@ function createCluster(roomList) {
   });
 }
 
+function removeCluster() {
+  if (roomCluster) roomCluster.clear();
+}
+
 /**
  * ^ 클러스터의 CSS(setStyle())에 변화를 줘서 클러스터를 보이게, 안보이게 하는 함수
  * @param {*} boolean
@@ -608,7 +612,7 @@ function subwayOverlayClick(event) {
   roomClusterState = true;
 
   // 이미 방에 대한 마커가 있다면 삭제, 삭제하지 않으면 계속 중첩된다.
-  if (roomCluster) roomCluster.clear();
+  removeCluster();
 
   // 방 정보를 요청하여 방클러스터 생성
   createOneRoomCluster(overlay.dataset.name);
@@ -1418,99 +1422,101 @@ function createFilterOptionContent_price(option) {
     let roomData = originalRoomAndMarker.map((item) => item.roomData);
 
     // 전체, 전세, 월세 필터
-    let result = originalRoomAndMarker.filter((item) => {
+    let result = roomData.filter((room) => {
       // 전체이면 모든 아이템을 리턴
       if (salesType === "전체") {
-        return item;
+        return room;
       }
       // 전세, 월세인경우 일치하는 아이템을 리턴
-      else if (item.roomData.item.sales_type === salesType) return item;
+      else if (room.item.sales_type === salesType) return room;
     });
-
+    console.log(result);
     // 보증금 최소금액, 최대금액 필터
     if (depositMin.value || depositMax.value) {
-      result = result.filter((item) => {
+      result = result.filter((room) => {
         // 최소값만 있을때
         if (depositMin.value && !depositMax.value) {
-          if (depositMin.value <= item.roomData.item.보증금액) return item;
+          if (depositMin.value <= room.item.보증금액) return room;
         }
         // 최대값만 있을때
         else if (depositMax.value && !depositMin.value) {
-          if (depositMax.value >= item.roomData.item.보증금액) return item;
+          if (depositMax.value >= room.item.보증금액) return room;
         }
         // 모두 있을때
         else {
           if (
-            depositMin.value <= item.roomData.item.보증금액 &&
-            item.roomData.item.보증금액 <= depositMax.value
+            depositMin.value <= room.item.보증금액 &&
+            room.item.보증금액 <= depositMax.value
           )
-            return item;
+            return room;
         }
       });
     }
+
     // 월세 최소금액, 최대금액 필터 + 관리비 포함여부
     if (salesType !== "전세") {
       // 이렇게 하지않으면 전세일때 rentMin.value가 없어서 에러가 난다.
       if (rentMin.value || rentMax.value) {
         const manageCost = filterCategory_price.querySelector("#toggle");
         result = result.filter((item) => {
-          // 최소값만 있을때
-          if (rentMin.value && !rentMax.value) {
-            if (
-              !manageCost.checked &&
-              rentMin.value <= item.roomData.item.월세금액
-            )
-              return item;
-            else if (
-              manageCost.checked &&
-              rentMin.value <=
-                Number(item.roomData.item.월세금액) +
-                  Number(item.roomData.item.manage_cost)
-            )
-              return item;
-          }
-          // 최대값만 있을때
-          else if (rentMax.value && !rentMin.value) {
-            if (
-              !manageCost.checked &&
-              rentMax.value >= item.roomData.item.월세금액
-            )
-              return item;
-            else if (
-              manageCost.checked &&
-              rentMax.value >=
-                Number(item.roomData.item.월세금액) +
-                  Number(item.roomData.item.manageCost)
-            )
-              return item;
-          }
-          // 모두 있을때
-          else {
-            if (
-              !manageCost.checked &&
-              rentMin.value <= item.roomData.item.월세금액 &&
-              item.roomData.item.월세금액 <= rentMax.value
-            )
-              return item;
-            else if (
-              manageCost.checked &&
-              rentMin.value <=
-                Number(item.roomData.item.월세금액.value) +
-                  Number(item.roomData.item.manage_cost) &&
-              Number(item.roomData.item.월세금액) +
-                Number(item.roomData.item.manage_cost) <=
-                rentMax.value
-            )
-              return item;
-          }
+          console.log(manageCost.checked);
+          // // 최소값만 있을때
+          // if (rentMin.value && !rentMax.value) {
+          //   if (
+          //     !manageCost.checked &&
+          //     rentMin.value <= item.roomData.item.월세금액
+          //   )
+          //     return item;
+          //   else if (
+          //     manageCost.checked &&
+          //     rentMin.value <=
+          //       Number(item.roomData.item.월세금액) +
+          //         Number(item.roomData.item.manage_cost)
+          //   )
+          //     return item;
+          // }
+          // // 최대값만 있을때
+          // else if (rentMax.value && !rentMin.value) {
+          //   if (
+          //     !manageCost.checked &&
+          //     rentMax.value >= item.roomData.item.월세금액
+          //   )
+          //     return item;
+          //   else if (
+          //     manageCost.checked &&
+          //     rentMax.value >=
+          //       Number(item.roomData.item.월세금액) +
+          //         Number(item.roomData.item.manageCost)
+          //   )
+          //     return item;
+          // }
+          // // 모두 있을때
+          // else {
+          //   if (
+          //     !manageCost.checked &&
+          //     rentMin.value <= item.roomData.item.월세금액 &&
+          //     item.roomData.item.월세금액 <= rentMax.value
+          //   )
+          //     return item;
+          //   else if (
+          //     manageCost.checked &&
+          //     rentMin.value <=
+          //       Number(item.roomData.item.월세금액.value) +
+          //         Number(item.roomData.item.manage_cost) &&
+          //     Number(item.roomData.item.월세금액) +
+          //       Number(item.roomData.item.manage_cost) <=
+          //       rentMax.value
+          //   )
+          //     return item;
+          // }
         });
       }
     }
     // console.log(result);
-    result = result.map((item) => item.roomData);
+    // result = result.map((item) => item.roomData);
     // console.log(result);
-    // 마지막으로 모든 필터링 후 클러스터를 새로 만들기
-    if (roomCluster) roomCluster.clear();
+
+    removeCluster();
     createCluster(result);
   };
 
