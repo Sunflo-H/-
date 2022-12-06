@@ -1271,20 +1271,30 @@ function createFilterOptionContent_price(option) {
 
   if (depositMin) {
     depositMin.addEventListener("change", (e) => {
+      // 최소금액이 존재하는 경우
       if (depositMin.value) {
+        // 최대금액이 존재하는 경우
         if (depositMax.value) {
           if (Number(depositMin.value) >= Number(depositMax.value)) {
             alert("최소금액은 최대금액보다 작아야합니다.");
             depositMin.value = Number(depositMax.value) - 100;
+            if (depositMin.value < 0) depositMin.value = 0;
           }
           divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
-        } else {
+        }
+        // 최대금액이 존재하지 않는 경우
+        else {
           divDepositValue.innerText = `${depositMin.value}부터`;
         }
-      } else {
+      }
+      // 최소금액이 존재하지 않는 경우
+      else {
+        // 최대금액이 존재하는 경우
         if (depositMax.value) {
           divDepositValue.innerText = `${depositMax.value}까지`;
-        } else {
+        }
+        // 최대금액이 존재하지 않는 경우
+        else {
           divDepositValue.innerText = "전체";
         }
       }
@@ -1293,25 +1303,29 @@ function createFilterOptionContent_price(option) {
 
   if (depositMax) {
     depositMax.addEventListener("change", (e) => {
-      /**
-       * 최대값이 존재할때
-       * 최대값이 존재하지 않을때
-       * 최소값, 최대값이 모두 존재하지 않을때
-       */
+      // 최대금액이 존재하는 경우
       if (depositMax.value) {
-        divDepositValue.innerText = `${depositMax.value}까지`;
+        // 최소금액이 존재하는 경우
         if (depositMin.value) {
           if (Number(depositMin.value) >= Number(depositMax.value)) {
             alert("최대금액은 최소금액보다 커야합니다.");
             depositMax.value = Number(depositMin.value) + 100;
           }
-
           divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
         }
-      } else {
+        // 최소금액이 존재하지 않는 경우
+        else {
+          divDepositValue.innerText = `${depositMax.value}까지`;
+        }
+      }
+      // 최대금액이 존재하지 않는 경우
+      else {
+        // 최소금액이 존재하는경우
         if (depositMin.value) {
           divDepositValue.innerText = `${depositMin.value}부터`;
-        } else {
+        }
+        // 최소금액이 존재하지 않는 경우
+        else {
           divDepositValue.innerText = "전체";
         }
       }
@@ -1320,26 +1334,63 @@ function createFilterOptionContent_price(option) {
 
   if (rentMin) {
     rentMin.addEventListener("change", (e) => {
-      divRentValue.innerText = rentMin.value + "부터";
-      if (rentMax.value) {
-        if (Number(rentMin.value) >= Number(rentMax.value)) {
-          alert("최소금액은 최대금액보다 작아야합니다.");
-          rentMin.value = Number(rentMax.value) - 10;
+      // 최소금액이 존재하는 경우
+      if (rentMin.value) {
+        // 최대금액이 존재하는 경우
+        if (rentMax.value) {
+          if (Number(rentMin.value) >= Number(rentMax.value)) {
+            alert("최소금액은 최대금액보다 작아야합니다.");
+            rentMin.value = Number(rentMax.value) - 10;
+            if (rentMin.value < 0) rentMin.value = 0;
+          }
+          divRentValue.innerText = `${rentMin.value} ~ ${rentMax.value}`;
         }
-        divRentValue.innerText = `${rentMin.value} ~ ${rentMax.value}`;
+        // 최대금액이 존재하지 않는 경우
+        else {
+          divRentValue.innerText = `${rentMin.value}부터`;
+        }
+      }
+      // 최소금액이 존재하지 않는 경우
+      else {
+        // 최대금액이 존재하는 경우
+        if (rentMax.value) {
+          divRentValue.innerText = `${rentMax.value}까지`;
+        }
+        // 최대금액이 존재하지 않는 경우
+        else {
+          divRentValue.innerText = "전체";
+        }
       }
     });
   }
 
   if (rentMax) {
     rentMax.addEventListener("change", (e) => {
-      divRentValue.innerText = rentMax.value + "까지";
-      if (rentMin.value) {
-        if (Number(rentMin.value) >= Number(rentMax.value)) {
-          alert("최대금액은 최소금액보다 커야합니다.");
-          rentMax.value = Number(rentMin.value) + 10;
+      // 최대금액이 존재하는 경우
+      if (rentMax.value) {
+        // 최소금액이 존재하는 경우
+        if (rentMin.value) {
+          if (Number(rentMin.value) >= Number(rentMax.value)) {
+            alert("최대금액은 최소금액보다 커야합니다.");
+            rentMax.value = Number(rentMin.value) + 10;
+          }
+          divRentValue.innerText = `${rentMin.value} ~ ${rentMax.value}`;
         }
-        divRentValue.innerText = `${rentMin.value} ~ ${rentMax.value}`;
+        // 최소금액이 존재하지 않는 경우
+        else {
+          divRentValue.innerText = `${rentMax.value}까지`;
+        }
+      }
+      // 최대금액이 존재하지 않는 경우
+      else {
+        // 최소금액이 존재하는 경우
+        if (rentMin.value) {
+          divRentValue.innerText = `${rentMin.value}부터`;
+        }
+        // 최소금액이 존재하지 않는 경우
+        else {
+          divRentValue.innerText = "전체";
+        }
       }
     });
   }
