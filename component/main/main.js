@@ -1430,7 +1430,7 @@ function createFilterOptionContent_price(option) {
       // 전세, 월세인경우 일치하는 아이템을 리턴
       else if (room.item.sales_type === salesType) return room;
     });
-    console.log(result);
+
     // 보증금 최소금액, 최대금액 필터
     if (depositMin.value || depositMax.value) {
       result = result.filter((room) => {
@@ -1456,65 +1456,52 @@ function createFilterOptionContent_price(option) {
     // 월세 최소금액, 최대금액 필터 + 관리비 포함여부
     if (salesType !== "전세") {
       // 이렇게 하지않으면 전세일때 rentMin.value가 없어서 에러가 난다.
+      const manageCost = filterCategory_price.querySelector("#toggle");
+      console.log(manageCost.checked);
       if (rentMin.value || rentMax.value) {
-        const manageCost = filterCategory_price.querySelector("#toggle");
-        result = result.filter((item) => {
-          console.log(manageCost.checked);
-          // // 최소값만 있을때
-          // if (rentMin.value && !rentMax.value) {
-          //   if (
-          //     !manageCost.checked &&
-          //     rentMin.value <= item.roomData.item.월세금액
-          //   )
-          //     return item;
-          //   else if (
-          //     manageCost.checked &&
-          //     rentMin.value <=
-          //       Number(item.roomData.item.월세금액) +
-          //         Number(item.roomData.item.manage_cost)
-          //   )
-          //     return item;
-          // }
-          // // 최대값만 있을때
-          // else if (rentMax.value && !rentMin.value) {
-          //   if (
-          //     !manageCost.checked &&
-          //     rentMax.value >= item.roomData.item.월세금액
-          //   )
-          //     return item;
-          //   else if (
-          //     manageCost.checked &&
-          //     rentMax.value >=
-          //       Number(item.roomData.item.월세금액) +
-          //         Number(item.roomData.item.manageCost)
-          //   )
-          //     return item;
-          // }
-          // // 모두 있을때
-          // else {
-          //   if (
-          //     !manageCost.checked &&
-          //     rentMin.value <= item.roomData.item.월세금액 &&
-          //     item.roomData.item.월세금액 <= rentMax.value
-          //   )
-          //     return item;
-          //   else if (
-          //     manageCost.checked &&
-          //     rentMin.value <=
-          //       Number(item.roomData.item.월세금액.value) +
-          //         Number(item.roomData.item.manage_cost) &&
-          //     Number(item.roomData.item.월세금액) +
-          //       Number(item.roomData.item.manage_cost) <=
-          //       rentMax.value
-          //   )
-          //     return item;
-          // }
+        result = result.filter((room) => {
+          // 최소값만 있을때
+          if (rentMin.value && !rentMax.value) {
+            if (!manageCost.checked && rentMin.value <= room.item.월세금액)
+              return room;
+            else if (
+              manageCost.checked &&
+              rentMin.value <=
+                Number(room.item.월세금액) + Number(room.item.manage_cost)
+            )
+              return room;
+          }
+          // 최대값만 있을때
+          else if (rentMax.value && !rentMin.value) {
+            if (!manageCost.checked && rentMax.value >= room.item.월세금액)
+              return room;
+            else if (
+              manageCost.checked &&
+              rentMax.value >=
+                Number(room.item.월세금액) + Number(room.item.manageCost)
+            )
+              return room;
+          }
+          // 모두 있을때
+          else {
+            if (
+              !manageCost.checked &&
+              rentMin.value <= room.item.월세금액 &&
+              room.item.월세금액 <= rentMax.value
+            )
+              return room;
+            else if (
+              manageCost.checked &&
+              rentMin.value <=
+                Number(room.item.월세금액) + Number(room.item.manage_cost) &&
+              Number(room.item.월세금액) + Number(room.item.manage_cost) <=
+                rentMax.value
+            )
+              return room;
+          }
         });
       }
     }
-    // console.log(result);
-    // result = result.map((item) => item.roomData);
-    // console.log(result);
 
     removeCluster();
     createCluster(result);
