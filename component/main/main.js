@@ -124,8 +124,8 @@ let originalRoomAndMarker = [];
 //  5. 필터가 적용되게끔 하기
 //  5-1 거래유형 버튼 : 버튼에 따라 보증금과 월세를 보여줌 +
 //  5-2 금액 최소~최대 기능 : 최소(대)만 입력되었을때, 최대가 최소보다 작을때 +
-//  5-3 적용 버튼 클릭 : 모든 필터 옵션들이 적용
-//  5-4 초기화 버튼 클릭: 모든 필터 옵션 초기화
+//  5-3 적용 버튼 클릭 : 모든 필터 옵션들이 적용 +
+//  5-4 초기화 버튼 클릭: 모든 필터 옵션 초기화 +
 
 //  7. filter__table의 경우에는 범위 선택, filter__option-btn?의 경우에는 단일선택
 
@@ -1271,28 +1271,49 @@ function createFilterOptionContent_price(option) {
 
   if (depositMin) {
     depositMin.addEventListener("change", (e) => {
-      divDepositValue.innerText = depositMin.value + "부터";
-      if (depositMax.value) {
-        if (Number(depositMin.value) >= Number(depositMax.value)) {
-          alert("최소금액은 최대금액보다 작아야합니다.");
-          depositMin.value = Number(depositMax.value) - 100;
+      if (depositMin.value) {
+        if (depositMax.value) {
+          if (Number(depositMin.value) >= Number(depositMax.value)) {
+            alert("최소금액은 최대금액보다 작아야합니다.");
+            depositMin.value = Number(depositMax.value) - 100;
+          }
+          divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
+        } else {
+          divDepositValue.innerText = `${depositMin.value}부터`;
         }
-
-        divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
+      } else {
+        if (depositMax.value) {
+          divDepositValue.innerText = `${depositMax.value}까지`;
+        } else {
+          divDepositValue.innerText = "전체";
+        }
       }
     });
   }
 
   if (depositMax) {
     depositMax.addEventListener("change", (e) => {
-      divDepositValue.innerText = depositMax.value + "까지";
-      if (depositMin.value) {
-        if (Number(depositMin.value) >= Number(depositMax.value)) {
-          alert("최대금액은 최소금액보다 커야합니다.");
-          depositMax.value = Number(depositMin.value) + 100;
-        }
+      /**
+       * 최대값이 존재할때
+       * 최대값이 존재하지 않을때
+       * 최소값, 최대값이 모두 존재하지 않을때
+       */
+      if (depositMax.value) {
+        divDepositValue.innerText = `${depositMax.value}까지`;
+        if (depositMin.value) {
+          if (Number(depositMin.value) >= Number(depositMax.value)) {
+            alert("최대금액은 최소금액보다 커야합니다.");
+            depositMax.value = Number(depositMin.value) + 100;
+          }
 
-        divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
+          divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
+        }
+      } else {
+        if (depositMin.value) {
+          divDepositValue.innerText = `${depositMin.value}부터`;
+        } else {
+          divDepositValue.innerText = "전체";
+        }
       }
     });
   }
