@@ -126,6 +126,7 @@ let originalRoomAndMarker = [];
 //  5-2 금액 최소~최대 기능 : 최소(대)만 입력되었을때, 최대가 최소보다 작을때 +
 //  5-3 적용 버튼 클릭 : 모든 필터 옵션들이 적용 +
 //  5-4 초기화 버튼 클릭: 모든 필터 옵션 초기화 +
+//  6 구조 면적 필터도 만들기
 
 //  7. filter__table의 경우에는 범위 선택, filter__option-btn?의 경우에는 단일선택
 
@@ -1071,68 +1072,6 @@ optionBtns_price.forEach((optionBtn) => {
   });
 });
 
-//* 필터 : 구조·면적; (원룸, 빌라)
-const optionBtns_structure = filterCategory_size.querySelectorAll(
-  ".filter__option--structure .filter__option-btn"
-);
-
-optionBtns_structure.forEach((optionBtn) => {
-  optionBtn.addEventListener("click", (e) => {
-    let totalBtn = optionBtns_structure[0];
-
-    // "전체"가 활성화 중일때 "전체"를 클릭시 아무것도 하지 않는다.
-    if (e.currentTarget === totalBtn && totalBtn.classList.contains("active")) {
-      // console.log("전체 활성화중 전체 클릭");
-      return;
-    }
-
-    // "전체"가 비활성화 중일때 "전체"를 클릭시 전체 활성화, 그 외 모든 버튼 비활성화
-    if (
-      e.currentTarget === totalBtn &&
-      !totalBtn.classList.contains("active")
-    ) {
-      console.log("전체 비활성화중 전체 클릭");
-      optionBtns_structure.forEach((btn) => btn.classList.remove("active"));
-      totalBtn.classList.add("active");
-    }
-
-    // "전체" 외의 버튼 클릭시 "전체"비활성화, 클릭버튼 토글
-    // 만약 모든 버튼이 비활성화면 "전체" 활성화
-    if (e.currentTarget !== totalBtn) {
-      totalBtn.classList.remove("active");
-      e.currentTarget.classList.toggle("active");
-    }
-
-    // 3개옵션 모두 선택시 "전체" 활성화
-    if (
-      optionBtns_structure[1].classList.contains("active") &&
-      optionBtns_structure[2].classList.contains("active") &&
-      optionBtns_structure[3].classList.contains("active")
-    ) {
-      optionBtns_structure.forEach((btn) => btn.classList.remove("active"));
-      totalBtn.classList.add("active");
-    }
-
-    // 노드리스트를 배열로 변환하는 코드
-    let div_array = Array.prototype.slice.call(optionBtns_structure);
-
-    // 아무것도 선택하지 않았다면 "전체 활성화"
-    if (!div_array.find((btn) => btn.classList.contains("active"))) {
-      totalBtn.classList.add("active");
-    }
-
-    const categoryValue = filterCategory_size.querySelector(
-      ".filter__option--structure .filter__option-value"
-    );
-    let valueArr = [];
-    categoryValue.innerText = "";
-    div_array.forEach((btn) => {
-      if (btn.classList.contains("active")) valueArr.push(btn.dataset.option);
-    });
-    categoryValue.innerText = valueArr.join(", ");
-  });
-});
-
 /**
  * 필터 중 거래유형(전체,월세, 전세)에 대한 보증금, 월세, 관리비 option-content element를 생성하고 이벤트를 등록하는 함수
  * @param {*} option "전체" or "월세" or "전세"
@@ -1510,6 +1449,88 @@ function createFilterOptionContent_price(option) {
   resetBtn.addEventListener("click", resetBtnHandler);
   applyBtn.addEventListener("click", applyBtnHandler);
 }
+
+//* 필터 : 구조·면적; (원룸, 빌라)
+const optionBtns_structure = filterCategory_size.querySelectorAll(
+  ".filter__option--structure .filter__option-btn"
+);
+const optionBtns_floor = filterCategory_size.querySelectorAll(
+  ".filter__option--floor .filter__option-btn"
+);
+console.log(optionBtns_floor);
+optionBtns_floor.forEach((optionBtn) => {
+  optionBtn.addEventListener("click", (e) => {
+    const optionValue = filterCategory_size.querySelector(
+      ".filter__option--floor .filter__option-value"
+    );
+    const totalBtn = optionBtns_floor[0];
+
+    if (e.currentTarget === totalBtn && totalBtn.classList.contains("acitve")) {
+      return;
+    }
+
+    optionBtns_floor.forEach((btn) => btn.classList.remove("active"));
+    e.currentTarget.classList.add("active");
+    optionValue.innerText = e.currentTarget.innerText;
+  });
+});
+
+optionBtns_structure.forEach((optionBtn) => {
+  optionBtn.addEventListener("click", (e) => {
+    let totalBtn = optionBtns_structure[0];
+
+    // "전체"가 활성화 중일때 "전체"를 클릭시 아무것도 하지 않는다.
+    if (e.currentTarget === totalBtn && totalBtn.classList.contains("active")) {
+      // console.log("전체 활성화중 전체 클릭");
+      return;
+    }
+
+    // "전체"가 비활성화 중일때 "전체"를 클릭시 전체 활성화, 그 외 모든 버튼 비활성화
+    if (
+      e.currentTarget === totalBtn &&
+      !totalBtn.classList.contains("active")
+    ) {
+      console.log("전체 비활성화중 전체 클릭");
+      optionBtns_structure.forEach((btn) => btn.classList.remove("active"));
+      totalBtn.classList.add("active");
+    }
+
+    // "전체" 외의 버튼 클릭시 "전체"비활성화, 클릭버튼 토글
+    // 만약 모든 버튼이 비활성화면 "전체" 활성화
+    if (e.currentTarget !== totalBtn) {
+      totalBtn.classList.remove("active");
+      e.currentTarget.classList.toggle("active");
+    }
+
+    // 3개옵션 모두 선택시 "전체" 활성화
+    if (
+      optionBtns_structure[1].classList.contains("active") &&
+      optionBtns_structure[2].classList.contains("active") &&
+      optionBtns_structure[3].classList.contains("active")
+    ) {
+      optionBtns_structure.forEach((btn) => btn.classList.remove("active"));
+      totalBtn.classList.add("active");
+    }
+
+    // 노드리스트를 배열로 변환하는 코드
+    let div_array = Array.prototype.slice.call(optionBtns_structure);
+
+    // 아무것도 선택하지 않았다면 "전체 활성화"
+    if (!div_array.find((btn) => btn.classList.contains("active"))) {
+      totalBtn.classList.add("active");
+    }
+
+    const categoryValue = filterCategory_size.querySelector(
+      ".filter__option--structure .filter__option-value"
+    );
+    let valueArr = [];
+    categoryValue.innerText = "";
+    div_array.forEach((btn) => {
+      if (btn.classList.contains("active")) valueArr.push(btn.dataset.option);
+    });
+    categoryValue.innerText = valueArr.join(", ");
+  });
+});
 
 //* ========================================== NAV 관련 코드들
 
