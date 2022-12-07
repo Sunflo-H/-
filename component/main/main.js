@@ -91,6 +91,11 @@ let infoWindow = null;
 let originalRoomAndMarker = [];
 
 /**
+ * 다른 filter를 적용했는지 상태를 나타낸다.
+ */
+let anotherFilteredState = false;
+
+/**
  * !설명
  * 지역, 지하철은 customOverlay로 만들었다. 방은 cluster로 만들었다.
  *
@@ -291,6 +296,7 @@ function createCluster(roomList) {
   });
   console.log(roomAndMarker);
 
+  // 새 지하철역을 클릭했다면 originalRoomAndMarker는 초기화된다.
   if (originalRoomAndMarker.length === 0)
     originalRoomAndMarker = [...roomAndMarker];
 
@@ -1647,7 +1653,58 @@ applyBtn_size.addEventListener("click", (e) => {
     ".filter__option--size .filter__option-value"
   );
 
-  console.log(roomAndMarker);
+  let room_structure_obj = {
+    분리형: "01",
+    오픈형: "02",
+    복층형: "03",
+    투룸: "04",
+    "쓰리룸+": "05",
+    "포룸+": "06",
+  };
+
+  console.log(room_structure_obj["01"]);
+  // 유형.금액필터가 적용되지 않은 데이터인 경우
+  if (!anotherFilteredState) {
+    let roomData = originalRoomAndMarker.map((item) => item.roomData);
+    console.log(roomData);
+    let arr = structureValue.innerText.split(", ");
+
+    let result = roomData.filter((room) => {
+      /**
+       * 구조의 값이 하나면 괜찮아
+       * 둘일때가 문제야
+       * structureValue.innerText.split(',').length === 1이면 한개
+       * 타입을 한번만 비교
+       *
+       * structureValue.innerText.split(',').length === 2면 두개
+       * 타입을 두번 비교 &&
+       *
+       *
+       */
+
+      if (structureValue.innerText === "전체") return room;
+
+      // structureValue의 배열의 값이 1개인경우
+      if (arr.length === 1) {
+        if (room.item.room_type === room_structure_obj[arr[0]]) return room;
+      }
+      // structureValue의 배열의 값이 2개인경우
+      else if (arr.length === 2) {
+        if (
+          room.item.room_type === room_structure_obj[arr[0]] ||
+          room.item.room_type === room_structure_obj[arr[1]]
+        )
+          return room;
+      }
+    });
+    console.log(result);
+  }
+  // 유형.금액필터가 적용된 데이터인 경우
+  else {
+    console.log(roomAndMarker);
+    console.log(originalRoomAndMarker);
+    console.log("object");
+  }
 });
 
 //* ========================================== NAV 관련 코드들
