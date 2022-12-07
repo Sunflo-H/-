@@ -1479,9 +1479,22 @@ const applyBtn_size = filterCategory_size.querySelector(".filter__btn--apply");
 optionBtns_structure.forEach((optionBtn) => {
   optionBtn.addEventListener("click", (e) => {
     let totalBtn = optionBtns_structure[0];
+    // 노드리스트를 배열로 변환하는 코드
+    let div_array = Array.prototype.slice.call(optionBtns_structure);
+    let valueArr = [];
 
-    // 활성화 중인걸 클릭시 아무것도 하지 않는다.
+    const structureValue = filterCategory_size.querySelector(
+      ".filter__option--structure .filter__option-value"
+    );
+
+    // 활성화 중인걸 클릭시 활성화 해제, 이때 모두 활성화 해제면 "전체" 활성화
     if (e.currentTarget.classList.contains("active")) {
+      e.currentTarget.classList.remove("active");
+      if (!div_array.find((btn) => btn.classList.contains("active"))) {
+        totalBtn.classList.add("active");
+        structureValue.innerText = "전체";
+      }
+
       return;
     }
 
@@ -1510,13 +1523,6 @@ optionBtns_structure.forEach((optionBtn) => {
       totalBtn.classList.add("active");
     }
 
-    // 노드리스트를 배열로 변환하는 코드
-    let div_array = Array.prototype.slice.call(optionBtns_structure);
-
-    const structureValue = filterCategory_size.querySelector(
-      ".filter__option--structure .filter__option-value"
-    );
-    let valueArr = [];
     structureValue.innerText = "";
     div_array.forEach((btn) => {
       if (btn.classList.contains("active")) valueArr.push(btn.dataset.option);
@@ -1667,21 +1673,10 @@ applyBtn_size.addEventListener("click", (e) => {
   if (!anotherFilteredState) {
     let roomData = originalRoomAndMarker.map((item) => item.roomData);
     console.log(roomData);
+    // 문자열 자르기 ("오픈형, 분리형" 이렇게 되어있는 경우때문에)
     let arr = structureValue.innerText.split(", ");
 
     let result = roomData.filter((room) => {
-      /**
-       * 구조의 값이 하나면 괜찮아
-       * 둘일때가 문제야
-       * structureValue.innerText.split(',').length === 1이면 한개
-       * 타입을 한번만 비교
-       *
-       * structureValue.innerText.split(',').length === 2면 두개
-       * 타입을 두번 비교 &&
-       *
-       *
-       */
-
       if (structureValue.innerText === "전체") return room;
 
       // structureValue의 배열의 값이 1개인경우
