@@ -221,6 +221,7 @@ select::-ms-expand {
   outline: 1px solid var(--primary);
 }
 
+/* 아파트에 쓸 table css,  건들지마 */
 .filter__table-item {
   background-color: #f5f5f5;
   margin-top: 10px;
@@ -250,14 +251,13 @@ select::-ms-expand {
 }
 
 .filter__td:hover {
-  background-color: var(--primary);
   cursor: pointer;
-  color: white;
 }
 
 .filter__td.active {
-  background-color: var(--primary);
+  background-color: var(--btn-active);
   color: white;
+  border: 1px solid var(--black);
 }
 
 .filter__toggle-main {

@@ -1457,23 +1457,10 @@ const optionBtns_structure = filterCategory_size.querySelectorAll(
 const optionBtns_floor = filterCategory_size.querySelectorAll(
   ".filter__option--floor .filter__option-btn"
 );
-console.log(optionBtns_floor);
-optionBtns_floor.forEach((optionBtn) => {
-  optionBtn.addEventListener("click", (e) => {
-    const optionValue = filterCategory_size.querySelector(
-      ".filter__option--floor .filter__option-value"
-    );
-    const totalBtn = optionBtns_floor[0];
-
-    if (e.currentTarget === totalBtn && totalBtn.classList.contains("acitve")) {
-      return;
-    }
-
-    optionBtns_floor.forEach((btn) => btn.classList.remove("active"));
-    e.currentTarget.classList.add("active");
-    optionValue.innerText = e.currentTarget.innerText;
-  });
-});
+const optionTable_size = filterCategory_size.querySelectorAll(
+  ".filter__option--size .filter__td"
+);
+console.log(optionTable_size);
 
 optionBtns_structure.forEach((optionBtn) => {
   optionBtn.addEventListener("click", (e) => {
@@ -1529,6 +1516,39 @@ optionBtns_structure.forEach((optionBtn) => {
       if (btn.classList.contains("active")) valueArr.push(btn.dataset.option);
     });
     categoryValue.innerText = valueArr.join(", ");
+  });
+});
+
+optionBtns_floor.forEach((optionBtn) => {
+  optionBtn.addEventListener("click", (e) => {
+    const optionValue = filterCategory_size.querySelector(
+      ".filter__option--floor .filter__option-value"
+    );
+    const totalBtn = optionBtns_floor[0];
+
+    if (e.currentTarget === totalBtn && totalBtn.classList.contains("acitve")) {
+      return;
+    }
+
+    optionBtns_floor.forEach((btn) => btn.classList.remove("active"));
+    e.currentTarget.classList.add("active");
+    optionValue.innerText = e.currentTarget.innerText;
+  });
+});
+
+optionTable_size.forEach((optionBtn) => {
+  optionBtn.addEventListener("click", (e) => {
+    /**
+     * 클릭하면 활성화
+     * 활성화 되어있는 곳보다 작은쪽을 클릭하면 작은쪽을 활성화
+     * 활성화 되어있는 곳보다 큰쪽을 클릭하면 큰쪽까지 활성화
+     *
+     * 두개 이상이 활성화되어있을때 또 클릭하면 모두 지우고 클릭한것만 활성화
+     *
+     * 처음부터 끝까지 활성화되면 전체로 바꾸기
+     */
+
+    e.currentTarget.classList.toggle("active");
   });
 });
 
