@@ -1217,6 +1217,10 @@ function createFilterOptionContent_price(option) {
     ".filter__option--manage-cost .toggle"
   );
 
+  // 초기화, 적용 버튼
+  const resetBtn = filterCategory_price.querySelector(".filter__btn--reset");
+  const applyBtn = filterCategory_price.querySelector(".filter__btn--apply");
+
   if (depositMin) {
     depositMin.addEventListener("change", (e) => {
       // 최소금액이 존재하는 경우
@@ -1343,11 +1347,7 @@ function createFilterOptionContent_price(option) {
     });
   }
 
-  // * 초기화, 적용 버튼 (버튼도 새로 생성할지, 아니면 html로 만들어둘지 염두)
-
-  const resetBtn = filterCategory_price.querySelector(".filter__btn--reset");
-  const applyBtn = filterCategory_price.querySelector(".filter__btn--apply");
-
+  // * 초기화, 적용 버튼
   const resetBtnHandler = () => {
     optionBtns_price.forEach((optionBtn) => {
       optionBtn.classList.remove("active");
@@ -1467,33 +1467,31 @@ const optionTable_size = filterCategory_size.querySelectorAll(
 const parkable = filterCategory_size.querySelector(
   ".filter__option--parkable .toggle"
 );
-console.log(parkable);
+const resetBtn_size = filterCategory_size.querySelector(".filter__btn--reset");
+const applyBtn_size = filterCategory_size.querySelector(".filter__btn--apply");
 
 optionBtns_structure.forEach((optionBtn) => {
   optionBtn.addEventListener("click", (e) => {
     let totalBtn = optionBtns_structure[0];
 
-    // "전체"가 활성화 중일때 "전체"를 클릭시 아무것도 하지 않는다.
-    if (e.currentTarget === totalBtn && totalBtn.classList.contains("active")) {
-      // console.log("전체 활성화중 전체 클릭");
+    // 활성화 중인걸 클릭시 아무것도 하지 않는다.
+    if (e.currentTarget.classList.contains("active")) {
       return;
     }
 
-    // "전체"가 비활성화 중일때 "전체"를 클릭시 전체 활성화, 그 외 모든 버튼 비활성화
+    // "전체"가 비활성화 중일때 "전체"를 클릭시 전체만 활성화
     if (
       e.currentTarget === totalBtn &&
       !totalBtn.classList.contains("active")
     ) {
-      console.log("전체 비활성화중 전체 클릭");
       optionBtns_structure.forEach((btn) => btn.classList.remove("active"));
       totalBtn.classList.add("active");
     }
 
-    // "전체" 외의 버튼 클릭시 "전체"비활성화, 클릭버튼 토글
-    // 만약 모든 버튼이 비활성화면 "전체" 활성화
+    // "전체" 외의 버튼 클릭시 "전체"비활성화, 클릭한 버튼 활성화
     if (e.currentTarget !== totalBtn) {
       totalBtn.classList.remove("active");
-      e.currentTarget.classList.toggle("active");
+      e.currentTarget.classList.add("active");
     }
 
     // 3개옵션 모두 선택시 "전체" 활성화
@@ -1508,11 +1506,6 @@ optionBtns_structure.forEach((optionBtn) => {
 
     // 노드리스트를 배열로 변환하는 코드
     let div_array = Array.prototype.slice.call(optionBtns_structure);
-
-    // 아무것도 선택하지 않았다면 "전체 활성화"
-    if (!div_array.find((btn) => btn.classList.contains("active"))) {
-      totalBtn.classList.add("active");
-    }
 
     const structureValue = filterCategory_size.querySelector(
       ".filter__option--structure .filter__option-value"
@@ -1615,6 +1608,46 @@ optionTable_size.forEach((td) => {
       sizeValue.innerText = `${e.currentTarget.innerText}`;
     }
   });
+});
+
+resetBtn_size.addEventListener("click", (e) => {
+  const structureValue = filterCategory_size.querySelector(
+    ".filter__option--structure .filter__option-value"
+  );
+  const floorValue = filterCategory_size.querySelector(
+    ".filter__option--floor .filter__option-value"
+  );
+  const sizeValue = filterCategory_size.querySelector(
+    ".filter__option--size .filter__option-value"
+  );
+  const reset = (nodeList) => {
+    nodeList.forEach((node) => node.classList.remove("active"));
+    nodeList[0].classList.add("active");
+  };
+
+  reset(optionBtns_structure);
+  reset(optionBtns_floor);
+  reset(optionTable_size);
+
+  structureValue.innerText = "전체";
+  floorValue.innerText = "전체";
+  sizeValue.innerText = "전체";
+
+  parkable.checked = false;
+});
+
+applyBtn_size.addEventListener("click", (e) => {
+  const structureValue = filterCategory_size.querySelector(
+    ".filter__option--structure .filter__option-value"
+  );
+  const floorValue = filterCategory_size.querySelector(
+    ".filter__option--floor .filter__option-value"
+  );
+  const sizeValue = filterCategory_size.querySelector(
+    ".filter__option--size .filter__option-value"
+  );
+
+  console.log(roomAndMarker);
 });
 
 //* ========================================== NAV 관련 코드들
