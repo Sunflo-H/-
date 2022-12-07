@@ -1507,21 +1507,21 @@ optionBtns_structure.forEach((optionBtn) => {
       totalBtn.classList.add("active");
     }
 
-    const categoryValue = filterCategory_size.querySelector(
+    const structureValue = filterCategory_size.querySelector(
       ".filter__option--structure .filter__option-value"
     );
     let valueArr = [];
-    categoryValue.innerText = "";
+    structureValue.innerText = "";
     div_array.forEach((btn) => {
       if (btn.classList.contains("active")) valueArr.push(btn.dataset.option);
     });
-    categoryValue.innerText = valueArr.join(", ");
+    structureValue.innerText = valueArr.join(", ");
   });
 });
 
 optionBtns_floor.forEach((optionBtn) => {
   optionBtn.addEventListener("click", (e) => {
-    const optionValue = filterCategory_size.querySelector(
+    const floorValue = filterCategory_size.querySelector(
       ".filter__option--floor .filter__option-value"
     );
     const totalBtn = optionBtns_floor[0];
@@ -1532,23 +1532,81 @@ optionBtns_floor.forEach((optionBtn) => {
 
     optionBtns_floor.forEach((btn) => btn.classList.remove("active"));
     e.currentTarget.classList.add("active");
-    optionValue.innerText = e.currentTarget.innerText;
+    floorValue.innerText = e.currentTarget.innerText;
   });
 });
 
-optionTable_size.forEach((optionBtn) => {
-  optionBtn.addEventListener("click", (e) => {
-    /**
-     * 클릭하면 활성화
-     * 활성화 되어있는 곳보다 작은쪽을 클릭하면 작은쪽을 활성화
-     * 활성화 되어있는 곳보다 큰쪽을 클릭하면 큰쪽까지 활성화
-     *
-     * 두개 이상이 활성화되어있을때 또 클릭하면 모두 지우고 클릭한것만 활성화
-     *
-     * 처음부터 끝까지 활성화되면 전체로 바꾸기
-     */
+optionTable_size.forEach((td) => {
+  td.addEventListener("click", (e) => {
+    const MIN_INDEX = 1;
+    const MAX_INDEX = 7;
+    const sizeValue = filterCategory_size.querySelector(
+      ".filter__option--size .filter__option-value"
+    );
+    let array_optionTable_size = Array.prototype.slice.call(optionTable_size);
 
-    e.currentTarget.classList.toggle("active");
+    if (optionTable_size[0] === e.currentTarget) {
+      optionTable_size.forEach((td) => td.classList.remove("active"));
+      e.currentTarget.classList.add("active");
+      sizeValue.innerText = `${e.currentTarget.innerText}`;
+      return;
+    }
+
+    // "전체"가 활성화 상태일때
+    if (optionTable_size[0].classList.contains("active")) {
+      optionTable_size[0].classList.remove("active");
+      e.currentTarget.classList.add("active");
+      sizeValue.innerText = `${e.currentTarget.innerText}`;
+    }
+    // "전체" 외의 td 하나가 활성화중일때
+    else if (
+      array_optionTable_size.filter((td) => td.classList.contains("active"))
+        .length === 1
+    ) {
+      // 원래 활성화 중이던 td
+      const prevIndex = array_optionTable_size.findIndex((td) =>
+        td.classList.contains("active")
+      );
+      // 클릭한 td
+      const currentIndex = array_optionTable_size.findIndex(
+        (td) => e.currentTarget === td
+      );
+
+      if (currentIndex < prevIndex) {
+        optionTable_size.forEach((td) => td.classList.remove("active"));
+        e.currentTarget.classList.add("active");
+        sizeValue.innerText = `${e.currentTarget.innerText}`;
+      } else if (currentIndex > prevIndex) {
+        // 최소~최대인덱스 면 "전체"라는 뜻 "전체"를 활성화
+        if (prevIndex === MIN_INDEX && currentIndex === MAX_INDEX) {
+          optionTable_size.forEach((td) => td.classList.remove("active"));
+          optionTable_size[0].classList.add("active");
+          sizeValue.innerText = `${optionTable_size[0].innerText}`;
+        }
+        // 최소~최대인덱스를 선택하지 않은경우에 prev ~ current까지 활성화
+        else {
+          for (let i = prevIndex; i <= currentIndex; i++) {
+            optionTable_size[i].classList.add("active");
+          }
+
+          if (prevIndex === 1)
+            sizeValue.innerText = ` ${optionTable_size[currentIndex].innerText} 이하`;
+          else if (currentIndex === 7)
+            sizeValue.innerText = `${optionTable_size[prevIndex].innerText} 이상 `;
+          else
+            sizeValue.innerText = `${optionTable_size[prevIndex].innerText} ~ ${optionTable_size[currentIndex].innerText}`;
+        }
+
+        // 10평 이하 ~ 10평대 => ~ 10평대 로
+        // 10평 이하 ~20 평대 => ~ 20평대
+      }
+    }
+    // "전체" 외의 td 여러개가 활성화중일때
+    else {
+      optionTable_size.forEach((td) => td.classList.remove("active"));
+      e.currentTarget.classList.add("active");
+      sizeValue.innerText = `${e.currentTarget.innerText}`;
+    }
   });
 });
 
