@@ -1144,11 +1144,11 @@ function createFilterOptionContent_price(option) {
                         />
                       </div>
                     </div>
-                    <div class="filter__option filter__toggle">
+                    <div class="filter__option filter__option--manage-cost">
                       <div class="filter__toggle-main">
                         관리비 포함
-                        <input type="checkbox" id="toggle" hidden />
-                        <label for="toggle" class="toggleSwitch">
+                        <input type="checkbox" id="toggle-manage-cost" class="toggle" hidden />
+                        <label for="toggle-manage-cost" class="toggleSwitch">
                           <span class="toggleButton"></span>
                         </label>
                       </div>
@@ -1194,7 +1194,7 @@ function createFilterOptionContent_price(option) {
   filterOptionContent.insertAdjacentHTML("beforeend", element);
 
   // * 생성한 엘리먼트에 이벤트 등록
-  //보증금
+  // 보증금
   const divDepositValue = filterCategory_price.querySelector(
     ".filter__option--deposit .filter__option-value"
   );
@@ -1203,7 +1203,7 @@ function createFilterOptionContent_price(option) {
   const depositMax =
     filterCategory_price.querySelector(".filter__input-deposit--max") || null;
 
-  //월세
+  // 월세
   const divRentValue = filterCategory_price.querySelector(
     ".filter__option--rent .filter__option-value"
   );
@@ -1211,6 +1211,11 @@ function createFilterOptionContent_price(option) {
     filterCategory_price.querySelector(".filter__input-rent--min") || null;
   const rentMax =
     filterCategory_price.querySelector(".filter__input-rent--max") || null;
+
+  // 관리비 포함여부
+  const manageCost = filterCategory_price.querySelector(
+    ".filter__option--manage-cost .toggle"
+  );
 
   if (depositMin) {
     depositMin.addEventListener("change", (e) => {
@@ -1395,8 +1400,7 @@ function createFilterOptionContent_price(option) {
     // 월세 최소금액, 최대금액 필터 + 관리비 포함여부
     if (salesType !== "전세") {
       // 이렇게 하지않으면 전세일때 rentMin.value가 없어서 에러가 난다.
-      const manageCost = filterCategory_price.querySelector("#toggle");
-      console.log(manageCost.checked);
+
       if (rentMin.value || rentMax.value) {
         result = result.filter((room) => {
           // 최소값만 있을때
@@ -1460,7 +1464,10 @@ const optionBtns_floor = filterCategory_size.querySelectorAll(
 const optionTable_size = filterCategory_size.querySelectorAll(
   ".filter__option--size .filter__td"
 );
-console.log(optionTable_size);
+const parkable = filterCategory_size.querySelector(
+  ".filter__option--parkable .toggle"
+);
+console.log(parkable);
 
 optionBtns_structure.forEach((optionBtn) => {
   optionBtn.addEventListener("click", (e) => {

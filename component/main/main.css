@@ -292,12 +292,11 @@ select::-ms-expand {
 }
 
 /* 체크박스가 체크되면 변경 이벤트 */
-#toggle:checked ~ .toggleSwitch {
+.toggle:checked ~ .toggleSwitch {
   background: var(--btn-active);
 }
 
-#toggle:checked ~ .toggleSwitch .toggleButton {
-  /* left: calc(100% - 44px); */
+.toggle:checked ~ .toggleSwitch .toggleButton {
   left: 52%;
   background: #fff;
 }
