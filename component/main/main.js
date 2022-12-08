@@ -91,9 +91,12 @@ let infoWindow = null;
 let originalRoomAndMarker = [];
 
 /**
- * 필터를 적용한 배열
+ * 필터를 적용한 방 정보 배열
  */
-let filteredRoomAndMarker = [];
+let filteredRoomDataObj = {
+  유형금액: [],
+  구조면적: [],
+};
 
 /**
  * !설명
@@ -1024,6 +1027,221 @@ searchInput.addEventListener("keydown", (e) => {
 
 //* ========================================== 필터 관련 코드들 ================================================
 
+function filterApply_oneroom() {
+  // * 유형 . 금액 변수들
+  // 보증금
+  const divDepositValue = filterCategory_price.querySelector(
+    ".filter__option--deposit .filter__option-value"
+  );
+  const depositMin =
+    filterCategory_price.querySelector(".filter__input-deposit--min") || null;
+  const depositMax =
+    filterCategory_price.querySelector(".filter__input-deposit--max") || null;
+
+  // 월세
+  const divRentValue = filterCategory_price.querySelector(
+    ".filter__option--rent .filter__option-value"
+  );
+  const rentMin =
+    filterCategory_price.querySelector(".filter__input-rent--min") || null;
+  const rentMax =
+    filterCategory_price.querySelector(".filter__input-rent--max") || null;
+
+  // 관리비 포함여부
+  const manageCost = filterCategory_price.querySelector(
+    ".filter__option--manage-cost .toggle"
+  );
+
+  // * 구조 . 면적 변수들
+  const structureValue = filterCategory_size.querySelector(
+    ".filter__option--structure .filter__option-value"
+  );
+  const floorValue = filterCategory_size.querySelector(
+    ".filter__option--floor .filter__option-value"
+  );
+  const sizeValue = filterCategory_size.querySelector(
+    ".filter__option--size .filter__option-value"
+  );
+  // 주차가능 여부
+  const parkable = filterCategory_size.querySelector(
+    ".filter__option--parkable .toggle"
+  );
+
+  let room_structure_obj = {
+    분리형: "01",
+    오픈형: "02",
+    복층형: "03",
+    투룸: "04",
+    "쓰리룸+": "05",
+    "포룸+": "06",
+  };
+
+  // * 필터적용 코드
+  let salesType = salesTypeValue.dataset.value;
+
+  let roomData = originalRoomAndMarker.map((item) => item.roomData);
+
+  // 전체, 전세, 월세 필터
+  let result = roomData.filter((room) => {
+    // 전체이면 모든 아이템을 리턴
+    if (salesType === "전체") {
+      return room;
+    }
+    // 전세, 월세인경우 일치하는 아이템을 리턴
+    else if (room.item.sales_type === salesType) return room;
+  });
+
+  // 보증금 최소금액, 최대금액 필터
+  if (depositMin.value || depositMax.value) {
+    console.log(depositMin);
+    console.log(depositMax);
+    result = result.filter((room) => {
+      // 최소값만 있을때
+      if (depositMin.value && !depositMax.value) {
+        if (depositMin.value <= room.item.보증금액) return room;
+      }
+      // 최대값만 있을때
+      else if (depositMax.value && !depositMin.value) {
+        if (depositMax.value >= room.item.보증금액) return room;
+      }
+      // 모두 있을때
+      else {
+        if (
+          depositMin.value <= room.item.보증금액 &&
+          room.item.보증금액 <= depositMax.value
+        )
+          return room;
+      }
+    });
+  }
+
+  // 월세 최소금액, 최대금액 필터 + 관리비 포함여부
+  if (salesType !== "전세") {
+    if (rentMin.value || rentMax.value) {
+      result = result.filter((room) => {
+        // 최소값만 있을때
+        if (rentMin.value && !rentMax.value) {
+          if (!manageCost.checked && rentMin.value <= room.item.월세금액)
+            return room;
+          else if (
+            manageCost.checked &&
+            rentMin.value <=
+              Number(room.item.월세금액) + Number(room.item.manage_cost)
+          )
+            return room;
+        }
+        // 최대값만 있을때
+        else if (rentMax.value && !rentMin.value) {
+          if (!manageCost.checked && rentMax.value >= room.item.월세금액)
+            return room;
+          else if (
+            manageCost.checked &&
+            rentMax.value >=
+              Number(room.item.월세금액) + Number(room.item.manageCost)
+          )
+            return room;
+        }
+        // 모두 있을때
+        else {
+          if (
+            !manageCost.checked &&
+            rentMin.value <= room.item.월세금액 &&
+            room.item.월세금액 <= rentMax.value
+          )
+            return room;
+          else if (
+            manageCost.checked &&
+            rentMin.value <=
+              Number(room.item.월세금액) + Number(room.item.manage_cost) &&
+            Number(room.item.월세금액) + Number(room.item.manage_cost) <=
+              rentMax.value
+          )
+            return room;
+        }
+      });
+    }
+  }
+
+  //* 구조 옵션 적용
+  let arr = structureValue.innerText.split(", ");
+  result = result.filter((room) => {
+    if (structureValue.innerText === "전체") return room;
+
+    // structureValue의 배열의 값이 1개인경우
+    if (arr.length === 1) {
+      if (room.item.room_type === room_structure_obj[arr[0]]) return room;
+    }
+    // structureValue의 배열의 값이 2개인경우
+    else if (arr.length === 2) {
+      if (
+        room.item.room_type === room_structure_obj[arr[0]] ||
+        room.item.room_type === room_structure_obj[arr[1]]
+      )
+        return room;
+    }
+  });
+
+  //* 층 옵션 적용
+  result = result.filter((room) => {
+    // console.log(room.item.floor, room.item.floor_string);
+    if (floorValue.innerText === "전체") {
+      return room;
+    } else if (floorValue.innerText === "지상") {
+      if (
+        room.item.floor_string !== "옥탑방" &&
+        room.item.floor_string !== "반지하"
+      )
+        return room;
+    } else if (floorValue.innerText === "반지하") {
+      if (room.item.floor_string === "반지하") return room;
+    } else if (floorValue.innerText === "옥탑") {
+      if (room.item.floor_string === "옥탑방") return room;
+    }
+  });
+
+  //* 면적 옵션 적용
+  result = result.filter((room) => {
+    let str = sizeValue.innerText;
+    let pyeong = getPyeong(room.item.전용면적_m2);
+
+    // n평 이하인경우
+    if (str.includes("이하")) {
+      if (pyeong <= str.slice(0, 2)) return room;
+    }
+    // n평 이상인경우
+    else if (str.includes("이상")) {
+      // console.log("이상");
+      if (pyeong >= str.slice(0, 2)) return room;
+    }
+    // n평 ~ m평 인경우
+    else if (str.includes("~")) {
+      // console.log("~");
+      if (str.slice(0, 2) <= pyeong && pyeong <= str.slice(7, 9)) return room;
+    }
+    // 전체인경우
+    else if (str === "전체") return room;
+    // n평대 하나인경우
+    else {
+      if (str.slice(0, 2) <= pyeong && pyeong <= Number(str.slice(0, 2)) + 9)
+        return room;
+    }
+  });
+
+  result = result.filter((room) => {
+    /**
+     * 체크 아닐때
+     * 체크 되었을때
+     */
+    if (parkable.checked) {
+      if (room.item.parking !== "불가능") return room;
+    } else return room;
+  });
+
+  removeCluster();
+  createCluster(result);
+  // filteredRoomDataObj.유형금액 = [...result];
+}
+
 // 모든 filter__category 클릭시 필터옵션창을 여는 이벤트
 filterCategories.forEach((filterCategory, index) => {
   const filterContent = filterCategory.querySelector(".filter__content");
@@ -1057,24 +1275,25 @@ filterCategories.forEach((filterCategory, index) => {
 });
 
 //* 필터 : 유형·금액
-const optionBtns_price = filterCategory_price.querySelectorAll(
+const optionBtns_salesType = filterCategory_price.querySelectorAll(
   ".filter__option--price .filter__option-btn"
 );
-
-optionBtns_price.forEach((optionBtn) => {
+const salesTypeValue = filterCategory_price.querySelector(
+  ".filter__option--price .filter__option-value"
+);
+optionBtns_salesType.forEach((optionBtn) => {
   optionBtn.addEventListener("click", (e) => {
     // 옵션버튼들을 순회하면서 모든 active를 지움
-    optionBtns_price.forEach((optionBtn_inner) =>
+    optionBtns_salesType.forEach((optionBtn_inner) =>
       optionBtn_inner.classList.remove("active")
     );
 
     // 클릭한 옵션버튼에 active 추가
     e.currentTarget.classList.add("active");
 
-    // 클릭한 거래유형 버튼의 값
-    const currentSalesType = e.currentTarget.dataset.option;
-
-    createFilterOptionContent_price(currentSalesType);
+    salesTypeValue.dataset.value = e.currentTarget.dataset.option;
+    salesTypeValue.innerText = salesTypeValue.dataset.value;
+    createFilterOptionContent_price(salesTypeValue.dataset.value);
   });
 });
 
@@ -1084,10 +1303,10 @@ optionBtns_price.forEach((optionBtn) => {
  */
 function createFilterOptionContent_price(option) {
   const filterOptionContent = document.querySelector(".filter__option-content");
-  const categoryValue = filterCategory_price.querySelector(
-    ".filter__option-value"
-  );
-  categoryValue.innerText = option;
+  // const categoryValue = filterCategory_price.querySelector(
+  //   ".filter__option-value"
+  // );
+  // categoryValue.innerText = option;
   let element = "";
 
   // 일단 클릭한 값으로 밸류부터 바꾸자.
@@ -1355,7 +1574,7 @@ function createFilterOptionContent_price(option) {
 
   // * 초기화, 적용 버튼
   const resetBtnHandler = () => {
-    optionBtns_price.forEach((optionBtn) => {
+    optionBtns_salesType.forEach((optionBtn) => {
       optionBtn.classList.remove("active");
       if (optionBtn.innerText === "전체") optionBtn.classList.add("active");
     });
@@ -1364,12 +1583,18 @@ function createFilterOptionContent_price(option) {
 
   const applyBtnHandler = () => {
     // 노드 리스트의 배열화
-    let array_optionBtns_price = Array.prototype.slice.call(optionBtns_price);
-    let salesType = array_optionBtns_price.find((optionBtn) =>
+    let array_optionBtns_salesType =
+      Array.prototype.slice.call(optionBtns_salesType);
+    let salesType = array_optionBtns_salesType.find((optionBtn) =>
       optionBtn.classList.contains("active")
     ).innerText;
 
-    let roomData = originalRoomAndMarker.map((item) => item.roomData);
+    let roomData = [];
+
+    // 다른 필터가 적용된 데이터가 있는지 판별
+    filteredRoomDataObj.구조면적.length === 0
+      ? (roomData = originalRoomAndMarker.map((item) => item.roomData))
+      : (roomData = [...filteredRoomDataObj.구조면적]);
 
     // 전체, 전세, 월세 필터
     let result = roomData.filter((room) => {
@@ -1454,10 +1679,11 @@ function createFilterOptionContent_price(option) {
 
     removeCluster();
     createCluster(result);
+    filteredRoomDataObj.유형금액 = [...result];
   };
 
   resetBtn.addEventListener("click", resetBtnHandler);
-  applyBtn.addEventListener("click", applyBtnHandler);
+  applyBtn.addEventListener("click", filterApply_oneroom);
 }
 
 //* 필터 : 구조·면적; (원룸, 빌라)
@@ -1649,130 +1875,107 @@ resetBtn_size.addEventListener("click", (e) => {
 
   parkable.checked = false;
 });
+applyBtn_size.addEventListener("click", filterApply_oneroom);
+// applyBtn_size.addEventListener("click", (e) => {
+//   const structureValue = filterCategory_size.querySelector(
+//     ".filter__option--structure .filter__option-value"
+//   );
+//   const floorValue = filterCategory_size.querySelector(
+//     ".filter__option--floor .filter__option-value"
+//   );
+//   const sizeValue = filterCategory_size.querySelector(
+//     ".filter__option--size .filter__option-value"
+//   );
 
-applyBtn_size.addEventListener("click", (e) => {
-  const structureValue = filterCategory_size.querySelector(
-    ".filter__option--structure .filter__option-value"
-  );
-  const floorValue = filterCategory_size.querySelector(
-    ".filter__option--floor .filter__option-value"
-  );
-  const sizeValue = filterCategory_size.querySelector(
-    ".filter__option--size .filter__option-value"
-  );
+//   let room_structure_obj = {
+//     분리형: "01",
+//     오픈형: "02",
+//     복층형: "03",
+//     투룸: "04",
+//     "쓰리룸+": "05",
+//     "포룸+": "06",
+//   };
 
-  let room_structure_obj = {
-    분리형: "01",
-    오픈형: "02",
-    복층형: "03",
-    투룸: "04",
-    "쓰리룸+": "05",
-    "포룸+": "06",
-  };
+//   let roomData = [];
 
-  // 유형.금액필터가 적용되지 않은 데이터인 경우
-  if (filteredRoomAndMarker.length === 0) {
-    let roomData = originalRoomAndMarker.map((item) => item.roomData);
+//   // 다른 필터가 적용된 데이터가 있는지 판별
+//   filteredRoomDataObj.유형금액.length === 0
+//     ? (roomData = originalRoomAndMarker.map((item) => item.roomData))
+//     : (roomData = [...filteredRoomDataObj.유형금액]);
 
-    // 문자열 자르기 ("오픈형, 분리형" 이렇게 되어있는 경우때문에)
-    let arr = structureValue.innerText.split(", ");
+//   // 문자열 자르기 ("오픈형, 분리형" 이렇게 되어있는 경우때문에)
+//   let arr = structureValue.innerText.split(", ");
 
-    //* 구조 옵션 적용
-    let result = roomData.filter((room) => {
-      if (structureValue.innerText === "전체") return room;
+//   //* 구조 옵션 적용
+//   let result = roomData.filter((room) => {
+//     if (structureValue.innerText === "전체") return room;
 
-      // structureValue의 배열의 값이 1개인경우
-      if (arr.length === 1) {
-        if (room.item.room_type === room_structure_obj[arr[0]]) return room;
-      }
-      // structureValue의 배열의 값이 2개인경우
-      else if (arr.length === 2) {
-        if (
-          room.item.room_type === room_structure_obj[arr[0]] ||
-          room.item.room_type === room_structure_obj[arr[1]]
-        )
-          return room;
-      }
-    });
-    // console.log(result);
+//     // structureValue의 배열의 값이 1개인경우
+//     if (arr.length === 1) {
+//       if (room.item.room_type === room_structure_obj[arr[0]]) return room;
+//     }
+//     // structureValue의 배열의 값이 2개인경우
+//     else if (arr.length === 2) {
+//       if (
+//         room.item.room_type === room_structure_obj[arr[0]] ||
+//         room.item.room_type === room_structure_obj[arr[1]]
+//       )
+//         return room;
+//     }
+//   });
+//   // console.log(result);
 
-    //* 층 옵션 적용
-    result = result.filter((room) => {
-      // console.log(room.item.floor, room.item.floor_string);
-      if (floorValue.innerText === "전체") {
-        return room;
-      } else if (floorValue.innerText === "지상") {
-        if (
-          room.item.floor_string !== "옥탑방" &&
-          room.item.floor_string !== "반지하"
-        )
-          return room;
-      } else if (floorValue.innerText === "반지하") {
-        if (room.item.floor_string === "반지하") return room;
-      } else if (floorValue.innerText === "옥탑") {
-        if (room.item.floor_string === "옥탑방") return room;
-      }
-    });
-    // console.log(result);
+//   //* 층 옵션 적용
+//   result = result.filter((room) => {
+//     // console.log(room.item.floor, room.item.floor_string);
+//     if (floorValue.innerText === "전체") {
+//       return room;
+//     } else if (floorValue.innerText === "지상") {
+//       if (
+//         room.item.floor_string !== "옥탑방" &&
+//         room.item.floor_string !== "반지하"
+//       )
+//         return room;
+//     } else if (floorValue.innerText === "반지하") {
+//       if (room.item.floor_string === "반지하") return room;
+//     } else if (floorValue.innerText === "옥탑") {
+//       if (room.item.floor_string === "옥탑방") return room;
+//     }
+//   });
+//   // console.log(result);
 
-    //* 면적 옵션 적용
-    result = result.filter((room) => {
-      /**
-       * 전체
-       * 10평 이하
-       * n평대 이하
-       *
-       * 60평 이상
-       * n평대 이상
-       *
-       * n평대 ~ m평대
-       *
-       * getPyeong(room.item.전용면적_m2)
-       *
-       * sizeValue.innerText // "10평 이하"
-       *
-       * sizeValue.innerText에 "이하", "이상", "~" 중 뭐가 포함되어있는지 확인
-       *
-       * "이하", "이상"이면 앞에 3칸(n평)을 잘라서 n평을 구하고 <, > 적용
-       *
-       * "~" 면 10평대 ~ 40평대  123 8910 짤라서 n평,m평 구하고 n<, m> 적용
-       * str.slice(0,3), str.slice(7,10)
-       */
+//   //* 면적 옵션 적용
+//   result = result.filter((room) => {
+//     let str = sizeValue.innerText;
+//     let pyeong = getPyeong(room.item.전용면적_m2);
 
-      let str = sizeValue.innerText;
-      let pyeong = getPyeong(room.item.전용면적_m2);
-
-      // n평 이하인경우
-      if (str.includes("이하")) {
-        if (pyeong <= str.slice(0, 2)) return room;
-      }
-      // n평 이상인경우
-      else if (str.includes("이상")) {
-        // console.log("이상");
-        if (pyeong >= str.slice(0, 2)) return room;
-      }
-      // n평 ~ m평 인경우
-      else if (str.includes("~")) {
-        // console.log("~");
-        if (str.slice(0, 2) <= pyeong && pyeong <= str.slice(7, 9)) return room;
-      }
-      // 전체인경우
-      else if (str === "전체") return room;
-      // n평대 하나인경우
-      else {
-        if (str.slice(0, 2) <= pyeong && pyeong <= Number(str.slice(0, 2)) + 9)
-          return room;
-      }
-    });
-    console.log(result);
-  }
-  // 유형.금액필터가 적용된 데이터인 경우
-  else {
-    console.log(roomAndMarker);
-    console.log(originalRoomAndMarker);
-    console.log("object");
-  }
-});
+//     // n평 이하인경우
+//     if (str.includes("이하")) {
+//       if (pyeong <= str.slice(0, 2)) return room;
+//     }
+//     // n평 이상인경우
+//     else if (str.includes("이상")) {
+//       // console.log("이상");
+//       if (pyeong >= str.slice(0, 2)) return room;
+//     }
+//     // n평 ~ m평 인경우
+//     else if (str.includes("~")) {
+//       // console.log("~");
+//       if (str.slice(0, 2) <= pyeong && pyeong <= str.slice(7, 9)) return room;
+//     }
+//     // 전체인경우
+//     else if (str === "전체") return room;
+//     // n평대 하나인경우
+//     else {
+//       if (str.slice(0, 2) <= pyeong && pyeong <= Number(str.slice(0, 2)) + 9)
+//         return room;
+//     }
+//   });
+//   console.log(result);
+//   removeCluster();
+//   createCluster(result);
+//   filteredRoomDataObj.구조면적 = [...result];
+// });
 
 //* ========================================== NAV 관련 코드들
 
