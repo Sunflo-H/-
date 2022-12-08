@@ -1239,7 +1239,7 @@ function filterApply_oneroom() {
 
   removeCluster();
   createCluster(result);
-  // filteredRoomDataObj.유형금액 = [...result];
+  createCardList();
 }
 
 // 모든 filter__category 클릭시 필터옵션창을 여는 이벤트
