@@ -91,9 +91,9 @@ let infoWindow = null;
 let originalRoomAndMarker = [];
 
 /**
- * 다른 filter를 적용했는지 상태를 나타낸다.
+ * 필터를 적용한 배열
  */
-let anotherFilteredState = false;
+let filteredRoomAndMarker = [];
 
 /**
  * !설명
@@ -1493,8 +1493,10 @@ optionBtns_structure.forEach((optionBtn) => {
       if (!div_array.find((btn) => btn.classList.contains("active"))) {
         totalBtn.classList.add("active");
         structureValue.innerText = "전체";
-      }
-
+      } else
+        structureValue.innerText = div_array.find((btn) =>
+          btn.classList.contains("active")
+        ).dataset.option;
       return;
     }
 
@@ -1668,14 +1670,14 @@ applyBtn_size.addEventListener("click", (e) => {
     "포룸+": "06",
   };
 
-  console.log(room_structure_obj["01"]);
   // 유형.금액필터가 적용되지 않은 데이터인 경우
-  if (!anotherFilteredState) {
+  if (filteredRoomAndMarker.length === 0) {
     let roomData = originalRoomAndMarker.map((item) => item.roomData);
     console.log(roomData);
     // 문자열 자르기 ("오픈형, 분리형" 이렇게 되어있는 경우때문에)
     let arr = structureValue.innerText.split(", ");
 
+    //* 구조 옵션 적용
     let result = roomData.filter((room) => {
       if (structureValue.innerText === "전체") return room;
 
@@ -1693,6 +1695,34 @@ applyBtn_size.addEventListener("click", (e) => {
       }
     });
     console.log(result);
+
+    //* 층 옵션 적용
+    result = result.filter((room) => {
+      /**
+       * 층 옵션의 값을 읽고 필터 적용
+       * 전체인경우
+       * 지상,반지하,옥탑인경우
+       * item.floor_string = [(1~), 반지하, 옥탑방, '저' '중' '고']
+       *
+       */
+      console.log(room.item.floor, room.item.floor_string);
+      if (floorValue.innerText === "전체") {
+        return room;
+      } else if (floorValue.innerText === "지상") {
+        if (
+          room.item.floor_string !== "옥탑방" &&
+          room.item.floor_string !== "반지하"
+        )
+          return room;
+      } else if (floorValue.innerText === "반지하") {
+        if (room.item.floor_string === "반지하") return room;
+      } else if (floorValue.innerText === "옥탑") {
+        if (room.item.floor_string === "옥탑방") return room;
+      }
+    });
+    console.log(result);
+
+    //* 면적 옵션 적용
   }
   // 유형.금액필터가 적용된 데이터인 경우
   else {
