@@ -1673,7 +1673,7 @@ applyBtn_size.addEventListener("click", (e) => {
   // 유형.금액필터가 적용되지 않은 데이터인 경우
   if (filteredRoomAndMarker.length === 0) {
     let roomData = originalRoomAndMarker.map((item) => item.roomData);
-    console.log(roomData);
+
     // 문자열 자르기 ("오픈형, 분리형" 이렇게 되어있는 경우때문에)
     let arr = structureValue.innerText.split(", ");
 
@@ -1694,18 +1694,11 @@ applyBtn_size.addEventListener("click", (e) => {
           return room;
       }
     });
-    console.log(result);
+    // console.log(result);
 
     //* 층 옵션 적용
     result = result.filter((room) => {
-      /**
-       * 층 옵션의 값을 읽고 필터 적용
-       * 전체인경우
-       * 지상,반지하,옥탑인경우
-       * item.floor_string = [(1~), 반지하, 옥탑방, '저' '중' '고']
-       *
-       */
-      console.log(room.item.floor, room.item.floor_string);
+      // console.log(room.item.floor, room.item.floor_string);
       if (floorValue.innerText === "전체") {
         return room;
       } else if (floorValue.innerText === "지상") {
@@ -1720,9 +1713,58 @@ applyBtn_size.addEventListener("click", (e) => {
         if (room.item.floor_string === "옥탑방") return room;
       }
     });
-    console.log(result);
+    // console.log(result);
 
     //* 면적 옵션 적용
+    result = result.filter((room) => {
+      /**
+       * 전체
+       * 10평 이하
+       * n평대 이하
+       *
+       * 60평 이상
+       * n평대 이상
+       *
+       * n평대 ~ m평대
+       *
+       * getPyeong(room.item.전용면적_m2)
+       *
+       * sizeValue.innerText // "10평 이하"
+       *
+       * sizeValue.innerText에 "이하", "이상", "~" 중 뭐가 포함되어있는지 확인
+       *
+       * "이하", "이상"이면 앞에 3칸(n평)을 잘라서 n평을 구하고 <, > 적용
+       *
+       * "~" 면 10평대 ~ 40평대  123 8910 짤라서 n평,m평 구하고 n<, m> 적용
+       * str.slice(0,3), str.slice(7,10)
+       */
+
+      let str = sizeValue.innerText;
+      let pyeong = getPyeong(room.item.전용면적_m2);
+
+      // n평 이하인경우
+      if (str.includes("이하")) {
+        if (pyeong <= str.slice(0, 2)) return room;
+      }
+      // n평 이상인경우
+      else if (str.includes("이상")) {
+        // console.log("이상");
+        if (pyeong >= str.slice(0, 2)) return room;
+      }
+      // n평 ~ m평 인경우
+      else if (str.includes("~")) {
+        // console.log("~");
+        if (str.slice(0, 2) <= pyeong && pyeong <= str.slice(7, 9)) return room;
+      }
+      // 전체인경우
+      else if (str === "전체") return room;
+      // n평대 하나인경우
+      else {
+        if (str.slice(0, 2) <= pyeong && pyeong <= Number(str.slice(0, 2)) + 9)
+          return room;
+      }
+    });
+    console.log(result);
   }
   // 유형.금액필터가 적용된 데이터인 경우
   else {
