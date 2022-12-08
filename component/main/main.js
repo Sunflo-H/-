@@ -1067,15 +1067,6 @@ function filterApply_oneroom() {
     ".filter__option--parkable .toggle"
   );
 
-  let room_structure_obj = {
-    분리형: "01",
-    오픈형: "02",
-    복층형: "03",
-    투룸: "04",
-    "쓰리룸+": "05",
-    "포룸+": "06",
-  };
-
   // * 필터적용 코드
   let salesType = salesTypeValue.dataset.value;
 
@@ -1164,7 +1155,16 @@ function filterApply_oneroom() {
 
   //* 구조 옵션 적용
   let arr = structureValue.innerText.split(", ");
+  let room_structure_obj = {
+    분리형: "01",
+    오픈형: "02",
+    복층형: "03",
+    투룸: "04",
+    "쓰리룸+": "05",
+    "포룸+": "06",
+  };
   result = result.filter((room) => {
+    console.log(room.item.room_type);
     if (structureValue.innerText === "전체") return room;
 
     // structureValue의 배열의 값이 1개인경우
