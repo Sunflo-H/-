@@ -91,6 +91,11 @@ let infoWindow = null;
 let originalRoomAndMarker = [];
 
 /**
+ * 세권의 범위를 표현하는데 사용하는 원의 배열
+ */
+const circleList = [];
+
+/**
  * !설명
  * 지역, 지하철은 customOverlay로 만들었다. 방은 cluster로 만들었다.
  *
@@ -116,7 +121,8 @@ let originalRoomAndMarker = [];
 //  3. 자동완성 +
 //  4. 자동완성 클릭, 엔터 이벤트 +
 //  6. 검색중 위 아래키 입력 +
-//* 필터 만들기
+
+//* 필터 만들기 +
 //  1. 필터 클릭시 활성화 +
 //  2. 필터 안에 버튼 두개 (금액옵션, 구조·면적옵션) +
 //  3. 필터 옵션창을 클릭했을때 필터가 비활성화됨 => 이벤트 위임을 막음 +
@@ -126,11 +132,18 @@ let originalRoomAndMarker = [];
 //  5-2 금액 최소~최대 기능 : 최소(대)만 입력되었을때, 최대가 최소보다 작을때 +
 //  5-3 적용 버튼 클릭 : 모든 필터 옵션들이 적용 +
 //  5-4 초기화 버튼 클릭: 모든 필터 옵션 초기화 +
-//  6 구조 면적 필터도 만들기
-
-//  7. filter__table의 경우에는 범위 선택, filter__option-btn?의 경우에는 단일선택
+//  6 구조 면적 필터도 만들기 +
 
 //* 세권 만들기
+//매물 클러스터 클릭하고 세권 필터를 눌러서 적용한경우 세권 생성!
+//  1. 컨텍스트 메뉴 만들기
+//  1-1 어느곳을 우클릭해도 컨텍스트 메뉴 생성
+//    1-1-a 클릭한 지점에 빨간 점표시정도
+//  1-2 만약 클릭이 클러스터면 클러스터의 중심을 기준으로 생성
+//  1-3 컨텍스트 메뉴에는 세권의 카테고리 => 세권, 거리옵션 => (250, 500, 1000)
+//  2. 컨텍스트 메뉴에 세권, 옵션(250m, 500m, 1000m 표시)
+//
+
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
 //* 카드 클릭시 디테일 정보 보여주기
 //* 각 페이지 별 기능 만들기
@@ -289,8 +302,6 @@ function createCluster(roomList) {
     roomAndMarker.push({ roomData: room, marker: marker });
     return marker;
   });
-  console.log(roomAndMarker);
-  console.log(roomCluster);
 
   // 새 지하철역을 클릭했다면 originalRoomAndMarker는 초기화된다.
   if (originalRoomAndMarker.length === 0)
@@ -361,14 +372,66 @@ function createCluster(roomList) {
   });
 
   kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
+    // 클릭한 클러스터 안의 마커들을
+    // 방정보,마커정보를 매핑한 배열과 비교하여 같은 marker를 가지는 방들을 return
     let roomList = cluster
       .getMarkers()
       .map(
         (marker) =>
           roomAndMarker.find((item) => marker === item.marker).roomData
       );
-
     createCardList(roomList);
+
+    let createRange = () => {
+      let circle1 = new kakao.maps.Circle({
+        center: cluster.getCenter(), // 원의 중심좌표 입니다
+        radius: 250, // 미터 단위의 원의 반지름입니다
+        strokeWeight: 2, // 선의 두께입니다
+        strokeColor: "#75B8FA", // 선의 색깔입니다
+        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        strokeStyle: "dashed", // 선의 스타일 입니다
+        fillColor: "#CFE7FF", // 채우기 색깔입니다
+        fillOpacity: 0.1, // 채우기 불투명도 입니다
+      });
+      let circle2 = new kakao.maps.Circle({
+        center: cluster.getCenter(), // 원의 중심좌표 입니다
+        radius: 500, // 미터 단위의 원의 반지름입니다
+        strokeWeight: 2, // 선의 두께입니다
+        strokeColor: "#75B8FA", // 선의 색깔입니다
+        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        strokeStyle: "dashed", // 선의 스타일 입니다
+        fillColor: "#CFE7FF", // 채우기 색깔입니다
+        fillOpacity: 0.1, // 채우기 불투명도 입니다
+      });
+      let circle3 = new kakao.maps.Circle({
+        center: cluster.getCenter(), // 원의 중심좌표 입니다
+        radius: 1000, // 미터 단위의 원의 반지름입니다
+        strokeWeight: 2, // 선의 두께입니다
+        strokeColor: "#75B8FA", // 선의 색깔입니다
+        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        strokeStyle: "dashed", // 선의 스타일 입니다
+        fillColor: "#CFE7FF", // 채우기 색깔입니다
+        fillOpacity: 0.5, // 채우기 불투명도 입니다
+      });
+
+      if (circleList.length !== 0) {
+        circleList.forEach((circle) => {
+          circle.setMap(null);
+        });
+        circleList.length = 0;
+      }
+
+      circleList.push(circle3);
+      circleList.push(circle2);
+      circleList.push(circle1);
+
+      circleList.forEach((circle) => {
+        circle.setMap(map);
+      });
+      console.log(circleList);
+    };
+
+    createRange();
 
     sortBtns.forEach((btn) => {
       const up = btn.querySelector(".fa-sort-up");
@@ -621,7 +684,7 @@ function subwayOverlayClick(event) {
   createOneRoomCluster(overlay.dataset.name);
 
   // 새로운 지하철로 매물을 검색했으니 필터용 오리지널 방 정보를 초기화
-  originalRoomAndMarker = [];
+  originalRoomAndMarker.length = 0;
 
   map.setLevel(5);
   map.setCenter(
