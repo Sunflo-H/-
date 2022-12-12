@@ -136,13 +136,8 @@ const circleList = [];
 
 //* 세권 만들기
 //매물 클러스터 클릭하고 세권 필터를 눌러서 적용한경우 세권 생성!
-//  1. 컨텍스트 메뉴 만들기
-//  1-1 어느곳을 우클릭해도 컨텍스트 메뉴 생성
-//    1-1-a 클릭한 지점에 빨간 점표시정도
-//  1-2 만약 클릭이 클러스터면 클러스터의 중심을 기준으로 생성
-//  1-3 컨텍스트 메뉴에는 세권의 카테고리 => 세권, 거리옵션 => (250, 500, 1000)
-//  2. 컨텍스트 메뉴에 세권, 옵션(250m, 500m, 1000m 표시)
-//
+//  1. 세권 클릭이벤트 등록
+//  2. 적용시 마커 생성
 
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
 //* 카드 클릭시 디테일 정보 보여주기
@@ -382,57 +377,6 @@ function createCluster(roomList) {
       );
     createCardList(roomList);
 
-    let createRange = () => {
-      let circle1 = new kakao.maps.Circle({
-        center: cluster.getCenter(), // 원의 중심좌표 입니다
-        radius: 250, // 미터 단위의 원의 반지름입니다
-        strokeWeight: 2, // 선의 두께입니다
-        strokeColor: "#75B8FA", // 선의 색깔입니다
-        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-        strokeStyle: "dashed", // 선의 스타일 입니다
-        fillColor: "#CFE7FF", // 채우기 색깔입니다
-        fillOpacity: 0.1, // 채우기 불투명도 입니다
-      });
-      let circle2 = new kakao.maps.Circle({
-        center: cluster.getCenter(), // 원의 중심좌표 입니다
-        radius: 500, // 미터 단위의 원의 반지름입니다
-        strokeWeight: 2, // 선의 두께입니다
-        strokeColor: "#75B8FA", // 선의 색깔입니다
-        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-        strokeStyle: "dashed", // 선의 스타일 입니다
-        fillColor: "#CFE7FF", // 채우기 색깔입니다
-        fillOpacity: 0.1, // 채우기 불투명도 입니다
-      });
-      let circle3 = new kakao.maps.Circle({
-        center: cluster.getCenter(), // 원의 중심좌표 입니다
-        radius: 1000, // 미터 단위의 원의 반지름입니다
-        strokeWeight: 2, // 선의 두께입니다
-        strokeColor: "#75B8FA", // 선의 색깔입니다
-        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-        strokeStyle: "dashed", // 선의 스타일 입니다
-        fillColor: "#CFE7FF", // 채우기 색깔입니다
-        fillOpacity: 0.5, // 채우기 불투명도 입니다
-      });
-
-      if (circleList.length !== 0) {
-        circleList.forEach((circle) => {
-          circle.setMap(null);
-        });
-        circleList.length = 0;
-      }
-
-      circleList.push(circle3);
-      circleList.push(circle2);
-      circleList.push(circle1);
-
-      circleList.forEach((circle) => {
-        circle.setMap(map);
-      });
-      console.log(circleList);
-    };
-
-    createRange();
-
     sortBtns.forEach((btn) => {
       const up = btn.querySelector(".fa-sort-up");
       const down = btn.querySelector(".fa-sort-down");
@@ -441,6 +385,14 @@ function createCluster(roomList) {
       down.classList.add("active");
     });
   });
+
+  kakao.maps.event.addListener(
+    roomCluster,
+    "clusterrightclick",
+    function (cluster) {
+      createRange(cluster);
+    }
+  );
 }
 
 function removeCluster() {
@@ -973,9 +925,19 @@ function createMarker(data) {
     position: new kakao.maps.LatLng(lat, lng),
   });
 
+  // let markerImage = new kakao.maps.MarkerImage(
+  //   "../../img/map/marker1.png",
+  //   new kakao.maps.Size(30, 30),
+  //   new kakao.maps.Point(15, 26)
+  // );
+  // let markerImage = new kakao.maps.MarkerImage(
+  //   "../../img/map/marker_drink2.png",
+  //   new kakao.maps.Size(25, 25),
+  //   new kakao.maps.Point(15, 26)
+  // );
   let markerImage = new kakao.maps.MarkerImage(
-    "../../img/map/marker1.png",
-    new kakao.maps.Size(30, 30),
+    "../../img/map/marker_drink.png",
+    new kakao.maps.Size(25, 25),
     new kakao.maps.Point(15, 26)
   );
   marker.setImage(markerImage);
@@ -1828,6 +1790,114 @@ resetBtn_size.addEventListener("click", (e) => {
   parkable.checked = false;
 });
 applyBtn_size.addEventListener("click", filterApply_oneroom);
+//* ========================================== 세권 관련 코드들
+/**
+ * 클러스터를 인자로 받아 클러스터를 기준으로 원(세권의 범위)을 생성한다.
+ * @param {*} radius
+ * @param {*} cluster
+ */
+function createRange(cluster) {
+  let circle250 = new kakao.maps.Circle({
+    center: cluster.getCenter(), // 원의 중심좌표 입니다
+    radius: 250, // 미터 단위의 원의 반지름입니다
+    strokeWeight: 2, // 선의 두께입니다
+    strokeColor: "#75B8FA", // 선의 색깔입니다
+    strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+    strokeStyle: "dashed", // 선의 스타일 입니다
+    fillColor: "#CFE7FF", // 채우기 색깔입니다
+    fillOpacity: 0.1, // 채우기 불투명도 입니다
+  });
+  let circle500 = new kakao.maps.Circle({
+    center: cluster.getCenter(), // 원의 중심좌표 입니다
+    radius: 500, // 미터 단위의 원의 반지름입니다
+    strokeWeight: 2, // 선의 두께입니다
+    strokeColor: "#75B8FA", // 선의 색깔입니다
+    strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+    strokeStyle: "dashed", // 선의 스타일 입니다
+    fillColor: "#CFE7FF", // 채우기 색깔입니다
+    fillOpacity: 0.1, // 채우기 불투명도 입니다
+  });
+  let circle1000 = new kakao.maps.Circle({
+    center: cluster.getCenter(), // 원의 중심좌표 입니다
+    radius: 1000, // 미터 단위의 원의 반지름입니다
+    strokeWeight: 2, // 선의 두께입니다
+    strokeColor: "#75B8FA", // 선의 색깔입니다
+    strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+    strokeStyle: "dashed", // 선의 스타일 입니다
+    fillColor: "#CFE7FF", // 채우기 색깔입니다
+    fillOpacity: 0.5, // 채우기 불투명도 입니다
+  });
+
+  if (circleList.length !== 0) {
+    circleList.forEach((circle) => {
+      circle.setMap(null);
+    });
+    circleList.length = 0;
+  }
+
+  circleList.push(circle1000);
+  circleList.push(circle500);
+  circleList.push(circle250);
+
+  circleList.forEach((circle) => {
+    circle.setMap(map);
+  });
+}
+
+function create세권Marker(data) {
+  let address = data.address_name || null;
+  // let roadAddress = data.road_address_name || null;
+  let place = data.place_name || null;
+  let category = data.category_group_name; //주소, 장소, 음식점-카페 등등
+  let lat = data.y;
+  let lng = data.x;
+
+  let content = "";
+  place === null
+    ? (content = `<div class="infoWindow__content">
+                    <div class="infoWindow__address infoWindow__address-data">${address}</div>
+                  </div>`)
+    : (content = `<div class="infoWindow__content">
+                    <div class="infoWindow__place">${place}</div>
+                    <div class="infoWindow__category">${category}</div>
+                    <div class="infoWindow__address">${address}</div>
+                  </div>`);
+
+  let marker = new kakao.maps.Marker({
+    map: map,
+    position: new kakao.maps.LatLng(lat, lng),
+  });
+
+  let markerImage = new kakao.maps.MarkerImage(
+    "../../img/map/markers.png",
+    new kakao.maps.Size(30, 30),
+    new kakao.maps.Point(15, 26)
+  );
+
+  marker.setImage(markerImage);
+
+  kakao.maps.event.addListener(marker, "click", function () {
+    if (infoWindow) infoWindow.close();
+    infoWindow = new kakao.maps.InfoWindow({
+      position: new kakao.maps.LatLng(lat, lng),
+      content: content,
+    });
+    let infoWindowBox = infoWindow.a;
+    let infoWindowArrow = infoWindow.a.firstElementChild;
+    let infoWindowContentBox = infoWindow.Uf;
+    infoWindowBox.classList.add("infoWindow-box");
+    infoWindowArrow.classList.add("infoWindow__arrow");
+    infoWindowContentBox.classList.add("infoWindow__content-box");
+    infoWindow.open(map, marker);
+  });
+
+  let marekrObj = {
+    marker: marker,
+    info: data,
+  };
+
+  markerList.push(marekrObj);
+}
 
 //* ========================================== NAV 관련 코드들
 
@@ -1887,6 +1957,8 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
 
   overlaySetEvent();
 });
+
+kakao.maps.event.addListener(map, "rightclick", () => {});
 
 /**
  * 지도를 해당 좌표로 부드럽게 이동시킨다.
