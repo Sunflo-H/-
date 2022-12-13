@@ -240,14 +240,28 @@ select::-ms-expand {
   background-color: #367bf5;
   color: #e6eeff;
 }
+.filter__option-chips.active i:first-child {
+  display: none;
+}
+.filter__option-chips.active i:last-child {
+  display: inline-block;
+}
 .filter__option-chips i {
   margin-right: 5px;
+  width: 13px;
+  /* border: 1px solid red; */
+}
+.filter__option-chips i:first-child {
+  display: inline-block;
+}
+.filter__option-chips i:last-child {
+  display: none;
 }
 .filter__option-chips:hover {
   transform: translateY(-2px);
   cursor: pointer;
 }
-.filter__option--local {
+.filter__option--hyper-local {
   padding: 5px 10px;
 }
 
