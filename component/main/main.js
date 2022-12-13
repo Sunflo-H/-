@@ -931,7 +931,7 @@ function createMarker(data) {
   //   new kakao.maps.Point(15, 26)
   // );
   let markerImage = new kakao.maps.MarkerImage(
-    "../../img/map/marker_drink2.png",
+    "../../img/map/marker_bar.png",
     new kakao.maps.Size(25, 25),
     new kakao.maps.Point(15, 26)
   );
@@ -1788,21 +1788,47 @@ applyBtn_size.addEventListener("click", filterApply_oneroom);
 const resetBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--reset");
 const applyBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--apply");
 const chips = hyperLocal.querySelectorAll(".filter__option-chips");
+
 chips.forEach((chip) => {
   chip.addEventListener("click", (e) => {
     e.currentTarget.classList.toggle("active");
   });
 });
+
 resetBtn_hyperLocal.addEventListener("click", (e) =>
   chips.forEach((chip) => chip.classList.remove("active"))
 );
+
 applyBtn_hyperLocal.addEventListener("click", (e) => {
   /**
    * 클릭한 클러스터 주변에 원 생성
    * 활성화된 chip에 따라 마커 생성
+   * 1. 클릭한 클러스터의 중심좌표 얻어오기 +
+   * 2. 활성화된 chip의 검색 키워드 얻어오기
+   * 3. 키워드와 중심좌표로 검색하기
+   * 4. 검색 결과를 마커로 띄우기
    *
    */
+  // console.log(roomCluster);
+  // let overlay = roomCluster._clusters[0].getClusterMarker().getContent();
+
+  // 클러스터의 중심좌표
+  let clickedCluster = roomCluster._clusters.filter((cluster) =>
+    cluster.getClusterMarker().getContent().classList.contains("cluster-click")
+  );
+  // console.log(clickedCluster[0].getCenter().La, clickedCluster[0].getCenter().Ma);
+  const lat = clickedCluster[0].getCenter().Ma;
+  const lng = clickedCluster[0].getCenter().La;
+
+  chips.forEach((chip) => {
+    if (chip.classList.contains("active")) {
+      kakaoSearch
+        .search_hyperLocal(chip.dataset.keyword, lat, lng)
+        .then((data) => data.forEach((item) => createHyperLocalMarker(item)));
+    }
+  });
 });
+
 /**
  * 클러스터를 인자로 받아 클러스터를 기준으로 원(세권의 범위)을 생성한다.
  * @param {*} radius
@@ -1856,7 +1882,8 @@ function createRange(cluster) {
   });
 }
 
-function create세권Marker(data) {
+function createHyperLocalMarker(data) {
+  console.log(data);
   let address = data.address_name || null;
   // let roadAddress = data.road_address_name || null;
   let place = data.place_name || null;
@@ -1875,13 +1902,14 @@ function create세권Marker(data) {
                     <div class="infoWindow__address">${address}</div>
                   </div>`);
 
+  console.log(content);
   let marker = new kakao.maps.Marker({
     map: map,
     position: new kakao.maps.LatLng(lat, lng),
   });
 
   let markerImage = new kakao.maps.MarkerImage(
-    "../../img/map/markers.png",
+    "../../img/map/marker_daiso.png",
     new kakao.maps.Size(30, 30),
     new kakao.maps.Point(15, 26)
   );

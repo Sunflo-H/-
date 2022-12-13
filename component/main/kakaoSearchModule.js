@@ -6,6 +6,7 @@ export default class kakaoSearch {
       LV2: 10000,
       LV3: 15000,
       LV4: 20000,
+      hyperLocal: 1500,
     };
   }
 
@@ -35,6 +36,13 @@ export default class kakaoSearch {
     return data;
   }
 
+  search_hyperLocal(keyword, lat, lng) {
+    let data = this.searchByKeyword_hyperLocal(keyword, lat, lng).then(
+      (data) => data
+    );
+    console.log(data);
+    return data;
+  }
   /**
    * 주소로 검색하여 장소(주소)에 대한 정보를 반환하는 함수
    * @param {*} addr 검색할 주소 ex)구의동
@@ -70,11 +78,12 @@ export default class kakaoSearch {
           resolve(result);
         }
       };
-
+      console.log(lng, lat);
       let option = {
         x: lng,
         y: lat,
         radius: this.RADIUS.LV4,
+        // radius: 1000,
         size: this.SEARCH_DATA_LENGTH,
       };
       places.keywordSearch(keyword, getResult, option);
@@ -111,6 +120,37 @@ export default class kakaoSearch {
       };
       places.keywordSearch(keyword, getResult, option);
     });
+  }
+
+  /**
+   * searchByKeyword와 같은 기능을 하나 검색 반경을 1km로 제한
+   * @param {*} keyword 검색할 키워드 ex)롯데리아
+   * @param {*} lat
+   * @param {*} lng
+   * @returns promise [장소데이터1, 장소데이터2, ...]
+   */
+  searchByKeyword_hyperLocal(keyword, lat, lng) {
+    let placeList = new Promise((resolve, reject) => {
+      let places = new kakao.maps.services.Places();
+
+      const getResult = (result, status) => {
+        if (status === kakao.maps.services.Status.OK) {
+          resolve(result);
+        }
+      };
+
+      console.log(lng, lat);
+      let option = {
+        x: lng,
+        y: lat,
+        // radius: this.RADIUS.hyperLocal,
+        // location: new kakao.maps.LatLng(lat, lng),
+        radius: 1000,
+        size: this.SEARCH_DATA_LENGTH,
+      };
+      places.keywordSearch(keyword, getResult, option);
+    });
+    return placeList;
   }
 
   /**
