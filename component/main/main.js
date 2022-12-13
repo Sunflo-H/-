@@ -1318,13 +1318,7 @@ optionBtns_salesType.forEach((optionBtn) => {
  */
 function createFilterOptionContent_price(option) {
   const filterOptionContent = document.querySelector(".filter__option-content");
-  // const categoryValue = filterCategory_price.querySelector(
-  //   ".filter__option-value"
-  // );
-  // categoryValue.innerText = option;
   let element = "";
-
-  // 일단 클릭한 값으로 밸류부터 바꾸자.
 
   while (filterOptionContent.firstChild) {
     filterOptionContent.removeChild(filterOptionContent.firstChild);
