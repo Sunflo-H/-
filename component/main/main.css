@@ -221,6 +221,36 @@ select::-ms-expand {
   outline: 1px solid var(--primary);
 }
 
+.filter__option-main--chips {
+  display: block;
+}
+
+.filter__option-chips {
+  display: inline-block;
+  padding: 2px 10px;
+  margin-left: 4px;
+  margin-bottom: 10px;
+  border-radius: 30px;
+  background-color: #e6eeff;
+  color: #367bf5;
+  font-size: 0.9rem;
+  transition: all 0.4s ease-in-out;
+}
+.filter__option-chips.active {
+  background-color: #367bf5;
+  color: #e6eeff;
+}
+.filter__option-chips i {
+  margin-right: 5px;
+}
+.filter__option-chips:hover {
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+.filter__option--local {
+  padding: 5px 10px;
+}
+
 /* 아파트에 쓸 table css,  건들지마 */
 .filter__table-item {
   background-color: #f5f5f5;

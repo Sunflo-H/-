@@ -930,16 +930,16 @@ function createMarker(data) {
   //   new kakao.maps.Size(30, 30),
   //   new kakao.maps.Point(15, 26)
   // );
-  // let markerImage = new kakao.maps.MarkerImage(
-  //   "../../img/map/marker_drink2.png",
-  //   new kakao.maps.Size(25, 25),
-  //   new kakao.maps.Point(15, 26)
-  // );
   let markerImage = new kakao.maps.MarkerImage(
-    "../../img/map/marker_drink.png",
+    "../../img/map/marker_drink2.png",
     new kakao.maps.Size(25, 25),
     new kakao.maps.Point(15, 26)
   );
+  // let markerImage = new kakao.maps.MarkerImage(
+  //   "../../img/map/marker_drink.png",
+  //   new kakao.maps.Size(25, 25),
+  //   new kakao.maps.Point(15, 26)
+  // );
   marker.setImage(markerImage);
 
   kakao.maps.event.addListener(marker, "click", function () {
