@@ -1785,18 +1785,17 @@ resetBtn_size.addEventListener("click", (e) => {
 });
 applyBtn_size.addEventListener("click", filterApply_oneroom);
 //* ========================================== 세권 관련 코드들
-console.log(hyperLocal);
-// const hyperLocal_life = hyperLocal.querySelector(".filter__option--life");
-// const hyperLocal_food = hyperLocal.querySelector(".filter__option--life");
-// const hyperLocal_nature = hyperLocal.querySelector(".filter__option--life");
-// const hyperLocal_play = hyperLocal.querySelector(".filter__option--life");
+const resetBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--reset");
+const applyBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--apply");
 const chips = hyperLocal.querySelectorAll(".filter__option-chips");
-console.log(chips);
 chips.forEach((chip) => {
   chip.addEventListener("click", (e) => {
     e.currentTarget.classList.toggle("active");
   });
 });
+resetBtn_hyperLocal.addEventListener("click", (e) =>
+  chips.forEach((chip) => chip.classList.remove("active"))
+);
 /**
  * 클러스터를 인자로 받아 클러스터를 기준으로 원(세권의 범위)을 생성한다.
  * @param {*} radius

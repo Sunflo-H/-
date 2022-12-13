@@ -262,7 +262,7 @@ select::-ms-expand {
   cursor: pointer;
 }
 .filter__option--hyper-local {
-  padding: 5px 10px;
+  padding: 5px 10px 0px;
 }
 
 /* 아파트에 쓸 table css,  건들지마 */
