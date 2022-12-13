@@ -1796,6 +1796,13 @@ chips.forEach((chip) => {
 resetBtn_hyperLocal.addEventListener("click", (e) =>
   chips.forEach((chip) => chip.classList.remove("active"))
 );
+applyBtn_hyperLocal.addEventListener("click", (e) => {
+  /**
+   * 클릭한 클러스터 주변에 원 생성
+   * 활성화된 chip에 따라 마커 생성
+   *
+   */
+});
 /**
  * 클러스터를 인자로 받아 클러스터를 기준으로 원(세권의 범위)을 생성한다.
  * @param {*} radius
