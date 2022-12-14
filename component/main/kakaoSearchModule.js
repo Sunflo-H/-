@@ -40,7 +40,6 @@ export default class kakaoSearch {
     let data = this.searchByKeyword_hyperLocal(keyword, lat, lng).then(
       (data) => data
     );
-    console.log(data);
     return data;
   }
   /**
@@ -138,7 +137,6 @@ export default class kakaoSearch {
         }
       };
 
-      console.log(lng, lat);
       let option = {
         x: lng,
         y: lat,
