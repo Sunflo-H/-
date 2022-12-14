@@ -1804,27 +1804,30 @@ applyBtn_hyperLocal.addEventListener("click", (e) => {
    * 클릭한 클러스터 주변에 원 생성
    * 활성화된 chip에 따라 마커 생성
    * 1. 클릭한 클러스터의 중심좌표 얻어오기 +
-   * 2. 활성화된 chip의 검색 키워드 얻어오기
+   * 2. 활성화된 chip의 검색 키워드 얻어오기 +
    * 3. 키워드와 중심좌표로 검색하기
    * 4. 검색 결과를 마커로 띄우기
    *
    */
-  // console.log(roomCluster);
-  // let overlay = roomCluster._clusters[0].getClusterMarker().getContent();
 
-  // 클러스터의 중심좌표
   let clickedCluster = roomCluster._clusters.filter((cluster) =>
     cluster.getClusterMarker().getContent().classList.contains("cluster-click")
   );
-  // console.log(clickedCluster[0].getCenter().La, clickedCluster[0].getCenter().Ma);
+
+  // 클러스터의 중심좌표
   const lat = clickedCluster[0].getCenter().Ma;
   const lng = clickedCluster[0].getCenter().La;
 
   chips.forEach((chip) => {
     if (chip.classList.contains("active")) {
+      // 검색할 키워드
+      const keyword = chip.dataset.keyword;
+      const markerImageName = chip.dataset.marker;
       kakaoSearch
-        .search_hyperLocal(chip.dataset.keyword, lat, lng)
-        .then((data) => data.forEach((item) => createHyperLocalMarker(item)));
+        .search_hyperLocal(keyword, lat, lng)
+        .then((data) =>
+          data.forEach((item) => createHyperLocalMarker(item, markerImageName))
+        );
     }
   });
 });
@@ -1882,7 +1885,7 @@ function createRange(cluster) {
   });
 }
 
-function createHyperLocalMarker(data) {
+function createHyperLocalMarker(data, markerImageName) {
   console.log(data);
   let address = data.address_name || null;
   // let roadAddress = data.road_address_name || null;
@@ -1909,7 +1912,7 @@ function createHyperLocalMarker(data) {
   });
 
   let markerImage = new kakao.maps.MarkerImage(
-    "../../img/map/marker_daiso.png",
+    `../../img/map/marker_${markerImageName}.png`,
     new kakao.maps.Size(30, 30),
     new kakao.maps.Point(15, 26)
   );
