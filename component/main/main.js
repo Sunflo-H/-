@@ -79,7 +79,7 @@ let cardListLayout = "card";
 /**
  * 검색 결과 정보와 마커를 담은 배열
  */
-let markerList = [];
+const markerList = [];
 /**
  * 마커를 클릭시 열리는 창
  */
@@ -94,6 +94,11 @@ let originalRoomAndMarker = [];
  * 세권의 범위를 표현하는데 사용하는 원의 배열
  */
 const circleList = [];
+
+/**
+ * 세권 마커정보 배열
+ */
+const hyperLocalMarkerList = [];
 
 /**
  * !설명
@@ -972,7 +977,17 @@ function removeMarker() {
   markerList.forEach((obj) => {
     obj.marker.setMap(null);
   });
-  markerList = [];
+  markerList.length = 0;
+}
+
+/**
+ * ^ 세권마커를 모두 삭제한다.
+ */
+function removeHyperLocalMarker() {
+  hyperLocalMarkerList.forEach((obj) => {
+    obj.marker.setMap(null);
+  });
+  hyperLocalMarkerList.length = 0;
 }
 
 /**
@@ -1809,6 +1824,7 @@ applyBtn_hyperLocal.addEventListener("click", (e) => {
    * 4. 검색 결과를 마커로 띄우기
    *
    */
+  removeHyperLocalMarker();
 
   let clickedCluster = roomCluster._clusters.filter((cluster) =>
     cluster.getClusterMarker().getContent().classList.contains("cluster-click")
@@ -1905,7 +1921,6 @@ function createHyperLocalMarker(data, markerImageName) {
                     <div class="infoWindow__address">${address}</div>
                   </div>`);
 
-  console.log(content);
   let marker = new kakao.maps.Marker({
     map: map,
     position: new kakao.maps.LatLng(lat, lng),
@@ -1939,7 +1954,7 @@ function createHyperLocalMarker(data, markerImageName) {
     info: data,
   };
 
-  markerList.push(marekrObj);
+  hyperLocalMarkerList.push(marekrObj);
 }
 
 //* ========================================== NAV 관련 코드들
