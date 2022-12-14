@@ -293,17 +293,22 @@ function createCluster(roomList) {
     ],
     calculator: [10],
   });
+
   roomAndMarker = [];
+
   let markers = roomList.map(function (room, i) {
     let position = room.item.random_location.split(",");
     let marker = new kakao.maps.Marker({
       position: new kakao.maps.LatLng(position[0], position[1]),
     });
+
+    // 방 정보와 마커를 매핑
     roomAndMarker.push({ roomData: room, marker: marker });
     return marker;
   });
 
-  // 새 지하철역을 클릭했다면 originalRoomAndMarker는 초기화된다.
+  // 새 지하철역을 클릭했을때 originalRoomAndMarker는 초기화된다.
+  // 초기화된 original에 새 값을 저장
   if (originalRoomAndMarker.length === 0)
     originalRoomAndMarker = [...roomAndMarker];
 
@@ -315,16 +320,19 @@ function createCluster(roomList) {
 
     return text;
   });
-  roomCluster.addMarkers(markers);
 
-  // 처음 생성된 클러스터에 적용하는 이벤트 (clustered 이벤트핸들러와 기능은 같다.)
+  roomCluster.addMarkers(markers); // 클러스터 생성
+
+  // 처음 생성된 클러스터의 엘리먼트들에 적용하는 css변화 이벤트 (clustered 이벤트핸들러와 기능은 같다.)
   roomCluster._clusters.forEach((cluster) => {
     let overlay = cluster.getClusterMarker().getContent();
+
     overlay.addEventListener("mouseover", function (e) {
       if (!this.classList.contains("cluster-over")) {
         this.classList.add("cluster-over");
       }
     });
+
     overlay.addEventListener("mouseout", function (e) {
       if (this.classList.contains("cluster-over")) {
         this.classList.remove("cluster-over");
@@ -333,15 +341,37 @@ function createCluster(roomList) {
 
     overlay.addEventListener("click", (e) => {
       roomCluster._clusters.forEach((cluster) => {
+        if (e.currentTarget === cluster.getClusterMarker().getContent()) return;
         cluster
           .getClusterMarker()
           .getContent()
           .classList.remove("cluster-click");
       });
-      e.currentTarget.classList.add("cluster-click");
+      e.currentTarget.classList.toggle("cluster-click");
+
+      // 이때 해당 클러스터가 활성화상태면 카드를 생성하고, 아니라면 삭제한다.
+      if (e.currentTarget.classList.contains("cluster-click")) {
+        let roomList = cluster
+          .getMarkers()
+          .map(
+            (marker) =>
+              roomAndMarker.find((item) => marker === item.marker).roomData
+          );
+        createCardList(roomList);
+      } else createCardList();
+
+      // 카드리스트가 생성, 삭제될때마다 정렬버튼을 초기화한다.
+      sortBtns.forEach((btn) => {
+        const up = btn.querySelector(".fa-sort-up");
+        const down = btn.querySelector(".fa-sort-down");
+        btn.dataset.state = "basic";
+        up.classList.add("active");
+        down.classList.add("active");
+      });
     });
   });
 
+  // 처음 생성된 이후 zoomIn, out으로 생기는 클러스터의 엘리먼트들에게 적용
   kakao.maps.event.addListener(roomCluster, "clustered", function (clusters) {
     for (let i = 0; i < clusters.length; i++) {
       let cluster = clusters[i];
@@ -370,34 +400,6 @@ function createCluster(roomList) {
       });
     }
   });
-
-  kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
-    // 클릭한 클러스터 안의 마커들을
-    // 방정보,마커정보를 매핑한 배열과 비교하여 같은 marker를 가지는 방들을 return
-    let roomList = cluster
-      .getMarkers()
-      .map(
-        (marker) =>
-          roomAndMarker.find((item) => marker === item.marker).roomData
-      );
-    createCardList(roomList);
-
-    sortBtns.forEach((btn) => {
-      const up = btn.querySelector(".fa-sort-up");
-      const down = btn.querySelector(".fa-sort-down");
-      btn.dataset.state = "basic";
-      up.classList.add("active");
-      down.classList.add("active");
-    });
-  });
-
-  kakao.maps.event.addListener(
-    roomCluster,
-    "clusterrightclick",
-    function (cluster) {
-      createRange(cluster);
-    }
-  );
 }
 
 function removeCluster() {
@@ -1812,17 +1814,17 @@ applyBtn_hyperLocal.addEventListener("click", (e) => {
    * 2. 활성화된 chip의 검색 키워드 얻어오기 +
    * 3. 키워드와 중심좌표로 검색하기 +
    * 4. 검색 결과를 마커로 띄우기 +
-   *
+   * 5. 세권 적용할때 원 띄우기 +
    */
   removeHyperLocalMarker();
 
   let clickedCluster = roomCluster._clusters.filter((cluster) =>
     cluster.getClusterMarker().getContent().classList.contains("cluster-click")
-  );
+  )[0];
 
   // 클러스터의 중심좌표
-  const lat = clickedCluster[0].getCenter().Ma;
-  const lng = clickedCluster[0].getCenter().La;
+  const lat = clickedCluster.getCenter().Ma;
+  const lng = clickedCluster.getCenter().La;
 
   chips.forEach((chip) => {
     if (chip.classList.contains("active")) {
@@ -1837,6 +1839,7 @@ applyBtn_hyperLocal.addEventListener("click", (e) => {
         );
     }
   });
+  createRange(clickedCluster);
 });
 
 /**
@@ -1890,6 +1893,7 @@ function createRange(cluster) {
     circle.setMap(map);
   });
 }
+
 /**
  * 세권 마커를 생성한다.
  * @param {*} data 마커에 대한 정보
