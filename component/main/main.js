@@ -327,6 +327,38 @@ function createCluster(roomList) {
   roomCluster._clusters.forEach((cluster) => {
     let overlay = cluster.getClusterMarker().getContent();
 
+    // const clickHandler = (e) => {
+    //   console.log("처음생성 된");
+    //   roomCluster._clusters.forEach((cluster) => {
+    //     if (e.currentTarget === cluster.getClusterMarker().getContent()) return;
+    //     cluster
+    //       .getClusterMarker()
+    //       .getContent()
+    //       .classList.remove("cluster-click");
+    //   });
+    //   e.currentTarget.classList.toggle("cluster-click");
+
+    //   // 이때 해당 클러스터가 활성화상태면 카드를 생성하고, 아니라면 삭제한다.
+    //   if (e.currentTarget.classList.contains("cluster-click")) {
+    //     let roomList = cluster
+    //       .getMarkers()
+    //       .map(
+    //         (marker) =>
+    //           roomAndMarker.find((item) => marker === item.marker).roomData
+    //       );
+    //     createCardList(roomList);
+    //   } else createCardList();
+
+    //   // 카드리스트가 생성, 삭제될때마다 정렬버튼을 초기화한다.
+    //   sortBtns.forEach((btn) => {
+    //     const up = btn.querySelector(".fa-sort-up");
+    //     const down = btn.querySelector(".fa-sort-down");
+    //     btn.dataset.state = "basic";
+    //     up.classList.add("active");
+    //     down.classList.add("active");
+    //   });
+    // };
+
     overlay.addEventListener("mouseover", function (e) {
       if (!this.classList.contains("cluster-over")) {
         this.classList.add("cluster-over");
@@ -338,40 +370,9 @@ function createCluster(roomList) {
         this.classList.remove("cluster-over");
       }
     });
-
-    overlay.addEventListener("click", (e) => {
-      roomCluster._clusters.forEach((cluster) => {
-        if (e.currentTarget === cluster.getClusterMarker().getContent()) return;
-        cluster
-          .getClusterMarker()
-          .getContent()
-          .classList.remove("cluster-click");
-      });
-      e.currentTarget.classList.toggle("cluster-click");
-
-      // 이때 해당 클러스터가 활성화상태면 카드를 생성하고, 아니라면 삭제한다.
-      if (e.currentTarget.classList.contains("cluster-click")) {
-        let roomList = cluster
-          .getMarkers()
-          .map(
-            (marker) =>
-              roomAndMarker.find((item) => marker === item.marker).roomData
-          );
-        createCardList(roomList);
-      } else createCardList();
-
-      // 카드리스트가 생성, 삭제될때마다 정렬버튼을 초기화한다.
-      sortBtns.forEach((btn) => {
-        const up = btn.querySelector(".fa-sort-up");
-        const down = btn.querySelector(".fa-sort-down");
-        btn.dataset.state = "basic";
-        up.classList.add("active");
-        down.classList.add("active");
-      });
-    });
   });
 
-  // 처음 생성된 이후 zoomIn, out으로 생기는 클러스터의 엘리먼트들에게 적용
+  // 처음 생성된 이후 zoomIn, out, 지도이동으로 생기는 클러스터의 엘리먼트들에게 적용
   kakao.maps.event.addListener(roomCluster, "clustered", function (clusters) {
     for (let i = 0; i < clusters.length; i++) {
       let cluster = clusters[i];
@@ -388,17 +389,37 @@ function createCluster(roomList) {
           this.classList.remove("cluster-over");
         }
       });
-
-      overlay.addEventListener("click", (e) => {
-        roomCluster._clusters.forEach((cluster) => {
-          cluster
-            .getClusterMarker()
-            .getContent()
-            .classList.remove("cluster-click");
-        });
-        e.currentTarget.classList.add("cluster-click");
-      });
     }
+  });
+
+  kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
+    let overlay = cluster.getClusterMarker().getContent();
+    overlay.classList.toggle("cluster-click");
+    roomCluster._clusters.forEach((innerCluster) => {
+      if (innerCluster === cluster) return;
+      innerCluster
+        .getClusterMarker()
+        .getContent()
+        .classList.remove("cluster-click");
+    });
+
+    if (overlay.classList.contains("cluster-click")) {
+      let roomList = cluster
+        .getMarkers()
+        .map(
+          (marker) =>
+            roomAndMarker.find((item) => marker === item.marker).roomData
+        );
+      createCardList(roomList);
+    } else createCardList(null);
+
+    sortBtns.forEach((btn) => {
+      const up = btn.querySelector(".fa-sort-up");
+      const down = btn.querySelector(".fa-sort-down");
+      btn.dataset.state = "basic";
+      up.classList.add("active");
+      down.classList.add("active");
+    });
   });
 }
 
@@ -1807,15 +1828,6 @@ resetBtn_hyperLocal.addEventListener("click", (e) =>
 );
 
 applyBtn_hyperLocal.addEventListener("click", (e) => {
-  /**
-   * 클릭한 클러스터 주변에 원 생성
-   * 활성화된 chip에 따라 마커 생성
-   * 1. 클릭한 클러스터의 중심좌표 얻어오기 +
-   * 2. 활성화된 chip의 검색 키워드 얻어오기 +
-   * 3. 키워드와 중심좌표로 검색하기 +
-   * 4. 검색 결과를 마커로 띄우기 +
-   * 5. 세권 적용할때 원 띄우기 +
-   */
   removeHyperLocalMarker();
 
   let clickedCluster = roomCluster._clusters.filter((cluster) =>
