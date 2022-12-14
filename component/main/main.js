@@ -981,16 +981,6 @@ function removeMarker() {
 }
 
 /**
- * ^ 세권마커를 모두 삭제한다.
- */
-function removeHyperLocalMarker() {
-  hyperLocalMarkerList.forEach((obj) => {
-    obj.marker.setMap(null);
-  });
-  hyperLocalMarkerList.length = 0;
-}
-
-/**
  * ^ 인포윈도우를 닫는다.
  */
 function removeInfoWindow() {
@@ -1820,8 +1810,8 @@ applyBtn_hyperLocal.addEventListener("click", (e) => {
    * 활성화된 chip에 따라 마커 생성
    * 1. 클릭한 클러스터의 중심좌표 얻어오기 +
    * 2. 활성화된 chip의 검색 키워드 얻어오기 +
-   * 3. 키워드와 중심좌표로 검색하기
-   * 4. 검색 결과를 마커로 띄우기
+   * 3. 키워드와 중심좌표로 검색하기 +
+   * 4. 검색 결과를 마커로 띄우기 +
    *
    */
   removeHyperLocalMarker();
@@ -1839,6 +1829,7 @@ applyBtn_hyperLocal.addEventListener("click", (e) => {
       // 검색할 키워드
       const keyword = chip.dataset.keyword;
       const markerImageName = chip.dataset.marker;
+
       kakaoSearch
         .search_hyperLocal(keyword, lat, lng)
         .then((data) =>
@@ -1850,8 +1841,7 @@ applyBtn_hyperLocal.addEventListener("click", (e) => {
 
 /**
  * 클러스터를 인자로 받아 클러스터를 기준으로 원(세권의 범위)을 생성한다.
- * @param {*} radius
- * @param {*} cluster
+ * @param {*} cluster 원을 생성할 클러스터
  */
 function createRange(cluster) {
   let circle250 = new kakao.maps.Circle({
@@ -1900,9 +1890,12 @@ function createRange(cluster) {
     circle.setMap(map);
   });
 }
-
+/**
+ * 세권 마커를 생성한다.
+ * @param {*} data 마커에 대한 정보
+ * @param {*} markerImageName 마커의 이미지 이름
+ */
 function createHyperLocalMarker(data, markerImageName) {
-  console.log(data);
   let address = data.address_name || null;
   // let roadAddress = data.road_address_name || null;
   let place = data.place_name || null;
@@ -1955,6 +1948,16 @@ function createHyperLocalMarker(data, markerImageName) {
   };
 
   hyperLocalMarkerList.push(marekrObj);
+}
+
+/**
+ * ^ 세권마커를 모두 삭제한다.
+ */
+function removeHyperLocalMarker() {
+  hyperLocalMarkerList.forEach((obj) => {
+    obj.marker.setMap(null);
+  });
+  hyperLocalMarkerList.length = 0;
 }
 
 //* ========================================== NAV 관련 코드들
