@@ -372,7 +372,11 @@ function createCluster(roomList) {
 
   kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
     let overlay = cluster.getClusterMarker().getContent();
+
+    // 클릭한 클러스터의 "cluster-click" 클래스 토글
     overlay.classList.toggle("cluster-click");
+
+    // 나머지 클러스터의 "cluster-click" 클래스 삭제
     roomCluster._clusters.forEach((innerCluster) => {
       if (innerCluster === cluster) return;
       innerCluster
@@ -381,6 +385,7 @@ function createCluster(roomList) {
         .classList.remove("cluster-click");
     });
 
+    // "cluster-click"가 있다면
     if (overlay.classList.contains("cluster-click")) {
       let roomList = cluster
         .getMarkers()
@@ -389,7 +394,15 @@ function createCluster(roomList) {
             roomAndMarker.find((item) => marker === item.marker).roomData
         );
       createCardList(roomList);
-    } else createCardList(null);
+      ableHyperLocalBtn();
+      ableSortBtn();
+    }
+    // "cluster-click"가 없다면
+    else {
+      createCardList(null);
+      disableHyperLocalBtn();
+      disableSortBtn();
+    }
 
     sortBtns.forEach((btn) => {
       const up = btn.querySelector(".fa-sort-up");
@@ -445,6 +458,33 @@ function displayRoomCluster(boolean) {
   }
   // kakao 에서 제공하는 cluster style 변경 함수
   if (roomCluster) roomCluster.setStyles(style);
+}
+
+// * 정렬버튼
+/**
+ * ^ 정렬 버튼을 클릭 가능한 상태로 만드는 함수
+ */
+function ableSortBtn() {
+  const layoutBox = document.querySelector(".layout-box");
+
+  sortBtns.forEach((btn) => {
+    btn.classList.remove("disable");
+  });
+
+  layoutBox.classList.remove("disable");
+}
+
+/**
+ * ^ 정렬 버튼을 클릭 불가능한 상태로 만드는 함수
+ */
+function disableSortBtn() {
+  const layoutBox = document.querySelector(".layout-box");
+
+  sortBtns.forEach((btn) => {
+    btn.classList.add("disable");
+  });
+
+  layoutBox.classList.add("disable");
 }
 
 /**
@@ -587,7 +627,7 @@ function createOverlay_local(local) {
   const overlayList = document.querySelectorAll(".customOverlay");
 
   overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", localOverlayClick);
+    overlay.addEventListener("click", localOverlayClickHandler);
   });
 }
 
@@ -616,7 +656,7 @@ async function createOverlay_subway() {
  * ^ 클릭한 지역오버레이를 중심으로 지도를 확대하는 이벤트 핸들러
  * @param {*} event 클릭한 오버레이 정보
  */
-function localOverlayClick(event) {
+function localOverlayClickHandler(event) {
   let overlay = event.target;
   map.setLevel(CRITERIA_MAP_LEVEL - 1);
   map.setCenter(
@@ -629,7 +669,7 @@ function localOverlayClick(event) {
  *
  * @param {*} event
  */
-function subwayOverlayClick(event) {
+function subwayOverlayClickHandler(event) {
   let overlay = event.target;
 
   // 방 클러스터가 있음을 알리는 상태
@@ -643,6 +683,9 @@ function subwayOverlayClick(event) {
 
   // 새로운 지하철로 매물을 검색했으니 필터용 오리지널 방 정보를 초기화
   originalRoomAndMarker.length = 0;
+
+  // 필터 버튼 활성화
+  ableFilterBtn();
 
   map.setLevel(5);
   map.setCenter(
@@ -658,7 +701,7 @@ function overlaySetEvent() {
     ".customOverlay.customOverlay--local"
   );
   localOverlay.forEach((overlay) => {
-    overlay.addEventListener("click", localOverlayClick);
+    overlay.addEventListener("click", localOverlayClickHandler);
   });
 
   // 지하철 오버레이는 많아서 모든 오버레이를 선택할수 있게 살짝 지연시켰다.
@@ -668,7 +711,7 @@ function overlaySetEvent() {
     );
 
     subwayOverlay.forEach((overlay) => {
-      overlay.addEventListener("click", subwayOverlayClick);
+      overlay.addEventListener("click", subwayOverlayClickHandler);
     });
   }, 500);
 }
@@ -1052,23 +1095,34 @@ searchInput.addEventListener("keydown", (e) => {
 //* ========================================== 필터 관련 코드들 ================================================
 
 /**
- * 필터 적용버튼 함수
+ * ^ 필터 버튼을 클릭 가능한 상태로 만드는 함수
+ */
+function ableFilterBtn() {
+  filterCategory_price.classList.remove("disable");
+  filterCategory_size.classList.remove("disable");
+}
+
+/**
+ * ^ 필터 버튼을 클릭 불가능한 상태로 만드는 함수
+ */
+function disableFilterBtn() {
+  filterCategory_price.classList.add("disable");
+  filterCategory_size.classList.add("disable");
+}
+
+/**
+ * ^ 필터 적용버튼 클릭 핸들러
  */
 function applyBtnHandler_oneroom() {
   // * 유형 . 금액 변수들
   // 보증금
-  // const divDepositValue = filterCategory_price.querySelector(
-  //   ".filter__option--deposit .filter__option-value"
-  // );
   const depositMin =
     filterCategory_price.querySelector(".filter__input-deposit--min") || null;
   const depositMax =
     filterCategory_price.querySelector(".filter__input-deposit--max") || null;
 
   // 월세
-  // const divRentValue = filterCategory_price.querySelector(
-  //   ".filter__option--rent .filter__option-value"
-  // );
+
   const rentMin =
     filterCategory_price.querySelector(".filter__input-rent--min") || null;
   const rentMax =
@@ -1789,7 +1843,7 @@ resetBtn_size.addEventListener("click", (e) => {
   parkable.checked = false;
 });
 applyBtn_size.addEventListener("click", applyBtnHandler_oneroom);
-//* ========================================== 세권 관련 코드들
+//* ========================================== 세권 관련 코드들 =================================================
 const resetBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--reset");
 const applyBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--apply");
 const chips = hyperLocal.querySelectorAll(".filter__option-chips");
@@ -1832,7 +1886,21 @@ applyBtn_hyperLocal.addEventListener("click", (e) => {
 });
 
 /**
- * 클러스터를 인자로 받아 클러스터를 기준으로 원(세권의 범위)을 생성한다.
+ * ^ 세권 버튼을 클릭 가능한 상태로 만드는 함수
+ */
+function ableHyperLocalBtn() {
+  hyperLocal.classList.remove("disable");
+}
+
+/**
+ * ^ 세권 버튼을 클릭 불가능한 상태로 만드는 함수
+ */
+function disableHyperLocalBtn() {
+  hyperLocal.classList.add("disable");
+}
+
+/**
+ * ^ 클러스터를 인자로 받아 클러스터를 기준으로 원(세권의 범위)을 생성한다.
  * @param {*} cluster 원을 생성할 클러스터
  */
 function createRange(cluster) {
@@ -1986,33 +2054,42 @@ kakao.maps.event.addListener(map, "dragend", function () {
 // 보여지는 오버레이에 클릭이벤트를 등록한다.
 kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   // 5이하 : 매물, 6~8 : 지하철, 9이상 : 지역
+  // 지하철 오버레이를 띄워야할때
   if (5 < map.getLevel() && map.getLevel() < 8) {
-    // console.log("지하철 오버레이를 띄워야할때");
     displayOverlay_local_subway(null, map);
 
     displayRoomCluster(false);
-    createCardList();
-  } else if (map.getLevel() <= 5) {
+    createCardList(null);
+    disableFilterBtn();
+    disableHyperLocalBtn();
+    disableSortBtn();
+  }
+  // 매물 클러스터를 띄워야 할때
+  else if (map.getLevel() <= 5) {
+    // console.log("줌이 바뀌었는데 방정보 있을때");
     if (roomClusterState) {
-      // console.log("줌이 바뀌었는데 방정보 있을때");
       displayRoomCluster(true);
       createCardList();
       displayOverlay_local_subway(null, null);
-    } else {
-      // console.log("줌이 바뀌었는데 방정보 없을때");
-      displayOverlay_local_subway(null, map);
+      ableFilterBtn();
     }
-  } else {
-    // console.log("로컬 오버레이를 띄워야할때");
+    // console.log("줌이 바뀌었는데 방정보 없을때");
+    else {
+      displayOverlay_local_subway(null, map);
+      disableFilterBtn();
+    }
+  }
+  // 로컬 오버레이를 띄워야할때
+  else {
     displayOverlay_local_subway(map, null);
-
-    createCardList();
+    createCardList(null);
+    disableFilterBtn();
+    disableHyperLocalBtn();
+    disableSortBtn();
   }
 
   overlaySetEvent();
 });
-
-kakao.maps.event.addListener(map, "rightclick", () => {});
 
 /**
  * 지도를 해당 좌표로 부드럽게 이동시킨다.
