@@ -115,7 +115,7 @@ const hyperLocalMarkerList = [];
  */
 
 //! 할것
-//* 검색기능
+//* 검색기능 +
 //  1. 입력된 값으로 검색하기 +
 //  2. 검색한 내용을 마커로 표시하기 +
 //   2-1 마커를 꾸밀수 있나? 꾸밀수 있으면 마커로 +
@@ -139,17 +139,23 @@ const hyperLocalMarkerList = [];
 //  5-4 초기화 버튼 클릭: 모든 필터 옵션 초기화 +
 //  6 구조 면적 필터도 만들기 +
 
-//* 세권 만들기
+//* 세권 만들기 +
 //매물 클러스터 클릭하고 세권 필터를 눌러서 적용한경우 세권 생성!
 //  1. 세권 클릭이벤트 등록 +
 //  2. 적용시 마커 생성 +
 
-//* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
+//* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기 +
 
 //* 카드 클릭시 디테일 정보 보여주기
+//  1. 디자인 생각해보기, 내용 생각해보기
+
 //* 각 페이지 별 기능 만들기
-//* 로그인 기능
+//  1. 페이지별 직방 크롤링 모듈 만들기.
+//  2. 페이지별로 함수 만들기 ★
+
 //* 카드 정렬 버튼 클릭했을때 스크롤이 제일 위로 가게
+
+//* 로그인 기능 ???
 
 // 지도 생성
 const map = new kakao.maps.Map(document.getElementById("map"), {
@@ -668,6 +674,8 @@ function localOverlayClickHandler(event) {
  */
 function subwayOverlayClickHandler(event) {
   let overlay = event.target;
+
+  displayOverlay_local_subway(null, null);
 
   // 방 클러스터가 있음을 알리는 상태
   roomClusterState = true;
