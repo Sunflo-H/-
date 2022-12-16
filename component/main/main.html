@@ -111,7 +111,8 @@
         <div class="filter-box">
           <div class="filter">
             <!-- 원룸의 필터 -->
-            <div class="filter__category">
+            <!-- 필터 - 유형·금액 -->
+            <div class="filter__category disable">
               <div class="filter__category-title">유형·금액</div>
               <div class="filter__category-arrow">
                 <i class="fa-solid fa-sort-down"></i>
@@ -154,7 +155,7 @@
             </div>
 
             <!-- 필터 - 구조·면적 -->
-            <div class="filter__category">
+            <div class="filter__category disable">
               <div class="filter__category-title">구조·면적</div>
               <div class="filter__category-arrow">
                 <i class="fa-solid fa-sort-down"></i>
@@ -265,7 +266,7 @@
             </div>
 
             <!-- 필터 - 세권 -->
-            <div class="filter__category">
+            <div class="filter__category disable">
               <div class="filter__category-title">세권</div>
               <div class="filter__category-arrow">
                 <i class="fa-solid fa-sort-down"></i>
@@ -295,14 +296,7 @@
                         <i class="fa-solid fa-plus"></i
                         ><i class="fa-solid fa-check"></i>다이소
                       </div>
-                      <div
-                        class="filter__option-chips"
-                        data-marker="departmentStore"
-                        data-keyword="백화점"
-                      >
-                        <i class="fa-solid fa-plus"></i
-                        ><i class="fa-solid fa-check"></i>백화점
-                      </div>
+
                       <div
                         class="filter__option-chips"
                         data-marker="mart"
@@ -506,8 +500,9 @@
           </div>
         </div>
 
+        <!-- 정렬 -->
         <div class="card-option-box">
-          <div class="sort-box">
+          <div class="sort-box disable">
             <div class="sort-btn" data-state="basic">
               <span>보증금</span>
               <div class="sort-btn__icon">
@@ -523,7 +518,7 @@
               </div>
             </div>
           </div>
-          <div class="layout-box">
+          <div class="layout-box disable">
             <div class="layout-btn active">
               <i class="fa-solid fa-list-ul"></i>
             </div>
@@ -544,37 +539,7 @@
 
         <!-- Card -->
         <div class="card-box">
-          <ul class="cards">
-            <!-- <li class="no-result">
-              <p class="no-result__text"><b>장소</b>를 클릭하여</p>
-              <p class="no-result__text">매물을 확인해보세요.</p>
-            </li> -->
-            <!-- <li class="card card--short">
-              <div class="card__text card__text--short">
-                <div class="card__price card__price--short">월세 2,000 / 100</div>
-                <div class="card__size card__size--short">6평 1층</div>
-              </div>
-            </li> -->
-            <!-- <li class="card">
-              <div class="card__text">
-                <div class="card__price">월세 2,000 / 100</div>
-                <div class="card__size">6평 1층</div>
-                <div class="card__addr">광진구 구의동</div>
-                <div class="card__description">
-                  최고급 어쩌구~ 아차산역 5분거리최고급 어쩌구~ 아차산역
-                  5분거리최고급 어쩌구~ 아차산역 5분거리최고급 어쩌구~ 아차산역
-                  5분거리최고급 어쩌구~ 아차산역 5분거리최고급 어쩌구~ 아차산역
-                  5분거리최고급 어쩌구~ 아차산역 5분거리
-                </div>
-              </div>
-              <div class="card__image">
-                <img
-                  src="https://ic.zigbang.com/ic/items/33724732/1.jpg?w=400&h=300&q=70&a=1"
-                  alt=""
-                />
-              </div>
-            </li> -->
-          </ul>
+          <ul class="cards"></ul>
         </div>
       </div>
     </main>

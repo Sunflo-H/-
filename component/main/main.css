@@ -2,6 +2,7 @@
   --black: #07364e;
   --secondary: #b3bfdb;
   --disabled: #f2f5f6;
+  --disabled2: #a3a3a3;
   --primary: #3c5cff;
   --accent1: #00bfb3;
   --accent2: #ff8959;
@@ -51,6 +52,16 @@ select::-ms-expand {
 }
 .w120 {
   width: 120px !important;
+}
+
+.disable {
+  color: var(--disabled2) !important;
+  background-color: var(--disabled) !important;
+  pointer-events: none;
+}
+
+.disable i {
+  color: var(--disabled2) !important;
 }
 
 /* Main */

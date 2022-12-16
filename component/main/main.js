@@ -132,19 +132,29 @@ const hyperLocalMarkerList = [];
 //  2. 필터 안에 버튼 두개 (금액옵션, 구조·면적옵션) +
 //  3. 필터 옵션창을 클릭했을때 필터가 비활성화됨 => 이벤트 위임을 막음 +
 //  4. 각 nav별로 기능 만들어두고 원룸 위주로 완성
-//  5. 필터가 적용되게끔 하기
+//  5. 필터가 적용되게끔 하기 +
 //  5-1 거래유형 버튼 : 버튼에 따라 보증금과 월세를 보여줌 +
 //  5-2 금액 최소~최대 기능 : 최소(대)만 입력되었을때, 최대가 최소보다 작을때 +
 //  5-3 적용 버튼 클릭 : 모든 필터 옵션들이 적용 +
 //  5-4 초기화 버튼 클릭: 모든 필터 옵션 초기화 +
 //  6 구조 면적 필터도 만들기 +
+//  7 필터를 적용하면 그 내용이 필터 버튼에 보이게
+
+//* 필터, 정렬 버튼 비활성화 상태 만들기
+//  1. 지하철 오버레이를 클릭하기 전이면 필터, 정렬 비활성화
+//  2. 지하철 오버레이를 클릭하면 필터 활성화
+//  3. 매물 클러스터 클릭하면 정렬 활성화
 
 //* 세권 만들기
 //매물 클러스터 클릭하고 세권 필터를 눌러서 적용한경우 세권 생성!
-//  1. 세권 클릭이벤트 등록
-//  2. 적용시 마커 생성
+//  1. 세권 클릭이벤트 등록 +
+//  2. 적용시 마커 생성 +
+
+//* 세권 닫기???
+//  1. 세권 생성 후 옆에 닫기 버튼을 만들자
 
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
+
 //* 카드 클릭시 디테일 정보 보여주기
 //* 각 페이지 별 기능 만들기
 //* 로그인 기능
@@ -326,38 +336,6 @@ function createCluster(roomList) {
   // 처음 생성된 클러스터의 엘리먼트들에 적용하는 css변화 이벤트 (clustered 이벤트핸들러와 기능은 같다.)
   roomCluster._clusters.forEach((cluster) => {
     let overlay = cluster.getClusterMarker().getContent();
-
-    // const clickHandler = (e) => {
-    //   console.log("처음생성 된");
-    //   roomCluster._clusters.forEach((cluster) => {
-    //     if (e.currentTarget === cluster.getClusterMarker().getContent()) return;
-    //     cluster
-    //       .getClusterMarker()
-    //       .getContent()
-    //       .classList.remove("cluster-click");
-    //   });
-    //   e.currentTarget.classList.toggle("cluster-click");
-
-    //   // 이때 해당 클러스터가 활성화상태면 카드를 생성하고, 아니라면 삭제한다.
-    //   if (e.currentTarget.classList.contains("cluster-click")) {
-    //     let roomList = cluster
-    //       .getMarkers()
-    //       .map(
-    //         (marker) =>
-    //           roomAndMarker.find((item) => marker === item.marker).roomData
-    //       );
-    //     createCardList(roomList);
-    //   } else createCardList();
-
-    //   // 카드리스트가 생성, 삭제될때마다 정렬버튼을 초기화한다.
-    //   sortBtns.forEach((btn) => {
-    //     const up = btn.querySelector(".fa-sort-up");
-    //     const down = btn.querySelector(".fa-sort-down");
-    //     btn.dataset.state = "basic";
-    //     up.classList.add("active");
-    //     down.classList.add("active");
-    //   });
-    // };
 
     overlay.addEventListener("mouseover", function (e) {
       if (!this.classList.contains("cluster-over")) {
@@ -1073,21 +1051,24 @@ searchInput.addEventListener("keydown", (e) => {
 
 //* ========================================== 필터 관련 코드들 ================================================
 
-function filterApply_oneroom() {
+/**
+ * 필터 적용버튼 함수
+ */
+function applyBtnHandler_oneroom() {
   // * 유형 . 금액 변수들
   // 보증금
-  const divDepositValue = filterCategory_price.querySelector(
-    ".filter__option--deposit .filter__option-value"
-  );
+  // const divDepositValue = filterCategory_price.querySelector(
+  //   ".filter__option--deposit .filter__option-value"
+  // );
   const depositMin =
     filterCategory_price.querySelector(".filter__input-deposit--min") || null;
   const depositMax =
     filterCategory_price.querySelector(".filter__input-deposit--max") || null;
 
   // 월세
-  const divRentValue = filterCategory_price.querySelector(
-    ".filter__option--rent .filter__option-value"
-  );
+  // const divRentValue = filterCategory_price.querySelector(
+  //   ".filter__option--rent .filter__option-value"
+  // );
   const rentMin =
     filterCategory_price.querySelector(".filter__input-rent--min") || null;
   const rentMax =
@@ -1113,7 +1094,7 @@ function filterApply_oneroom() {
     ".filter__option--parkable .toggle"
   );
 
-  // * 필터적용 코드
+  // * 거래유형 옵션 적용
   let salesType = salesTypeValue.dataset.value;
 
   let roomData = originalRoomAndMarker.map((item) => item.roomData);
@@ -1271,10 +1252,6 @@ function filterApply_oneroom() {
   });
 
   result = result.filter((room) => {
-    /**
-     * 체크 아닐때
-     * 체크 되었을때
-     */
     if (parkable.checked) {
       if (room.item.parking !== "불가능") return room;
     } else return room;
@@ -1619,7 +1596,7 @@ function createFilterOptionContent_price(option) {
   };
 
   resetBtn.addEventListener("click", resetBtnHandler);
-  applyBtn.addEventListener("click", filterApply_oneroom);
+  applyBtn.addEventListener("click", applyBtnHandler_oneroom);
 }
 
 //* 필터 : 구조·면적; (원룸, 빌라)
@@ -1811,7 +1788,7 @@ resetBtn_size.addEventListener("click", (e) => {
 
   parkable.checked = false;
 });
-applyBtn_size.addEventListener("click", filterApply_oneroom);
+applyBtn_size.addEventListener("click", applyBtnHandler_oneroom);
 //* ========================================== 세권 관련 코드들
 const resetBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--reset");
 const applyBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--apply");
