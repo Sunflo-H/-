@@ -138,20 +138,11 @@ const hyperLocalMarkerList = [];
 //  5-3 적용 버튼 클릭 : 모든 필터 옵션들이 적용 +
 //  5-4 초기화 버튼 클릭: 모든 필터 옵션 초기화 +
 //  6 구조 면적 필터도 만들기 +
-//  7 필터를 적용하면 그 내용이 필터 버튼에 보이게
-
-//* 필터, 정렬 버튼 비활성화 상태 만들기
-//  1. 지하철 오버레이를 클릭하기 전이면 필터, 정렬 비활성화
-//  2. 지하철 오버레이를 클릭하면 필터 활성화
-//  3. 매물 클러스터 클릭하면 정렬 활성화
 
 //* 세권 만들기
 //매물 클러스터 클릭하고 세권 필터를 눌러서 적용한경우 세권 생성!
 //  1. 세권 클릭이벤트 등록 +
 //  2. 적용시 마커 생성 +
-
-//* 세권 닫기???
-//  1. 세권 생성 후 옆에 닫기 버튼을 만들자
 
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기
 
@@ -166,6 +157,12 @@ const map = new kakao.maps.Map(document.getElementById("map"), {
   level: 8,
   maxLevel: 12,
 });
+
+function getUserLocation() {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject); // succes, error
+  });
+}
 
 //* ============================== 방 정보, 방 클러스터 관련 코드들 =================================
 /**
@@ -1114,6 +1111,16 @@ function disableFilterBtn() {
  * ^ 필터 적용버튼 클릭 핸들러
  */
 function applyBtnHandler_oneroom() {
+  const filterTitle_price = filterCategory_price.querySelector(
+    ".filter__category-title"
+  );
+  const filterTitle_size = filterCategory_size.querySelector(
+    ".filter__category-title"
+  );
+
+  const title_price = [];
+  const title_size = [];
+
   // * 유형 . 금액 변수들
   // 보증금
   const depositMin =
@@ -1314,6 +1321,8 @@ function applyBtnHandler_oneroom() {
   removeCluster();
   createCluster(result);
   createCardList();
+
+  filterTitle_price.innerText = "하이";
 }
 
 // 모든 filter__category 클릭시 필터옵션창을 여는 이벤트
@@ -2107,8 +2116,17 @@ function panTo(lat, lng) {
 function init() {
   createOverlay_subway();
   createOverlay_local(local);
-  createCardList();
+  createCardList(null);
   createFilterOptionContent_price("전체");
+  getUserLocation().then((data) => {
+    map.setCenter(
+      new kakao.maps.LatLng(data.coords.latitude, data.coords.longitude)
+    );
+    map.setLevel(6);
+    setTimeout(() => {
+      displayOverlay_local_subway(null, map);
+    }, 200);
+  });
 }
 
 init();
