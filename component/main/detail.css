@@ -1,0 +1,100 @@
+/* 공용 */
+.detail__text--06r {
+  font-size: 0.6rem;
+}
+
+.detail__text--07r {
+  font-size: 0.7rem;
+}
+
+.detail__text--09r {
+  font-size: 0.9rem;
+}
+
+.detail__text--11r {
+  font-size: 1.1rem;
+}
+
+.detail__text--14r {
+  font-size: 1.4rem;
+}
+
+.detail__text--bold {
+  font-weight: bold;
+}
+
+/* detail */
+.detail-box {
+  border: 1px solid red;
+  width: 270px;
+}
+
+.detail__header {
+  display: none;
+  position: fixed;
+}
+
+.detail__image {
+  width: 100%;
+  height: 300px;
+}
+
+/* detail - basic__top */
+.basic__top {
+  border: 1px solid blue;
+  padding: 10px;
+}
+
+.detail__address {
+  font-size: 0.6rem;
+}
+
+.detail__manage-cost {
+  font-size: 0.7rem;
+}
+
+/* detail - basic__bottom */
+.basic__bottom {
+  border: 1px solid green;
+  padding: 10px;
+}
+
+.detail__title {
+  font-size: 0.9rem;
+}
+
+.detail__text {
+  font-size: 0.9rem;
+}
+
+/* detail__manage */
+
+.detail__manage {
+  border: 1px solid blue;
+  padding: 10px;
+}
+
+/* detail__option */
+.detail__option {
+  display: flex;
+}
+
+/* detail__description */
+.detail__description {
+}
+
+/* detail__location */
+.detail__location {
+}
+
+/* detail-bottom */
+.detail__bottom {
+}
+
+/* 더보기 버튼 */
+.view-more {
+  border: none;
+  text-decoration: underline;
+  background-color: transparent;
+  font-size: 0.9rem;
+}

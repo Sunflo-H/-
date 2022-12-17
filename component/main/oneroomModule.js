@@ -130,6 +130,7 @@ class Oneroom {
 
     // 방정보중 원룸인것들만 필터링
     let result = roomInfoList.filter((roomInfo) => roomInfo);
+    console.log(result);
 
     return result;
   }

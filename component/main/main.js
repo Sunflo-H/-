@@ -147,13 +147,45 @@ const hyperLocalMarkerList = [];
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기 +
 
 //* 카드 클릭시 디테일 정보 보여주기
-//  1. 디자인 생각해보기, 내용 생각해보기
+//  1. 디자인 생각해보기, 내용 생각해보기 ★
+
+//  기본 정보
+//  이미지 : images[]
+//  주소 : address
+//  월세/전세 : 월세금액/전세금액
+//  관리비 : manage_cost
+//  타이틀 : title
+//  평수 : 공급면적_m2   평수 계산함수
+//  복층형 원룸(욕실 1개) : room_type_code (bathroom_count)
+//  세대당 1대 가능 or 불가능 : parking
+//  3층/4층 : floor_string층 / floor_all
+//  즉시 입주 가능 : movein_date  => 처음사용하는 값임 어떤 값이 들어있는지 확인해야함
+
+//  관리비 정보
+//  관리비 : manage_cost
+//  포함 : manage_cost_inc
+//  별도 : manage_cost_not_inc
+
+//  옵션 정보
+//  options String타입 한번에 다 보여주되 대신 텍스트만 작게 보여주자
+
+//  상세 설명
+//  description  이 데이터를 어떻게 하면 그대로 html로 나타낼수 있는지 그것이 관건
+//  이거는 더보기 필요 => 더보기하면 이 칸을 늘려, 모달 만들지마
+
+//  공인중개사 정보
+//  사람사진과 중개사이름 : agent.owner.profile_url / agent.agent_title
+//  주소 추가? agent.agent_address
+//  설명 : agent.agent_intro
+//  이름 : agent.owner.agent_name
+//  전화번호 : agent.owner.agent_phone
+//  얘도 더보기로 설명만 마저 볼 수 있게끔
 
 //* 각 페이지 별 기능 만들기
 //  1. 페이지별 직방 크롤링 모듈 만들기.
 //  2. 페이지별로 함수 만들기 ★
 
-//* 카드 정렬 버튼 클릭했을때 스크롤이 제일 위로 가게
+//* 정렬 버튼 클릭했을때 스크롤이 제일 위로 가게
 
 //* 로그인 기능 ???
 
@@ -206,9 +238,9 @@ function createCardList(roomList = null) {
 
   // roomList가 없다면 기본값을 띄우고 함수 종료
   if (!roomList) {
-    let element = `<li class="no-result">
-                    <p class="no-result__text"><b>장소</b>를 클릭하여</p>
-                    <p class="no-result__text">매물을 확인해보세요.</p>
+    let element = `<li class="card__no-result">
+                    <p class="card__no-result__text"><b>장소</b>를 클릭하여</p>
+                    <p class="card__no-result__text">매물을 확인해보세요.</p>
                   </li>`;
     cards.insertAdjacentHTML("beforeend", element);
     return;
@@ -260,9 +292,103 @@ function createCardList(roomList = null) {
     cards.insertAdjacentHTML("beforeend", element);
   });
 
+  const cardList = document.querySelectorAll("li.card");
+
+  cardList.forEach((card) => {
+    card.addEventListener("click", (e) => {
+      let element = `
+          <!-- 픽스로 맨 위에 붙여, 안보이다가 스크롤 내려지는 순간 보이게 -->
+          <div class="detail__header">
+            <div class="detail__header__back"><i class="fa-solid fa-angles-right"></i></div>
+            <div class="detail__header__text">강남구 논현동</div>
+          </div>
+          <div class="detail__image-box">
+            <img class="detail__image" src="https://source.unsplash.com/random" />
+          </div>
+          <div class="detail__basic">
+            <div class="basic__top">
+              <div class="detail__text--07r">서울시 강남구 논현동</div>
+              <div class="detail__text--14r detail__text--bold">월세 200/140</div>
+              <div class="detail__text--07r">관리비 10만원</div>
+            </div>
+            <br />
+
+            <div class="basic__bottom">
+              <div class="detail__title detail__text--09r">★어쩌구~</div>
+              <div class="detail__text">
+                <i class="fa-solid fa-expand"></i></i>전용 12평
+              </div>
+              <div class="detail__text"><i class="fa-solid fa-house"></i>복층형 원룸(욕실 1개)</div>
+              <div class="detail__text">
+                <i class="fa-brands fa-product-hunt"></i>세대당 1대 주차 가능
+              </div>
+              <div class="detail__text">
+                <i class="fa-regular fa-building"></i>3층/4층
+              </div>
+              <div class="detail__text">
+                <i class="fa-regular fa-calendar"></i>즉시 입주 가능
+              </div>
+            </div>
+          </div>
+          <br />
+          <div class="detail__manage">
+            <div class="detail__text--11r detail__text--bold">관리비 : 10만원</div>
+            <div class="detail__text--09r">포함 : 없음</div>
+            <div class="detail__manage-not-inc detail__text--09r">
+              별도 : 전기, 가스, 수도, 인터넷, 티비
+            </div>
+          </div>
+          <br />
+          <!-- data 받아와서 수만큼 div 생성 -->
+          <div class="detail__option">
+            <div>싱크대 </div>
+            <div>에어컨 </div>
+            <div>신발장 </div>
+            <div>세탁기</div>
+        </div>
+          <br />
+          <div class="detail__description">
+            ★어쩌구
+            <button class="view-more">더보기</button>
+          </div>
+          <br />
+          <div class="detail__location">
+            <div class="detail__address--short">강남구 논현동</div>
+            <div class="detail__map-image"></div>
+          </div>
+          <br />
+          <div class="detail__realtor">
+            <div class="detail__agent-box">
+              <div class="agent__image"></div>
+              <div class="agent__realtor-name"></div>
+              <div class="agent__name"></div>
+              <div class="agent__phone"></div>
+              <!-- agent-box에 hover하면 배경 검어지고, 이름과 전화번호 띄우기 -->
+            </div>
+            <div class="detail__realtor-description"></div>
+            <button class="view-more">더보기</button>
+          </div>`;
+
+      const detailBox = document.querySelector(".detail-box");
+      while (detailBox.firstChild) detailBox.removeChild(detailBox.firstChild);
+      detailBox.insertAdjacentHTML("beforeend", element);
+
+      const backBtn = document.querySelector(".detail__header__back");
+      console.log(backBtn);
+
+      detailBox.classList.add("active");
+      setTimeout(() => {
+        cards.style.display = "none";
+      }, 500);
+
+      backBtn.addEventListener("click", (e) => {
+        detailBox.classList.remove("active");
+        cards.style.display = "block";
+      });
+    });
+  });
+
   currentOneroomList = roomList;
-  // 오리지널에 일치하는 값이 있다면 이미 오리지널이 존재하므로 바꾸지 않는다.
-  // 오리지널에 일치하는 값이 없다면 아직 오리지널에 값을 저장하지 않은것이므로 roomList를 저장한다.
   if (!originalOneroomList.find((item) => item === roomList[0]))
     originalOneroomList = [...roomList];
 }

@@ -527,7 +527,6 @@ select::-ms-expand {
   display: none;
   width: 50px;
   height: 50px;
-  /* border: 3px solid rgba(255, 255, 255, 0.3); */
   border: 3px solid #3c5cff5b;
   border-radius: 50%;
   border-top-color: var(--primary);
@@ -571,6 +570,7 @@ select::-ms-expand {
   background: #ffffff;
   transition: all 0.3s ease-in-out;
 }
+
 .card:hover {
   cursor: pointer;
   transform: scale(1.04);
@@ -650,7 +650,7 @@ select::-ms-expand {
   margin-left: 10px;
 }
 
-.no-result {
+.card__no-result {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -660,14 +660,64 @@ select::-ms-expand {
   text-align: center;
 }
 
-.no-result__text {
+.card__no-result__text {
   font-size: 1.1rem;
   line-height: 30px;
 }
 
-.no-result__text b {
+.card__no-result__text b {
   font-weight: bold;
   color: var(--primary);
+}
+
+/* card's detail */
+.detail-box {
+  position: absolute;
+  top: 0;
+  right: -300px;
+  width: 285px;
+  height: calc(100% - 5px);
+  border-radius: 10px;
+  overflow: scroll;
+  margin-left: 10px;
+  box-sizing: border-box;
+  background-color: var(--disabled);
+  box-shadow: 2px 2px 6px #98a2ba, -2px -2px 6px #cedcfc;
+  transition: all 0.5s ease;
+}
+.detail-box.active {
+  transform: translate(-302px, 0);
+}
+
+.detail__header {
+  /* display: none; */
+  position: fixed;
+  width: 265px;
+  height: 20px;
+  line-height: 20px;
+  padding: 10px;
+  background-color: #fefefe;
+  border-radius: 5px 5px 0 0;
+}
+
+.detail__header__back {
+  position: absolute;
+  right: 10px;
+}
+
+.detail__header__back:hover {
+  cursor: pointer;
+}
+
+.detail__header__text {
+  text-align: center;
+}
+
+.detail__image {
+  width: 100%;
+  height: 250px;
+  /* padding: 10px; */
+  border-radius: 10px 0px 0 0;
 }
 
 /* Kakao Map */
