@@ -671,22 +671,56 @@ select::-ms-expand {
 }
 
 /* card's detail */
+
+.detail__contour {
+  border-top: 1px solid #ddd;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+.detail__text--06r {
+  font-size: 0.6rem;
+}
+
+.detail__text--07r {
+  font-size: 0.7rem;
+}
+
+.detail__text--08r {
+  font-size: 0.8rem;
+}
+
+.detail__text--09r {
+  font-size: 0.9rem;
+}
+
+.detail__text--11r {
+  font-size: 1.1rem;
+}
+
+.detail__text--14r {
+  font-size: 1.4rem;
+}
+
+.detail__text--bold {
+  font-weight: bold;
+}
+
 .detail-box {
+  display: none;
   position: absolute;
   top: 0;
-  right: -300px;
   width: 285px;
   height: calc(100% - 5px);
   border-radius: 10px;
   overflow: scroll;
   margin-left: 10px;
   box-sizing: border-box;
-  background-color: var(--disabled);
+  background-color: white;
   box-shadow: 2px 2px 6px #98a2ba, -2px -2px 6px #cedcfc;
-  transition: all 0.5s ease;
 }
+
 .detail-box.active {
-  transform: translate(-302px, 0);
+  display: block;
 }
 
 .detail__header {
@@ -713,11 +747,119 @@ select::-ms-expand {
   text-align: center;
 }
 
+.detail__image-box {
+  /* padding: 1px; */
+}
+
 .detail__image {
   width: 100%;
   height: 250px;
-  /* padding: 10px; */
   border-radius: 10px 0px 0 0;
+}
+
+/* detail - basic__top */
+.basic__top {
+  /* border: 1px solid blue; */
+  padding: 10px;
+}
+
+.detail__address {
+  margin-bottom: 5px;
+}
+
+.detail__price {
+  margin-bottom: 8px;
+}
+
+.detail__manage-cost--top {
+}
+
+.detail__manage-cost {
+  /* font-size: 0.7rem; */
+}
+
+/* detail - basic__bottom */
+.basic__bottom {
+  /* border: 1px solid green; */
+  padding: 10px;
+}
+
+.detail__title {
+  font-size: 0.9rem;
+}
+
+.detail__info-message:nth-child(2),
+.detail__info-message:nth-child(3) {
+  font-weight: bold;
+}
+
+.detail__icon {
+  width: 20px;
+  margin-top: 10px;
+  margin-right: 10px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+/* detail__manage */
+
+.detail__manage {
+  padding: 10px 10px 0 10px;
+}
+
+.detail__manage div {
+  margin-bottom: 10px;
+}
+
+/* detail__option */
+.detail__option-box {
+  padding: 10px;
+}
+.detail__option-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.detail__option-item-box {
+  display: flex;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  /* border: 1px solid red; */
+}
+.detail__option-item {
+  margin-right: 5px;
+  font-size: 0.9rem;
+  background-color: var(--primary);
+  border-radius: 5px;
+  padding: 5px 6px;
+  color: white;
+  margin-bottom: 5px;
+}
+
+/* detail__description */
+.detail__description {
+}
+
+/* detail__location */
+.detail__location {
+}
+
+/* detail-bottom */
+.detail__bottom {
+}
+
+/* 더보기 버튼 */
+.view-more {
+  display: block;
+  width: 100px;
+  /* border: 1px solid red; */
+  text-align: end;
+  text-decoration: underline;
+  background-color: transparent;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-left: auto;
+  margin-top: 5px;
 }
 
 /* Kakao Map */

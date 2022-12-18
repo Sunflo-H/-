@@ -67,6 +67,10 @@
   font-size: 0.9rem;
 }
 
+.detail__text:nth-child(2) {
+  background-color: red;
+}
+
 /* detail__manage */
 
 .detail__manage {

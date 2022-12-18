@@ -299,38 +299,41 @@ function createCardList(roomList = null) {
       let element = `
           <!-- 픽스로 맨 위에 붙여, 안보이다가 스크롤 내려지는 순간 보이게 -->
           <div class="detail__header">
-            <div class="detail__header__back"><i class="fa-solid fa-angles-right"></i></div>
+            <div class="detail__header__back"><i class="fa-solid fa-xmark"></i></div>
             <div class="detail__header__text">강남구 논현동</div>
           </div>
           <div class="detail__image-box">
+          <!-- 이미지 클릭하면 화면 전체로 확대 -->
             <img class="detail__image" src="https://source.unsplash.com/random" />
           </div>
           <div class="detail__basic">
             <div class="basic__top">
-              <div class="detail__text--07r">서울시 강남구 논현동</div>
-              <div class="detail__text--14r detail__text--bold">월세 200/140</div>
-              <div class="detail__text--07r">관리비 10만원</div>
+              <div class="detail__address detail__text--09r">서울시 강남구 논현동</div>
+              <div class="detail__price detail__text--14r detail__text--bold">월세 200/140</div>
+              <div class="detail__manage-cost--top detail__text--09r">관리비 10만원</div>
             </div>
-            <br />
+            <div class="detail__contour"></div>
 
             <div class="basic__bottom">
               <div class="detail__title detail__text--09r">★어쩌구~</div>
-              <div class="detail__text">
-                <i class="fa-solid fa-expand"></i></i>전용 12평
+              <div class="detail__info-message ">
+                <i class="fa-solid fa-expand detail__icon"></i></i>전용 12평
               </div>
-              <div class="detail__text"><i class="fa-solid fa-house"></i>복층형 원룸(욕실 1개)</div>
-              <div class="detail__text">
-                <i class="fa-brands fa-product-hunt"></i>세대당 1대 주차 가능
+              <div class="detail__info-message ">
+                <i class="fa-solid fa-house detail__icon"></i>복층형 원룸(욕실 1개)</div>
+              <div class="detail__info-message ">
+                <i class="fa-brands fa-product-hunt detail__icon"></i>세대당 1대 주차 가능
               </div>
-              <div class="detail__text">
-                <i class="fa-regular fa-building"></i>3층/4층
+              <div class="detail__info-message ">
+                <i class="fa-regular fa-building detail__icon"></i>3층/4층
               </div>
-              <div class="detail__text">
-                <i class="fa-regular fa-calendar"></i>즉시 입주 가능
+              <div class="detail__info-message ">
+                <i class="fa-regular fa-calendar detail__icon"></i>즉시 입주 가능
               </div>
             </div>
           </div>
-          <br />
+          <div class="detail__contour"></div>
+
           <div class="detail__manage">
             <div class="detail__text--11r detail__text--bold">관리비 : 10만원</div>
             <div class="detail__text--09r">포함 : 없음</div>
@@ -338,25 +341,36 @@ function createCardList(roomList = null) {
               별도 : 전기, 가스, 수도, 인터넷, 티비
             </div>
           </div>
-          <br />
+          <div class="detail__contour"></div>
+
           <!-- data 받아와서 수만큼 div 생성 -->
-          <div class="detail__option">
-            <div>싱크대 </div>
-            <div>에어컨 </div>
-            <div>신발장 </div>
-            <div>세탁기</div>
-        </div>
-          <br />
+          <div class="detail__option-box">
+            <div class="detail__option-title">옵션 정보</div>
+            <div class="detail__option-item-box">
+              <div class="detail__option-item">싱크대 </div>
+              <div class="detail__option-item">에어컨 </div>
+              <div class="detail__option-item">신발장 </div>
+              <div class="detail__option-item">세탁기 </div>
+              <div class="detail__option-item">어쩌구 </div>
+              <div class="detail__option-item">책장 </div>
+              <div class="detail__option-item">신발장 </div>
+              <div class="detail__option-item">세탁기 </div>
+            </div>
+            <div class="view-more">12개 모두보기</div>
+          </div>
+          <div class="detail__contour"></div>
           <div class="detail__description">
             ★어쩌구
-            <button class="view-more">더보기</button>
+            <div class="view-more">더보기</div>
           </div>
-          <br />
+          <div class="detail__contour"></div>
+
           <div class="detail__location">
             <div class="detail__address--short">강남구 논현동</div>
             <div class="detail__map-image"></div>
           </div>
-          <br />
+          <div class="detail__contour"></div>
+
           <div class="detail__realtor">
             <div class="detail__agent-box">
               <div class="agent__image"></div>
@@ -366,7 +380,7 @@ function createCardList(roomList = null) {
               <!-- agent-box에 hover하면 배경 검어지고, 이름과 전화번호 띄우기 -->
             </div>
             <div class="detail__realtor-description"></div>
-            <button class="view-more">더보기</button>
+            <div class="view-more">더보기</div>
           </div>`;
 
       const detailBox = document.querySelector(".detail-box");
@@ -377,9 +391,8 @@ function createCardList(roomList = null) {
       console.log(backBtn);
 
       detailBox.classList.add("active");
-      setTimeout(() => {
-        cards.style.display = "none";
-      }, 500);
+
+      cards.style.display = "none";
 
       backBtn.addEventListener("click", (e) => {
         detailBox.classList.remove("active");
