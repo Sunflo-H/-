@@ -445,12 +445,16 @@ function createCardList(roomList = null) {
 
           <div class="detail__realtor">
             <div class="detail__agent-box">
-              <div class="agent__image"><img src=${
-                agent.owner.profile_url
-              }?w=400&h=300&q=70&a=1 ></div>
+              <div class="agent__image-box">
+                <img class="agent__image"src=${
+                  agent.owner.profile_url
+                }?w=400&h=400&q=70&a=1 >
+              </div>
               <div class="agent__realtor-name">${agent.agent_title}</div>
-              <div class="agent__name">${agent.owner.owner_name}</div>
-              <div class="agent__phone">${agent.owner.owner_phone}</div>
+              <!-- <div class="agent__name">${agent.owner.owner_name}</div>-->
+              <!-- <div class="agent__phone">${
+                agent.owner.owner_phone
+              }</div> -->
               <!-- agent-box에 hover하면 배경 검어지고, 이름과 전화번호 띄우기 -->
             </div>
             <div class="detail__realtor-description">
