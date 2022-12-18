@@ -294,48 +294,117 @@ function createCardList(roomList = null) {
 
   const cardList = document.querySelectorAll("li.card");
 
-  cardList.forEach((card) => {
+  cardList.forEach((card, index) => {
     card.addEventListener("click", (e) => {
+      const room_type_obj = {
+        "01": "분리형",
+        "02": "오픈형",
+        "03": "복층형",
+        "04": "투룸",
+        "05": "쓰리룸+",
+        "06": "포룸+",
+      };
+
+      const options_obj = {
+        "01": "에어컨",
+        "02": "냉장고",
+        "03": "세탁기",
+        "04": "가스레인지",
+        "05": "인덕션",
+        "06": "전자레인지",
+        "07": "책상",
+        "08": "책장",
+        "09": "침대",
+        10: "옷장",
+        11: "신발장",
+        12: "싱크대",
+      };
+
+      const room = roomList[index].item;
+      const agent = roomList[index].agent;
+      console.log(room);
+      console.log(agent);
+      const {
+        address,
+        jibunAddress,
+        sales_type,
+        보증금액,
+        월세금액,
+        manage_cost,
+        images,
+        title,
+        description,
+        전용면적_m2,
+        room_type_code,
+        service_type,
+        bathroom_count,
+        parking,
+        floor_string,
+        floor_all,
+        movein_date,
+      } = room;
+
+      let roomTypeCode = room_type_obj[room_type_code];
+      let floorString = `${floor_string}층`;
+      if (floor_string === "옥탑방" || floor_string === "반지하")
+        floorString = `${floor_string}`;
+      let priceElement = `<div class="detail__price detail__text--14r detail__text--bold">${sales_type} ${보증금액}/${월세금액}</div>`;
+      if (sales_type === "전세")
+        priceElement = `<div class="detail__price detail__text--14r detail__text--bold">${sales_type} ${보증금액}</div>`;
+
+      let jibunAddressElement = `<div class="detail__address detail__text--09r">${jibunAddress}</div>`;
+      if (!jibunAddress)
+        jibunAddressElement = `<div class="detail__address detail__text--09r"></div>`;
+
+      let parkingElement = `<div class="detail__info-message ">
+                              <i class="fa-brands fa-product-hunt detail__icon"></i>세대당 ${parking}
+                            </div>`;
+      if (parking === "불가능")
+        parkingElement = `<div class="detail__info-message ">
+                            <i class="fa-brands fa-product-hunt detail__icon"></i>${parking}
+                          </div>`;
       let element = `
           <!-- 픽스로 맨 위에 붙여, 안보이다가 스크롤 내려지는 순간 보이게 -->
           <div class="detail__header">
             <div class="detail__header__back"><i class="fa-solid fa-xmark"></i></div>
-            <div class="detail__header__text">강남구 논현동</div>
+            <div class="detail__header__text">${address}</div>
           </div>
           <div class="detail__image-box">
           <!-- 이미지 클릭하면 화면 전체로 확대 -->
-            <img class="detail__image" src="https://source.unsplash.com/random" />
+            <img class="detail__image" src=${images[0]}?w=400&h=300&q=70&a=1 />
           </div>
           <div class="detail__basic">
             <div class="basic__top">
-              <div class="detail__address detail__text--09r">서울시 강남구 논현동</div>
-              <div class="detail__price detail__text--14r detail__text--bold">월세 200/140</div>
-              <div class="detail__manage-cost--top detail__text--09r">관리비 10만원</div>
+              ${jibunAddressElement}
+              ${priceElement}
+              <div class="detail__manage-cost--top detail__text--09r">관리비 ${manage_cost}만원</div>
             </div>
             <div class="detail__contour"></div>
-
-            <div class="basic__bottom">
-              <div class="detail__title detail__text--09r">★어쩌구~</div>
+            <div class="basic__middle">
+              <div class="detail__title detail__text--09r">${title}</div>
+            </div>
+            <div class="detail__contour"></div>
+            <div class="basic__bottom">  
               <div class="detail__info-message ">
-                <i class="fa-solid fa-expand detail__icon"></i></i>전용 12평
+                <i class="fa-solid fa-expand detail__icon"></i></i>전용 ${getPyeong(
+                  전용면적_m2
+                )}평
               </div>
               <div class="detail__info-message ">
-                <i class="fa-solid fa-house detail__icon"></i>복층형 원룸(욕실 1개)</div>
+                <i class="fa-solid fa-house detail__icon"></i>${roomTypeCode} ${service_type}(욕실 ${bathroom_count}개)</div>
+              ${parkingElement}
               <div class="detail__info-message ">
-                <i class="fa-brands fa-product-hunt detail__icon"></i>세대당 1대 주차 가능
+                <i class="fa-regular fa-building detail__icon"></i>${floorString}/${floor_all}
               </div>
               <div class="detail__info-message ">
-                <i class="fa-regular fa-building detail__icon"></i>3층/4층
-              </div>
-              <div class="detail__info-message ">
-                <i class="fa-regular fa-calendar detail__icon"></i>즉시 입주 가능
+                <i class="fa-regular fa-calendar detail__icon"></i>${movein_date}
               </div>
             </div>
           </div>
           <div class="detail__contour"></div>
 
           <div class="detail__manage">
-            <div class="detail__text--11r detail__text--bold">관리비 : 10만원</div>
+            <div class="detail__text--11r detail__text--bold">관리비 : ${manage_cost}만원</div>
             <div class="detail__text--09r">포함 : 없음</div>
             <div class="detail__manage-not-inc detail__text--09r">
               별도 : 전기, 가스, 수도, 인터넷, 티비
@@ -360,27 +429,31 @@ function createCardList(roomList = null) {
           </div>
           <div class="detail__contour"></div>
           <div class="detail__description">
-            ★어쩌구
+            <pre class="detail__description-message">${description}</pre>
             <div class="view-more">더보기</div>
           </div>
           <div class="detail__contour"></div>
 
           <div class="detail__location">
-            <div class="detail__address--short">강남구 논현동</div>
+            <div class="detail__address--short">${address}</div>
             <div class="detail__map-image"></div>
           </div>
           <div class="detail__contour"></div>
 
           <div class="detail__realtor">
             <div class="detail__agent-box">
-              <div class="agent__image"></div>
-              <div class="agent__realtor-name"></div>
-              <div class="agent__name"></div>
-              <div class="agent__phone"></div>
+              <div class="agent__image"><img src=${
+                agent.owner.profile_url
+              }?w=400&h=300&q=70&a=1 ></div>
+              <div class="agent__realtor-name">${agent.agent_title}</div>
+              <div class="agent__name">${agent.owner.owner_name}</div>
+              <div class="agent__phone">${agent.owner.owner_phone}</div>
               <!-- agent-box에 hover하면 배경 검어지고, 이름과 전화번호 띄우기 -->
             </div>
-            <div class="detail__realtor-description"></div>
-            <div class="view-more">더보기</div>
+            <div class="detail__realtor-description">
+              <pre>${agent.agent_intro}</pre>
+              <div class="view-more">더보기</div>
+            </div>
           </div>`;
 
       const detailBox = document.querySelector(".detail-box");
@@ -388,7 +461,6 @@ function createCardList(roomList = null) {
       detailBox.insertAdjacentHTML("beforeend", element);
 
       const backBtn = document.querySelector(".detail__header__back");
-      console.log(backBtn);
 
       detailBox.classList.add("active");
 

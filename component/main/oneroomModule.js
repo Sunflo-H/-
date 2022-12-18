@@ -130,7 +130,10 @@ class Oneroom {
 
     // 방정보중 원룸인것들만 필터링
     let result = roomInfoList.filter((roomInfo) => roomInfo);
-    console.log(result);
+    // console.log(result);
+    result.forEach((item) => {
+      // console.log(item.item.movein_date);
+    });
 
     return result;
   }

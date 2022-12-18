@@ -760,7 +760,7 @@ select::-ms-expand {
 /* detail - basic__top */
 .basic__top {
   /* border: 1px solid blue; */
-  padding: 10px;
+  padding: 20px 15px 10px;
 }
 
 .detail__address {
@@ -772,25 +772,41 @@ select::-ms-expand {
 }
 
 .detail__manage-cost--top {
+  margin-bottom: 8px;
 }
 
 .detail__manage-cost {
   /* font-size: 0.7rem; */
 }
 
+.basic__middle {
+  padding: 15px;
+}
+
 /* detail - basic__bottom */
 .basic__bottom {
-  /* border: 1px solid green; */
-  padding: 10px;
+  padding: 15px;
 }
 
 .detail__title {
   font-size: 0.9rem;
 }
 
-.detail__info-message:nth-child(2),
-.detail__info-message:nth-child(3) {
+.detail__info-message {
+  margin-top: 10px;
+}
+
+.detail__info-message:nth-child(1) {
+  margin-top: 0;
+}
+
+.detail__info-message:nth-child(1),
+.detail__info-message:nth-child(2) {
   font-weight: bold;
+}
+
+.detail__info-message:last-child {
+  padding-bottom: 10px;
 }
 
 .detail__icon {
@@ -804,16 +820,19 @@ select::-ms-expand {
 /* detail__manage */
 
 .detail__manage {
-  padding: 10px 10px 0 10px;
+  padding: 20px 15px;
 }
 
-.detail__manage div {
+.detail__manage div:first-child {
   margin-bottom: 10px;
+}
+.detail__manage div:nth-child(2) {
+  margin-bottom: 5px;
 }
 
 /* detail__option */
 .detail__option-box {
-  padding: 10px;
+  padding: 20px 15px;
 }
 .detail__option-title {
   font-size: 1.1rem;
@@ -824,35 +843,52 @@ select::-ms-expand {
   display: flex;
   margin-top: 10px;
   flex-wrap: wrap;
-  /* border: 1px solid red; */
 }
 .detail__option-item {
   margin-right: 5px;
   font-size: 0.9rem;
   background-color: var(--primary);
+  color: white;
+
   border-radius: 5px;
   padding: 5px 6px;
-  color: white;
   margin-bottom: 5px;
 }
 
 /* detail__description */
 .detail__description {
+  padding: 20px 10px;
+}
+.detail__description-message {
+  font-size: 0.9rem;
+  height: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* white-space: pre-wrap; */
+  /* 더보기 누르면 pre-wrap 활성화하자 */
 }
 
 /* detail__location */
 .detail__location {
+  padding: 20px 15px;
 }
 
-/* detail-bottom */
-.detail__bottom {
+/* detail-realtor */
+.detail__realtor {
+}
+
+.detail__realtor-description pre {
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* white-space: pre-wrap; */
 }
 
 /* 더보기 버튼 */
 .view-more {
   display: block;
   width: 100px;
-  /* border: 1px solid red; */
+  border: 1px solid red;
   text-align: end;
   text-decoration: underline;
   background-color: transparent;
