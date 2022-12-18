@@ -342,6 +342,7 @@ function createCardList(roomList = null) {
         floor_string,
         floor_all,
         movein_date,
+        random_location,
       } = room;
 
       let roomTypeCode = room_type_obj[room_type_code];
@@ -429,14 +430,16 @@ function createCardList(roomList = null) {
           </div>
           <div class="detail__contour"></div>
           <div class="detail__description">
+            <div class="detail__description-title">상세 설명</div>
             <pre class="detail__description-message">${description}</pre>
             <div class="view-more">더보기</div>
           </div>
           <div class="detail__contour"></div>
 
           <div class="detail__location">
+            <div class="detail__location-title">위치</div>
             <div class="detail__address--short">${address}</div>
-            <div class="detail__map-image"></div>
+            <div id="detail__staticMap"></div>
           </div>
           <div class="detail__contour"></div>
 
@@ -470,6 +473,35 @@ function createCardList(roomList = null) {
         detailBox.classList.remove("active");
         cards.style.display = "block";
       });
+
+      // 이미지 지도에서 마커가 표시될 위치입니다
+
+      var markerPosition = new kakao.maps.LatLng(
+        Number(random_location.split(",")[0]),
+        Number(random_location.split(",")[1])
+      );
+
+      // 이미지 지도에 표시할 마커입니다
+      // 이미지 지도에 표시할 마커는 Object 형태입니다
+      var marker = {
+        position: markerPosition,
+      };
+
+      var staticMapContainer = document.getElementById("detail__staticMap"), // 이미지 지도를 표시할 div
+        staticMapOption = {
+          center: new kakao.maps.LatLng(
+            Number(random_location.split(",")[0]),
+            Number(random_location.split(",")[1])
+          ), // 이미지 지도의 중심좌표
+          level: 3, // 이미지 지도의 확대 레벨
+          marker: marker, // 이미지 지도에 표시할 마커
+        };
+
+      // 이미지 지도를 생성합니다
+      var staticMap = new kakao.maps.StaticMap(
+        staticMapContainer,
+        staticMapOption
+      );
     });
   });
 
