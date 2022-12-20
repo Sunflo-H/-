@@ -372,7 +372,11 @@ function createCardList(roomList = null) {
           </div>
           <div class="detail__image-box">
           <!-- 이미지 클릭하면 화면 전체로 확대 -->
-            <img class="detail__image" src=${images[0]}?w=400&h=300&q=70&a=1 />
+            <div class="carousel-box">
+              
+            </div>
+            <div class="carousel-btn carousel-btn--prev"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="carousel-btn carousel-btn--next"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
           <div class="detail__basic">
             <div class="basic__top">
@@ -463,49 +467,129 @@ function createCardList(roomList = null) {
             </div>
           </div>`;
 
+      // 엘리먼트 생성 코드
       const detailBox = document.querySelector(".detail-box");
       while (detailBox.firstChild) detailBox.removeChild(detailBox.firstChild);
       detailBox.insertAdjacentHTML("beforeend", element);
 
+      // 생성된 엘리먼트에 기능 적용
       const backBtn = document.querySelector(".detail__header__back");
+      const carouselBtns = document.querySelectorAll(".carousel-btn");
 
-      detailBox.classList.add("active");
-
-      cards.style.display = "none";
-
-      backBtn.addEventListener("click", (e) => {
-        detailBox.classList.remove("active");
-        cards.style.display = "block";
-      });
-
-      // 이미지 지도에서 마커가 표시될 위치입니다
-
-      var markerPosition = new kakao.maps.LatLng(
-        Number(random_location.split(",")[0]),
-        Number(random_location.split(",")[1])
-      );
-
-      // 이미지 지도에 표시할 마커입니다
-      // 이미지 지도에 표시할 마커는 Object 형태입니다
-      var marker = {
-        position: markerPosition,
+      const activeDetailBox = (isTrue) => {
+        // 카드의 detailBox를 열고 , 카드리스트는 안보이게 한다.
+        if (isTrue) {
+          detailBox.classList.add("open");
+          cards.style.display = "none";
+        }
+        // detailBox 닫고, 카드리스트 보이게 한다.
+        else {
+          detailBox.classList.remove("open");
+          cards.style.display = "block";
+        }
       };
 
-      var staticMapContainer = document.getElementById("detail__staticMap"), // 이미지 지도를 표시할 div
-        staticMapOption = {
-          center: new kakao.maps.LatLng(
-            Number(random_location.split(",")[0]),
-            Number(random_location.split(",")[1])
-          ), // 이미지 지도의 중심좌표
-          level: 3, // 이미지 지도의 확대 레벨
-          marker: marker, // 이미지 지도에 표시할 마커
+      const createStaticMap = () => {
+        // 이미지 지도에서 마커가 표시될 위치입니다
+        var markerPosition = new kakao.maps.LatLng(
+          Number(random_location.split(",")[0]),
+          Number(random_location.split(",")[1])
+        );
+
+        // 이미지 지도에 표시할 마커입니다
+        // 이미지 지도에 표시할 마커는 Object 형태입니다
+        var marker = {
+          position: markerPosition,
         };
 
-      // 이미지 지도를 생성합니다
-      var staticMap = new kakao.maps.StaticMap(
-        staticMapContainer,
-        staticMapOption
-      );
+        var staticMapContainer = document.getElementById("detail__staticMap"), // 이미지 지도를 표시할 div
+          staticMapOption = {
+            center: new kakao.maps.LatLng(
+              Number(random_location.split(",")[0]),
+              Number(random_location.split(",")[1])
+            ), // 이미지 지도의 중심좌표
+            level: 3, // 이미지 지도의 확대 레벨
+            marker: marker, // 이미지 지도에 표시할 마커
+          };
+
+        // 이미지 지도를 생성합니다
+        var staticMap = new kakao.maps.StaticMap(
+          staticMapContainer,
+          staticMapOption
+        );
+      };
+
+      const makeCarousel = () => {
+        const carouselBox = document.querySelector(".carousel-box");
+        const imageWidth = 285;
+
+        carouselBox.style.width = `${(images.length + 2) * imageWidth}px`;
+
+        images.forEach((image) => {
+          let element = `
+          <div class="carousel">
+            <img class="detail__image" src=${image}?w=400&h=300&q=70&a=1 />
+          </div>`;
+          carouselBox.insertAdjacentHTML("beforeend", element);
+        });
+      };
+
+      const makeClone = () => {
+        const carouselBox = document.querySelector(".carousel-box");
+        const carousel = document.querySelectorAll(".carousel");
+        let clone_first = carousel[0].cloneNode(true);
+        let clone_last = carousel[carousel.length - 1].cloneNode(true);
+
+        console.log(clone_first);
+        console.log(clone_last);
+        carouselBox.append(clone_first);
+        carouselBox.insertBefore(clone_last, carouselBox.firstElementChild);
+      };
+
+      const move = () => {};
+      let count = 0;
+      const carouselBtnHandler = (e) => {
+        const carouselBox = document.querySelector(".carousel-box");
+        const imageWidth = carouselBox.firstElementChild.clientWidth;
+        const carouselWidth = imageWidth * images.length;
+        console.log(carouselWidth);
+
+        let translateX;
+        if (e.currentTarget.classList.contains("carousel-btn--prev")) {
+          console.log(e.currentTarget);
+          count++;
+          translateX = count * imageWidth;
+          console.log(translateX);
+          carouselBox.style.transform = `translate(${translateX}px)`;
+          // moveLeft()
+        } else {
+          count--;
+          translateX = count * imageWidth;
+          console.log(translateX);
+          carouselBox.style.transform = `translate(${translateX}px)`;
+          // carouselBox.style.transform = `translate(285px)`;
+          // moveRight()
+        }
+
+        // const carousel = document.querySelectorAll(".carousel");
+        // const cloneCarousle = carousel.map((node) => node.cloneNode(true));
+        // const cloneCarouselBox = carouselBox.cloneNode(true);
+
+        // console.log(cloneCarousel);
+        // makeClone();
+      };
+
+      makeCarousel();
+      activeDetailBox(true);
+      createStaticMap();
+
+      backBtn.addEventListener("click", (e) => {
+        activeDetailBox(false);
+      });
+
+      carouselBtns.forEach((btn, index) => {
+        btn.addEventListener("click", carouselBtnHandler);
+      });
     });
   });
 
