@@ -769,13 +769,17 @@ select::-ms-expand {
   width: 285px;
 }
 
-.carousel--prev {
+.carousel-clone {
+  position: absolute;
+  top: 0;
 }
 
-.carousel--current {
+.first-clone {
+  right: -285px;
 }
 
-.carousel--next {
+.last-clone {
+  left: -285px;
 }
 
 .carousel-btn {

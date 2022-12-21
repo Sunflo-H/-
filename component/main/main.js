@@ -467,28 +467,33 @@ function createCardList(roomList = null) {
             </div>
           </div>`;
 
-      // 엘리먼트 생성 코드
+      // 위의 코드로 디테일창을 생성한다.
       const detailBox = document.querySelector(".detail-box");
       while (detailBox.firstChild) detailBox.removeChild(detailBox.firstChild);
       detailBox.insertAdjacentHTML("beforeend", element);
 
-      // 생성된 엘리먼트에 기능 적용
-      const backBtn = document.querySelector(".detail__header__back");
+      // * 생성된 디테일창에 기능을 적용하는 코드
+      const closeBtn = document.querySelector(".detail__header__back");
       const carouselBtns = document.querySelectorAll(".carousel-btn");
+      let count = 0;
 
+      /**
+       * ^ 디테일창을 보이게 or 안보이게 하는 함수
+       * @param {*} isTrue
+       */
       const activeDetailBox = (isTrue) => {
-        // 카드의 detailBox를 열고 , 카드리스트는 안보이게 한다.
         if (isTrue) {
           detailBox.classList.add("open");
           cards.style.display = "none";
-        }
-        // detailBox 닫고, 카드리스트 보이게 한다.
-        else {
+        } else {
           detailBox.classList.remove("open");
           cards.style.display = "block";
         }
       };
 
+      /**
+       * ^ 디테일창의 '위치' 항목에서 보일 정적 지도 이미지 생성 함수
+       */
       const createStaticMap = () => {
         // 이미지 지도에서 마커가 표시될 위치입니다
         var markerPosition = new kakao.maps.LatLng(
@@ -519,12 +524,16 @@ function createCardList(roomList = null) {
         );
       };
 
-      const makeCarousel = () => {
+      /**
+       * ^ 디테일창의 이미지슬라이더 Element를 만드는 함수
+       */
+      const createCarousel = () => {
         const carouselBox = document.querySelector(".carousel-box");
-        const imageWidth = 285;
+        const imageWidth = detailBox.clientWidth; // 285px
 
-        carouselBox.style.width = `${(images.length + 2) * imageWidth}px`;
-
+        carouselBox.style.width = `${images.length * imageWidth}px`;
+        while (carouselBox.firstChild)
+          carouselBox.removeChild(carouselBox.firstChild);
         images.forEach((image) => {
           let element = `
           <div class="carousel">
@@ -532,22 +541,30 @@ function createCardList(roomList = null) {
           </div>`;
           carouselBox.insertAdjacentHTML("beforeend", element);
         });
+        makeClone();
       };
 
+      /**
+       * ^ carousel의 첫번째 이미지의 이전, 마지막 이미지의 다음에 클론을 생성하는 함수
+       */
       const makeClone = () => {
         const carouselBox = document.querySelector(".carousel-box");
         const carousel = document.querySelectorAll(".carousel");
         let clone_first = carousel[0].cloneNode(true);
         let clone_last = carousel[carousel.length - 1].cloneNode(true);
 
-        console.log(clone_first);
-        console.log(clone_last);
+        clone_first.classList.add("carousel-clone", "first-clone");
+        clone_last.classList.add("carousel-clone", "last-clone");
         carouselBox.append(clone_first);
         carouselBox.insertBefore(clone_last, carouselBox.firstElementChild);
       };
 
-      const move = () => {};
-      let count = 0;
+      const createClone = () => {
+        const carouselBox = document.querySelector(".carousel-box");
+        const carousel = document.querySelectorAll(".carousel");
+        console.log(carouselBox);
+      };
+
       const carouselBtnHandler = (e) => {
         const carouselBox = document.querySelector(".carousel-box");
         const imageWidth = carouselBox.firstElementChild.clientWidth;
@@ -555,39 +572,49 @@ function createCardList(roomList = null) {
         console.log(carouselWidth);
 
         let translateX;
+        console.log(images.length);
         if (e.currentTarget.classList.contains("carousel-btn--prev")) {
           console.log(e.currentTarget);
           count++;
+          console.log(count);
           translateX = count * imageWidth;
-          console.log(translateX);
           carouselBox.style.transform = `translate(${translateX}px)`;
-          // moveLeft()
+          if (count % images.length === 1) {
+            setTimeout(() => {
+              // createCarousel();
+              createClone();
+            }, 500);
+          }
         } else {
           count--;
+          console.log(count);
           translateX = count * imageWidth;
-          console.log(translateX);
           carouselBox.style.transform = `translate(${translateX}px)`;
-          // carouselBox.style.transform = `translate(285px)`;
-          // moveRight()
         }
-
-        // const carousel = document.querySelectorAll(".carousel");
-        // const cloneCarousle = carousel.map((node) => node.cloneNode(true));
-        // const cloneCarouselBox = carouselBox.cloneNode(true);
-
-        // console.log(cloneCarousel);
-        // makeClone();
       };
 
-      makeCarousel();
+      /**
+       * 이미지가 3개라면
+       * count 가 (이전버튼) 1+3n일때, (다음버튼) -3n 일때 carousel 전체를 복사해서 붙여넣고싶어
+       * 1 -> 4 -> 7 -> 10
+       * -3 -> -6 -> -9
+       * 이전버튼 눌러서 3번째 이미지가 가운데로 오면
+       * transform : translate(285px * -2 px)
+       *
+       * 다음버튼 눌러서 1번째 이미지가 가운데로 오면
+       * transfrom : translate(285px * 0 px)
+       */
+
       activeDetailBox(true);
+      createCarousel();
+
       createStaticMap();
 
-      backBtn.addEventListener("click", (e) => {
+      closeBtn.addEventListener("click", (e) => {
         activeDetailBox(false);
       });
 
-      carouselBtns.forEach((btn, index) => {
+      carouselBtns.forEach((btn) => {
         btn.addEventListener("click", carouselBtnHandler);
       });
     });

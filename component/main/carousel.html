@@ -5,87 +5,147 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>슬라이드</title>
-    <link rel="stylesheet" href="CSS/style.css" />
-    <script src="carousel.js" defer></script>
+    <!-- <link rel="stylesheet" href="CSS/style.css" /> -->
+    <!-- <script src="carousel.js" defer></script> -->
     <style>
-      /* 초기화 */
       * {
         margin: 0;
         padding: 0;
-        box-sizing: border-box;
       }
       li {
-        list-style-type: none;
+        list-style: none;
       }
-      /* 보여줄 구간의 높이와 넓이 설정 */
-      #slideShow {
-        /*전체 컨테이너*/
-        width: 500px;
-        height: 300px;
+      .kind_wrap {
+        border: 2px solid black;
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
         position: relative;
-        margin: 50px auto;
-        overflow: hidden; /*리스트 형식으로 이미지를 일렬로 정렬할 것이기 때문에, 500px 밖으로 튀어 나간 이미지들은 hidden으로 숨겨줘야됨*/
       }
-      .slides {
-        /*이미지들이 담겨있는 슬라이드 컨테이너*/
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 2500px; /* 슬라이드할 사진과 마진 총 넓이 */
-        transition: 0.5s ease-out; /*ease-out: 처음에는 느렸다가 점점 빨라짐*/
-      } /* 첫 번째 슬라이드 가운데에 정렬하기위해 첫번째 슬라이드만 margin-left조정 */
-      .slides li:first-child {
-        margin-left: 100px;
-      } /* 슬라이드들 옆으로 정렬 */
-      .slides li:not(:last-child) {
+      .kind_wrap > .kind_slider {
+        overflow: hidden;
+      }
+      .kind_wrap > .kind_slider .slider {
+        position: relative;
+        transition: 0.5s;
+      }
+      .kind_wrap > .kind_slider .slider li {
         float: left;
-        margin-right: 100px;
       }
-      .controller span {
+      .kind_wrap > .kind_slider img {
+        vertical-align: top;
+      }
+      .kind_wrap .arrow > a.prev {
         position: absolute;
-        background-color: transparent;
-        color: black;
-        text-align: center;
-        border-radius: 50%;
-        padding: 10px 20px;
-        top: 50%;
-        font-size: 1.3em;
-        cursor: pointer;
-      } /* 이전, 다음 화살표에 마우스 커서가 올라가 있을때 */
-      .controller span:hover {
-        background-color: rgba(128, 128, 128, 0.11);
+        left: -50px;
+        top: 100px;
       }
-      .prev {
-        left: 10px;
-      } /* 이전 화살표에 마우스 커서가 올라가 있을때 이전 화살표가 살짝 왼쪽으로 이동하는 효과*/
-      .prev:hover {
-        transform: translateX(-10px);
+      .kind_wrap .arrow > a.next {
+        position: absolute;
+        right: -50px;
+        top: 100px;
       }
-      .next {
-        right: 10px;
-      } /* 다음 화살표에 마우스 커서가 올라가 있을때 이전 화살표가 살짝 오른쪽으로 이동하는 효과*/
-      .next:hover {
-        transform: translateX(10px);
+      img {
+        width: 800px;
+        height: 200px;
       }
     </style>
   </head>
 
   <body>
-    <div id="slideShow">
-      <ul class="slides">
-        <li><img src="../../img/flower.jpg" alt="" /></li>
-        <li><img src="../../img/fox.jpg" alt="" /></li>
-        <li><img src="../../img/lightning.jpg" alt="" /></li>
-        <li><img src="../../img/moon.jpg" alt="" /></li>
-        <li><img src="../../img/nature.jpg" alt="" /></li>
-        <li><img src="../../img/space.jpg" alt="" /></li>
-      </ul>
-      <p class="controller">
-        <!-- &lang: 왼쪽 방향 화살표 &rang: 오른쪽 방향 화살표 -->
-        <span class="prev">&lang;</span>
-        <span class="next">&rang;</span>
-      </p>
+    <div class="kind_wrap">
+      <!-- viewer -->
+      <div class="kind_slider">
+        <!-- 이게 움직이는애 -->
+        <ul class="slider">
+          <li><img src="../../img/flower.jpg" alt="" /></li>
+          <li><img src="../../img/fox.jpg" alt="" /></li>
+          <li><img src="../../img/lightning.jpg" alt="" /></li>
+          <li><img src="../../img/moon.jpg" alt="" /></li>
+          <li><img src="../../img/nature.jpg" alt="" /></li>
+          <!-- <li><img src="../../img/space.jpg" alt="" /></li> -->
+        </ul>
+      </div>
+      <div class="arrow">
+        <a href="" class="prev">이전</a>
+        <a href="" class="next">다음</a>
+      </div>
     </div>
-    <script src="JS/slideShow.js"></script>
+    <!-- <script src="JS/slideShow.js"></script> -->
+    <script>
+      window.onload = function () {
+        const kindWrap = document.querySelector(".kind_wrap");
+        const slider = kindWrap.querySelector(".slider");
+        const slideLis = slider.querySelectorAll("li");
+        const moveButton = kindWrap.querySelector(".arrow");
+
+        /* 클론 */
+        const clone1 = slideLis[0].cloneNode(true);
+        const cloneLast = slideLis[slideLis.length - 1].cloneNode(true);
+        slider.insertBefore(cloneLast, slideLis[0]);
+        slider.appendChild(clone1);
+
+        /* 주요 변수 초기화 */
+        let currentIdx = 0; // 슬라이드 현재 번호
+        let translate = 0; // 슬라이드 위치 값
+        const speedTime = 500;
+
+        /* CSSOM 셋업 */
+        const sliderCloneLis = slider.querySelectorAll("li");
+        const liWidth = slideLis[0].clientWidth;
+        const sliderWidth = liWidth * sliderCloneLis.length;
+        slider.style.width = `${sliderWidth}px`;
+        currentIdx = 1; // 클론 생성후 1번째 이미지가 원래의 0번째이미지
+        translate = -liWidth; // 그에 맞게 translate도 1번째로 변경
+        slider.style.transform = `translateX(${translate}px)`;
+
+        /* 리스너 설치하기 */
+        moveButton.addEventListener("click", moveSlide);
+
+        function move(D) {
+          currentIdx += -1 * D;
+          translate += liWidth * D;
+          slider.style.transform = `translateX(${translate}px)`;
+          slider.style.transition = `all ${speedTime}ms ease`;
+        }
+
+        function moveSlide(event) {
+          console.log(sliderCloneLis);
+          console.log(slideLis);
+          event.preventDefault();
+          if (event.target.className === "next") {
+            console.log(currentIdx, translate);
+            move(-1);
+            // 마지막 이미지라면
+            if (currentIdx === sliderCloneLis.length - 1)
+              setTimeout(() => {
+                console.log(currentIdx);
+                slider.style.transition = "none";
+                currentIdx = 1;
+                translate = -liWidth;
+                slider.style.transform = `translateX(${translate}px)`;
+              }, speedTime);
+            console.log(currentIdx, translate);
+          } else if (event.target.className === "prev") {
+            console.log(currentIdx, translate);
+            move(1);
+            // 첫번째 이미지라면
+            if (currentIdx === 0) {
+              setTimeout(() => {
+                slider.style.transition = "none";
+                currentIdx = sliderCloneLis.length - 2;
+                translate = -(liWidth * currentIdx);
+                slider.style.transform = `translateX(${translate}px)`;
+              }, speedTime);
+            }
+            console.log(currentIdx, translate);
+          }
+        }
+      };
+
+      //버튼 누르기전 currentIdx = 0, translate = 0
+      //다음 버튼 누른후 currentIdx++, translate = translate - liWidth
+      //이전 버튼 누른후 currentIdx--, translate = translate + liWidth
+    </script>
   </body>
 </html>
