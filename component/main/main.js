@@ -372,11 +372,13 @@ function createCardList(roomList = null) {
           </div>
           <div class="detail__image-box">
           <!-- 이미지 클릭하면 화면 전체로 확대 -->
-            <div class="carousel-box">
-              
+            <div class="carousel-screen">
+              <ul class="carousel">
+                
+              </ul>
             </div>
-            <div class="carousel-btn carousel-btn--prev"><i class="fa-solid fa-chevron-left"></i></div>
-            <div class="carousel-btn carousel-btn--next"><i class="fa-solid fa-chevron-right"></i></div>
+            <div class="carousel-controller carousel-controller--prev"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="carousel-controller carousel-controller--next"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
           <div class="detail__basic">
             <div class="basic__top">
@@ -473,15 +475,21 @@ function createCardList(roomList = null) {
       detailBox.insertAdjacentHTML("beforeend", element);
 
       // * 생성된 디테일창에 기능을 적용하는 코드
+
       const closeBtn = document.querySelector(".detail__header__back");
-      const carouselBtns = document.querySelectorAll(".carousel-btn");
-      let count = 0;
+      const carouselControllers = document.querySelectorAll(
+        ".carousel-controller"
+      );
+
+      let currentIndex = 0;
+      let translate = 0;
+      const speedTime = 500;
 
       /**
        * ^ 디테일창을 보이게 or 안보이게 하는 함수
        * @param {*} isTrue
        */
-      const activeDetailBox = (isTrue) => {
+      function activeDetailBox(isTrue) {
         if (isTrue) {
           detailBox.classList.add("open");
           cards.style.display = "none";
@@ -489,20 +497,17 @@ function createCardList(roomList = null) {
           detailBox.classList.remove("open");
           cards.style.display = "block";
         }
-      };
+      }
 
       /**
        * ^ 디테일창의 '위치' 항목에서 보일 정적 지도 이미지 생성 함수
        */
-      const createStaticMap = () => {
-        // 이미지 지도에서 마커가 표시될 위치입니다
+      function createStaticMap() {
         var markerPosition = new kakao.maps.LatLng(
           Number(random_location.split(",")[0]),
           Number(random_location.split(",")[1])
         );
 
-        // 이미지 지도에 표시할 마커입니다
-        // 이미지 지도에 표시할 마커는 Object 형태입니다
         var marker = {
           position: markerPosition,
         };
@@ -512,9 +517,9 @@ function createCardList(roomList = null) {
             center: new kakao.maps.LatLng(
               Number(random_location.split(",")[0]),
               Number(random_location.split(",")[1])
-            ), // 이미지 지도의 중심좌표
-            level: 3, // 이미지 지도의 확대 레벨
-            marker: marker, // 이미지 지도에 표시할 마커
+            ),
+            level: 3,
+            marker: marker,
           };
 
         // 이미지 지도를 생성합니다
@@ -522,100 +527,85 @@ function createCardList(roomList = null) {
           staticMapContainer,
           staticMapOption
         );
-      };
+      }
 
       /**
        * ^ 디테일창의 이미지슬라이더 Element를 만드는 함수
        */
-      const createCarousel = () => {
-        const carouselBox = document.querySelector(".carousel-box");
+      function createCarousel() {
+        const carousel = document.querySelector(".carousel");
         const imageWidth = detailBox.clientWidth; // 285px
 
-        carouselBox.style.width = `${images.length * imageWidth}px`;
-        while (carouselBox.firstChild)
-          carouselBox.removeChild(carouselBox.firstChild);
+        carousel.style.width = `${images.length * imageWidth}px`;
+
         images.forEach((image) => {
           let element = `
-          <div class="carousel">
-            <img class="detail__image" src=${image}?w=400&h=300&q=70&a=1 />
-          </div>`;
-          carouselBox.insertAdjacentHTML("beforeend", element);
+          <li>
+            <img class="carousel-image" src=${image}?w=400&h=300&q=70&a=1 />
+          </li>`;
+          carousel.insertAdjacentHTML("beforeend", element);
         });
-        makeClone();
-      };
 
-      /**
-       * ^ carousel의 첫번째 이미지의 이전, 마지막 이미지의 다음에 클론을 생성하는 함수
-       */
-      const makeClone = () => {
-        const carouselBox = document.querySelector(".carousel-box");
-        const carousel = document.querySelectorAll(".carousel");
-        let clone_first = carousel[0].cloneNode(true);
-        let clone_last = carousel[carousel.length - 1].cloneNode(true);
+        let firstImageClone = carousel.firstElementChild.cloneNode(true);
+        let lastImageClone = carousel.lastElementChild.cloneNode(true);
 
-        clone_first.classList.add("carousel-clone", "first-clone");
-        clone_last.classList.add("carousel-clone", "last-clone");
-        carouselBox.append(clone_first);
-        carouselBox.insertBefore(clone_last, carouselBox.firstElementChild);
-      };
+        carousel.insertAdjacentElement("afterbegin", lastImageClone);
+        carousel.insertAdjacentElement("beforeend", firstImageClone);
 
-      const createClone = () => {
-        const carouselBox = document.querySelector(".carousel-box");
-        const carousel = document.querySelectorAll(".carousel");
-        console.log(carouselBox);
-      };
+        currentIndex = 1;
+        translate -= imageWidth;
+        carousel.style.transform = `translate(${translate}px)`;
+      }
 
-      const carouselBtnHandler = (e) => {
-        const carouselBox = document.querySelector(".carousel-box");
-        const imageWidth = carouselBox.firstElementChild.clientWidth;
-        const carouselWidth = imageWidth * images.length;
-        console.log(carouselWidth);
+      function move(direction) {
+        const carousel = document.querySelector(".carousel");
+        const imageWidth = carousel.firstElementChild.clientWidth;
 
-        let translateX;
-        console.log(images.length);
-        if (e.currentTarget.classList.contains("carousel-btn--prev")) {
-          console.log(e.currentTarget);
-          count++;
-          console.log(count);
-          translateX = count * imageWidth;
-          carouselBox.style.transform = `translate(${translateX}px)`;
-          if (count % images.length === 1) {
+        direction === "next" ? currentIndex++ : currentIndex--;
+        translate = -(imageWidth * currentIndex);
+        carousel.style.transform = `translate(${translate}px)`;
+        carousel.style.transition = `all ${speedTime}ms ease`;
+      }
+
+      const carouselControllerHandler = (e) => {
+        const carousel = document.querySelector(".carousel");
+        const imageList = carousel.querySelectorAll("img");
+        const imageWidth = carousel.firstElementChild.clientWidth;
+        const target = e.currentTarget;
+
+        if (target.classList.contains("carousel-controller--next")) {
+          move("next");
+          if (currentIndex === imageList.length - 1) {
             setTimeout(() => {
-              // createCarousel();
-              createClone();
-            }, 500);
+              currentIndex = 1;
+              translate = -(imageWidth * currentIndex);
+              carousel.style.transition = `none`;
+              carousel.style.transform = `translate(${translate}px)`;
+            }, speedTime);
           }
         } else {
-          count--;
-          console.log(count);
-          translateX = count * imageWidth;
-          carouselBox.style.transform = `translate(${translateX}px)`;
+          move("prev");
+          if (currentIndex === 0) {
+            setTimeout(() => {
+              currentIndex = imageList.length - 2;
+              translate = -(imageWidth * currentIndex);
+              carousel.style.transition = `none`;
+              carousel.style.transform = `translate(${translate}px)`;
+            }, speedTime);
+          }
         }
       };
 
-      /**
-       * 이미지가 3개라면
-       * count 가 (이전버튼) 1+3n일때, (다음버튼) -3n 일때 carousel 전체를 복사해서 붙여넣고싶어
-       * 1 -> 4 -> 7 -> 10
-       * -3 -> -6 -> -9
-       * 이전버튼 눌러서 3번째 이미지가 가운데로 오면
-       * transform : translate(285px * -2 px)
-       *
-       * 다음버튼 눌러서 1번째 이미지가 가운데로 오면
-       * transfrom : translate(285px * 0 px)
-       */
-
       activeDetailBox(true);
       createCarousel();
-
       createStaticMap();
 
       closeBtn.addEventListener("click", (e) => {
         activeDetailBox(false);
       });
 
-      carouselBtns.forEach((btn) => {
-        btn.addEventListener("click", carouselBtnHandler);
+      carouselControllers.forEach((controller) => {
+        controller.addEventListener("click", carouselControllerHandler);
       });
     });
   });
