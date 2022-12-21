@@ -376,9 +376,12 @@ function createCardList(roomList = null) {
               <ul class="carousel">
                 
               </ul>
+              <div class="carousel-controller carousel-controller--prev"><i class="fa-solid fa-chevron-left"></i></div>
+              <div class="carousel-controller carousel-controller--next"><i class="fa-solid fa-chevron-right"></i></div>
+              <div class="carousel-count-box"><span class="carousel-count">1</span> / ${
+                images.length
+              }</div> 
             </div>
-            <div class="carousel-controller carousel-controller--prev"><i class="fa-solid fa-chevron-left"></i></div>
-            <div class="carousel-controller carousel-controller--next"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
           <div class="detail__basic">
             <div class="basic__top">
@@ -571,26 +574,38 @@ function createCardList(roomList = null) {
         const carousel = document.querySelector(".carousel");
         const imageList = carousel.querySelectorAll("img");
         const imageWidth = carousel.firstElementChild.clientWidth;
+        const carouselCount = document.querySelector(".carousel-count");
         const target = e.currentTarget;
 
         if (target.classList.contains("carousel-controller--next")) {
           move("next");
+          carouselCount.innerText = currentIndex;
+
           if (currentIndex === imageList.length - 1) {
+            // target.style.pointerEvents = "none";
+            carouselCount.innerText = 1;
             setTimeout(() => {
               currentIndex = 1;
               translate = -(imageWidth * currentIndex);
               carousel.style.transition = `none`;
               carousel.style.transform = `translate(${translate}px)`;
+              // target.style.pointerEvents = "auto";
             }, speedTime);
           }
         } else {
           move("prev");
+          carouselCount.innerText = currentIndex;
+
           if (currentIndex === 0) {
+            // target.style.pointerEvents = "none";
+            carouselCount.innerText = imageList.length - 2;
             setTimeout(() => {
               currentIndex = imageList.length - 2;
+              carouselCount.innerText = currentIndex;
               translate = -(imageWidth * currentIndex);
               carousel.style.transition = `none`;
               carousel.style.transform = `translate(${translate}px)`;
+              // target.style.pointerEvents = "auto";
             }, speedTime);
           }
         }

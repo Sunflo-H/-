@@ -789,18 +789,38 @@ select::-ms-expand {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  width: 30px;
+  height: 100%;
   text-align: center;
   font-size: 1.8rem;
   color: white;
   cursor: pointer;
 }
 
+.carousel-controller i {
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
 .carousel-controller--prev {
-  left: 10px;
+  left: 0;
 }
 
 .carousel-controller--next {
-  right: 10px;
+  right: 0;
+}
+
+.carousel-count-box {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  color: white;
+  background-color: rgba(26, 26, 26, 0.6);
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 20px;
 }
 
 /* detail - basic__top */
