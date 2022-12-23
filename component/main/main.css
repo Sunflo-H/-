@@ -724,7 +724,6 @@ select::-ms-expand {
 }
 
 .detail__header {
-  /* display: none; */
   position: fixed;
   width: 265px;
   height: 20px;
@@ -732,8 +731,7 @@ select::-ms-expand {
   padding: 10px;
   border-radius: 5px 5px 0 0;
   z-index: 2;
-  /* background-color: #fefefe; */
-  color: white;
+  color: #fefefe;
 }
 
 .detail__header__back {
@@ -746,6 +744,7 @@ select::-ms-expand {
 }
 
 .detail__header__text {
+  display: none;
   text-align: center;
 }
 

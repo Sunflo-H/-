@@ -771,6 +771,23 @@ function createCardList(roomList = null) {
       carouselControllers.forEach((controller) => {
         controller.addEventListener("click", carouselControllerHandler);
       });
+
+      detailBox.addEventListener("scroll", (e) => {
+        const header = document.querySelector(".detail__header");
+        const text = header.querySelector(".detail__header__text");
+
+        let currentScrollTop = e.target.scrollTop;
+
+        if (currentScrollTop === 0) {
+          header.style.backgroundColor = "transparent";
+          header.style.color = "#fefefe";
+          text.style.display = "none";
+        } else {
+          header.style.backgroundColor = "#fefefe";
+          header.style.color = "black";
+          text.style.display = "block";
+        }
+      });
     });
   });
 
