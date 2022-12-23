@@ -480,6 +480,7 @@ function createCardList(roomList = null) {
       // * 생성된 디테일창에 기능을 적용하는 코드
 
       const closeBtn = document.querySelector(".detail__header__back");
+      const carousel = document.querySelector(".carousel");
       const carouselControllers = document.querySelectorAll(
         ".carousel-controller"
       );
@@ -536,7 +537,6 @@ function createCardList(roomList = null) {
        * ^ 디테일창의 이미지슬라이더 Element를 만드는 함수
        */
       function createCarousel() {
-        const carousel = document.querySelector(".carousel");
         const imageWidth = detailBox.clientWidth; // 285px
 
         carousel.style.width = `${images.length * imageWidth}px`;
@@ -561,7 +561,6 @@ function createCardList(roomList = null) {
       }
 
       function move(direction) {
-        const carousel = document.querySelector(".carousel");
         const imageWidth = carousel.firstElementChild.clientWidth;
 
         direction === "next" ? currentIndex++ : currentIndex--;
@@ -601,7 +600,6 @@ function createCardList(roomList = null) {
             carouselCount.innerText = imageList.length - 2;
             setTimeout(() => {
               currentIndex = imageList.length - 2;
-              carouselCount.innerText = currentIndex;
               translate = -(imageWidth * currentIndex);
               carousel.style.transition = `none`;
               carousel.style.transform = `translate(${translate}px)`;
@@ -617,6 +615,13 @@ function createCardList(roomList = null) {
 
       closeBtn.addEventListener("click", (e) => {
         activeDetailBox(false);
+      });
+
+      carousel.addEventListener("click", (e) => {
+        if (e.target.classList.contains("carousel-image")) {
+          console.log("모달 생성");
+          // 모달생성()
+        }
       });
 
       carouselControllers.forEach((controller) => {
