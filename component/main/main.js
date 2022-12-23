@@ -202,6 +202,124 @@ function getUserLocation() {
   });
 }
 
+//* ============================== Modal 관련 코드
+const modalCloseBtn = document.querySelector(".modal__close-btn");
+const modalController = document.querySelectorAll(
+  ".modal__carousel-controller"
+);
+
+let currentIndex = 0;
+let translate = 0;
+const speedTime = 500;
+
+function openModal() {
+  const modal = document.querySelector(".modal-box");
+  modal.style.display = "block";
+}
+
+function closeModal() {
+  const modal = document.querySelector(".modal-box");
+  modal.style.display = "none";
+}
+
+function createModalCarousel(images, index) {
+  const screen = document.querySelector(".modal__carousel-screen");
+  const carousel = document.querySelector(".modal__carousel");
+  const count = document.querySelector(".modal__carousel-count");
+  const total = document.querySelector(".modal__carousel-total-count");
+  const imageWidth = screen.clientWidth;
+
+  carousel.style.width = `${images.length * imageWidth}px`;
+
+  while (carousel.firstChild) carousel.removeChild(carousel.firstChild);
+
+  images.forEach((image) => {
+    let element = `
+          <li>
+            <img class="modal__carousel__image" src=${image}?w=700&h=500&q=70&a=1 />
+          </li>`;
+    carousel.insertAdjacentHTML("beforeend", element);
+  });
+
+  let firstImageClone = carousel.firstElementChild.cloneNode(true);
+  let lastImageClone = carousel.lastElementChild.cloneNode(true);
+
+  carousel.insertAdjacentElement("afterbegin", lastImageClone);
+  carousel.insertAdjacentElement("beforeend", firstImageClone);
+
+  count.innerText = index;
+  total.innerText = images.length;
+
+  // 생성된 이미지에 width 설정
+  const imageList = document.querySelectorAll(".modal__carousel__image");
+  imageList.forEach((image) => {
+    image.style.width = `${imageWidth}px`;
+  });
+  currentIndex = index;
+  translate = -(currentIndex * imageWidth);
+  carousel.style.transition = "none";
+  carousel.style.transform = `translate(${translate}px)`;
+}
+
+/**
+ * ^ carousel 이미지를 이동하는 함수
+ * @param {*} direction
+ */
+function move(direction) {
+  const carousel = document.querySelector(".modal__carousel");
+  const imageWidth = carousel.firstElementChild.clientWidth;
+
+  direction === "next" ? currentIndex++ : currentIndex--;
+  translate = -(imageWidth * currentIndex);
+  carousel.style.transform = `translate(${translate}px)`;
+  carousel.style.transition = `all ${speedTime}ms ease`;
+}
+
+function modalCarouselControllerHandler(e) {
+  const carousel = document.querySelector(".modal__carousel");
+  const imageList = carousel.querySelectorAll("img");
+  const imageWidth = carousel.firstElementChild.clientWidth;
+  const carouselCount = document.querySelector(".modal__carousel-count");
+  const target = e.currentTarget;
+
+  if (target.classList.contains("carousel__controller--next")) {
+    move("next");
+    carouselCount.innerText = currentIndex;
+
+    if (currentIndex === imageList.length - 1) {
+      // target.style.pointerEvents = "none";
+      carouselCount.innerText = 1;
+      setTimeout(() => {
+        currentIndex = 1;
+        translate = -(imageWidth * currentIndex);
+        carousel.style.transition = `none`;
+        carousel.style.transform = `translate(${translate}px)`;
+        // target.style.pointerEvents = "auto";
+      }, speedTime);
+    }
+  } else {
+    move("prev");
+    carouselCount.innerText = currentIndex;
+
+    if (currentIndex === 0) {
+      // target.style.pointerEvents = "none";
+      carouselCount.innerText = imageList.length - 2;
+      setTimeout(() => {
+        currentIndex = imageList.length - 2;
+        translate = -(imageWidth * currentIndex);
+        carousel.style.transition = `none`;
+        carousel.style.transform = `translate(${translate}px)`;
+        // target.style.pointerEvents = "auto";
+      }, speedTime);
+    }
+  }
+}
+
+modalCloseBtn.addEventListener("click", closeModal);
+modalController.forEach((controller) => {
+  controller.addEventListener("click", modalCarouselControllerHandler);
+});
+
 //* ============================== 방 정보, 방 클러스터 관련 코드들 =================================
 /**
  *
@@ -372,13 +490,13 @@ function createCardList(roomList = null) {
           </div>
           <div class="detail__image-box">
           <!-- 이미지 클릭하면 화면 전체로 확대 -->
-            <div class="carousel-screen">
+            <div class="carousel__screen">
               <ul class="carousel">
                 
               </ul>
-              <div class="carousel-controller carousel-controller--prev"><i class="fa-solid fa-chevron-left"></i></div>
-              <div class="carousel-controller carousel-controller--next"><i class="fa-solid fa-chevron-right"></i></div>
-              <div class="carousel-count-box"><span class="carousel-count">1</span> / ${
+              <div class="carousel__controller carousel__controller--prev"><i class="fa-solid fa-chevron-left"></i></div>
+              <div class="carousel__controller carousel__controller--next"><i class="fa-solid fa-chevron-right"></i></div>
+              <div class="carousel__count-box"><span class="carousel__count">1</span> / ${
                 images.length
               }</div> 
             </div>
@@ -482,7 +600,7 @@ function createCardList(roomList = null) {
       const closeBtn = document.querySelector(".detail__header__back");
       const carousel = document.querySelector(".carousel");
       const carouselControllers = document.querySelectorAll(
-        ".carousel-controller"
+        ".carousel__controller"
       );
 
       let currentIndex = 0;
@@ -544,7 +662,7 @@ function createCardList(roomList = null) {
         images.forEach((image) => {
           let element = `
           <li>
-            <img class="carousel-image" src=${image}?w=400&h=300&q=70&a=1 />
+            <img class="carousel__image" src=${image}?w=400&h=300&q=70&a=1 />
           </li>`;
           carousel.insertAdjacentHTML("beforeend", element);
         });
@@ -560,6 +678,10 @@ function createCardList(roomList = null) {
         carousel.style.transform = `translate(${translate}px)`;
       }
 
+      /**
+       * ^ carousel 이미지를 이동하는 함수
+       * @param {*} direction
+       */
       function move(direction) {
         const imageWidth = carousel.firstElementChild.clientWidth;
 
@@ -569,14 +691,14 @@ function createCardList(roomList = null) {
         carousel.style.transition = `all ${speedTime}ms ease`;
       }
 
-      const carouselControllerHandler = (e) => {
+      function carouselControllerHandler(e) {
         const carousel = document.querySelector(".carousel");
         const imageList = carousel.querySelectorAll("img");
         const imageWidth = carousel.firstElementChild.clientWidth;
-        const carouselCount = document.querySelector(".carousel-count");
+        const carouselCount = document.querySelector(".carousel__count");
         const target = e.currentTarget;
 
-        if (target.classList.contains("carousel-controller--next")) {
+        if (target.classList.contains("carousel__controller--next")) {
           move("next");
           carouselCount.innerText = currentIndex;
 
@@ -607,7 +729,7 @@ function createCardList(roomList = null) {
             }, speedTime);
           }
         }
-      };
+      }
 
       activeDetailBox(true);
       createCarousel();
@@ -618,9 +740,9 @@ function createCardList(roomList = null) {
       });
 
       carousel.addEventListener("click", (e) => {
-        if (e.target.classList.contains("carousel-image")) {
-          console.log("모달 생성");
-          // 모달생성()
+        if (e.target.classList.contains("carousel__image")) {
+          openModal();
+          createModalCarousel(images, currentIndex);
         }
       });
 
