@@ -431,6 +431,14 @@ function createCardList(roomList = null) {
         "06": "포룸+",
       };
 
+      const manage_option_obj = {
+        "01": "전기",
+        "02": "가스",
+        "03": "수도",
+        "04": "인터넷",
+        "05": "티비",
+      };
+
       const options_obj = {
         "01": "에어컨",
         "02": "냉장고",
@@ -449,6 +457,9 @@ function createCardList(roomList = null) {
       const room = roomList[index].item;
       const agent = roomList[index].agent;
 
+      console.log(room);
+      console.log(agent);
+
       const {
         address,
         jibunAddress,
@@ -456,6 +467,8 @@ function createCardList(roomList = null) {
         보증금액,
         월세금액,
         manage_cost,
+        manage_cost_inc,
+        manage_cost_not_inc,
         images,
         title,
         description,
@@ -468,12 +481,14 @@ function createCardList(roomList = null) {
         floor_all,
         movein_date,
         random_location,
+        options,
       } = room;
 
       let roomTypeCode = room_type_obj[room_type_code];
       let floorString = `${floor_string}층`;
       if (floor_string === "옥탑방" || floor_string === "반지하")
         floorString = `${floor_string}`;
+
       let priceElement = `<div class="detail__price detail__text--14r detail__text--bold">${sales_type} ${보증금액}/${월세금액}</div>`;
       if (sales_type === "전세")
         priceElement = `<div class="detail__price detail__text--14r detail__text--bold">${sales_type} ${보증금액}</div>`;
@@ -489,14 +504,30 @@ function createCardList(roomList = null) {
         parkingElement = `<div class="detail__info-message ">
                             <i class="fa-brands fa-product-hunt detail__icon"></i>${parking}
                           </div>`;
+
+      let manageCostInc = "없음";
+      if (manage_cost_inc) {
+        manageCostInc = manage_cost_inc
+          .split(";")
+          .slice(0, -1)
+          .map((item) => manage_option_obj[item])
+          .join(", ");
+      }
+      let manageCostNotInc = "없음";
+      if (manage_cost_not_inc) {
+        manageCostNotInc = manage_cost_not_inc
+          .split(";")
+          .slice(0, -1)
+          .map((item) => manage_option_obj[item])
+          .join(", ");
+      }
+
       let element = `
-          <!-- 픽스로 맨 위에 붙여, 안보이다가 스크롤 내려지는 순간 보이게 -->
           <div class="detail__header">
             <div class="detail__header__back"><i class="fa-solid fa-xmark"></i></div>
             <div class="detail__header__text">${address}</div>
           </div>
           <div class="detail__image-box">
-          <!-- 이미지 클릭하면 화면 전체로 확대 -->
             <div class="carousel__screen">
               <ul class="carousel">
                 
@@ -540,27 +571,16 @@ function createCardList(roomList = null) {
 
           <div class="detail__manage">
             <div class="detail__text--11r detail__text--bold">관리비 : ${manage_cost}만원</div>
-            <div class="detail__text--09r">포함 : 없음</div>
+            <div class="detail__manage-inc detail__text--09r">포함 : ${manageCostInc}</div>
             <div class="detail__manage-not-inc detail__text--09r">
-              별도 : 전기, 가스, 수도, 인터넷, 티비
+              별도 : ${manageCostNotInc}
             </div>
           </div>
           <div class="detail__contour"></div>
 
-          <!-- data 받아와서 수만큼 div 생성 -->
           <div class="detail__option-box">
             <div class="detail__option-title">옵션 정보</div>
-            <div class="detail__option-item-box">
-              <div class="detail__option-item">싱크대 </div>
-              <div class="detail__option-item">에어컨 </div>
-              <div class="detail__option-item">신발장 </div>
-              <div class="detail__option-item">세탁기 </div>
-              <div class="detail__option-item">어쩌구 </div>
-              <div class="detail__option-item">책장 </div>
-              <div class="detail__option-item">신발장 </div>
-              <div class="detail__option-item">세탁기 </div>
-            </div>
-            <div class="view-more">12개 모두보기</div>
+            <div class="detail__option-item-box"></div>
           </div>
           <div class="detail__contour"></div>
           <div class="detail__description">
@@ -602,6 +622,24 @@ function createCardList(roomList = null) {
       while (detailBox.firstChild) detailBox.removeChild(detailBox.firstChild);
       detailBox.insertAdjacentHTML("beforeend", element);
 
+      // 새 디테일창을 열면 스크롤을 맨 위로
+      setTimeout(() => {
+        detailBox.scrollTop = 0;
+      }, 0);
+
+      // 옵션 정보에 대한 element 생성
+      const detailOptionBox = document.querySelector(
+        ".detail__option-item-box"
+      );
+
+      let optionCodeList = options.split(";").slice(0, -1);
+
+      optionCodeList.forEach((optionCode) => {
+        let element = `<div class="detail__option-item">${options_obj[optionCode]}</div>`;
+        detailOptionBox.insertAdjacentHTML("beforeend", element);
+      });
+
+      // 이미지 박스 요소에 carousel 기능 적용
       const imageBox = document.querySelector(".detail__image-box");
       const closeBtn = document.querySelector(".detail__header__back");
       const carousel = document.querySelector(".carousel");

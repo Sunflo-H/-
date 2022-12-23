@@ -900,7 +900,7 @@ select::-ms-expand {
 /* detail__option */
 .detail__option-box {
   position: relative;
-  padding: 20px 15px 40px;
+  padding: 20px 15px;
 }
 .detail__option-title {
   font-size: 1.1rem;
