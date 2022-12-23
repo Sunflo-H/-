@@ -222,6 +222,11 @@ function closeModal() {
   modal.style.display = "none";
 }
 
+/**
+ * ^ Modal 의 carousel 을 동적으로 생성하는 함수
+ * @param {*} images
+ * @param {*} index
+ */
 function createModalCarousel(images, index) {
   const screen = document.querySelector(".modal__carousel-screen");
   const carousel = document.querySelector(".modal__carousel");
@@ -229,10 +234,11 @@ function createModalCarousel(images, index) {
   const total = document.querySelector(".modal__carousel-total-count");
   const imageWidth = screen.clientWidth;
 
+  // carousel의 너비 설정
   carousel.style.width = `${images.length * imageWidth}px`;
 
+  // 기존의 carousel 이미지들을 삭제하고 새 이미지들로 채운다.
   while (carousel.firstChild) carousel.removeChild(carousel.firstChild);
-
   images.forEach((image) => {
     let element = `
           <li>
@@ -241,16 +247,18 @@ function createModalCarousel(images, index) {
     carousel.insertAdjacentHTML("beforeend", element);
   });
 
+  // 첫번째 이미지와 마지막 이미지를 맨 뒤, 맨 앞에 놓아 무한carousel을 만들 준비
   let firstImageClone = carousel.firstElementChild.cloneNode(true);
   let lastImageClone = carousel.lastElementChild.cloneNode(true);
 
   carousel.insertAdjacentElement("afterbegin", lastImageClone);
   carousel.insertAdjacentElement("beforeend", firstImageClone);
 
+  // 현재이미지인덱스 / 총 이미지수 설정
   count.innerText = index;
   total.innerText = images.length;
 
-  // 생성된 이미지에 width 설정
+  // 생성된 이미지들에 width, transision, transform 설정
   const imageList = document.querySelectorAll(".modal__carousel__image");
   imageList.forEach((image) => {
     image.style.width = `${imageWidth}px`;
@@ -275,6 +283,10 @@ function move(direction) {
   carousel.style.transition = `all ${speedTime}ms ease`;
 }
 
+/**
+ * ^ 클릭한 컨트롤러에 따라 carousel을 앞 뒤로 이동시키는 함수
+ * @param {*} e
+ */
 function modalCarouselControllerHandler(e) {
   const carousel = document.querySelector(".modal__carousel");
   const imageList = carousel.querySelectorAll("img");
@@ -337,14 +349,8 @@ async function createOneRoomCluster(subway) {
 }
 
 /**
- * ^ 방 정보를 받아 cardList를 생성한다.
+ * ^ 방 정보를 받아 cardList를 생성하고, 생성된 card들에 기능들을 적용한다.
  * @param {*} oneroomList [{원룸 정보}, {원룸 정보} ...]
- * * 생성
- * 1. 클러스터 클릭시 카드 생성
- * 2. 지하철, 지역상태에서 확대했는데 방 정보가 있을때
- *
- * * 삭제
- * 1. 지도 축소 해서 지하철, 지역이 보일때
  */
 function createCardList(roomList = null) {
   const cardBox = document.querySelector(".card-box");
@@ -354,7 +360,7 @@ function createCardList(roomList = null) {
     cards.removeChild(cards.firstChild);
   }
 
-  // roomList가 없다면 기본값을 띄우고 함수 종료
+  // roomList가 없다면 매물이 없을때의 html을 띄우고 함수 종료
   if (!roomList) {
     let element = `<li class="card__no-result">
                     <p class="card__no-result__text"><b>장소</b>를 클릭하여</p>
@@ -364,6 +370,7 @@ function createCardList(roomList = null) {
     return;
   }
 
+  // 방 정보들로 카드를 생성한다.
   roomList.forEach((oneroom) => {
     let item = oneroom.item;
     let price = ``;
@@ -412,6 +419,7 @@ function createCardList(roomList = null) {
 
   const cardList = document.querySelectorAll("li.card");
 
+  // 카드를 클릭했을때 Detail 창이 열리도록 클릭이벤트 등록
   cardList.forEach((card, index) => {
     card.addEventListener("click", (e) => {
       const room_type_obj = {
@@ -440,8 +448,7 @@ function createCardList(roomList = null) {
 
       const room = roomList[index].item;
       const agent = roomList[index].agent;
-      console.log(room);
-      console.log(agent);
+
       const {
         address,
         jibunAddress,
@@ -595,8 +602,7 @@ function createCardList(roomList = null) {
       while (detailBox.firstChild) detailBox.removeChild(detailBox.firstChild);
       detailBox.insertAdjacentHTML("beforeend", element);
 
-      // * 생성된 디테일창에 기능을 적용하는 코드
-
+      const imageBox = document.querySelector(".detail__image-box");
       const closeBtn = document.querySelector(".detail__header__back");
       const carousel = document.querySelector(".carousel");
       const carouselControllers = document.querySelectorAll(
@@ -691,6 +697,10 @@ function createCardList(roomList = null) {
         carousel.style.transition = `all ${speedTime}ms ease`;
       }
 
+      /**
+       * ^ 클릭한 컨트롤러에 따라 carousel을 앞 뒤로 이동시키는 함수
+       * @param {*} e
+       */
       function carouselControllerHandler(e) {
         const carousel = document.querySelector(".carousel");
         const imageList = carousel.querySelectorAll("img");
@@ -744,6 +754,18 @@ function createCardList(roomList = null) {
           openModal();
           createModalCarousel(images, currentIndex);
         }
+      });
+
+      imageBox.addEventListener("mouseenter", (e) => {
+        carouselControllers.forEach((controller) => {
+          controller.style.display = "block";
+        });
+      });
+
+      imageBox.addEventListener("mouseleave", (e) => {
+        carouselControllers.forEach((controller) => {
+          controller.style.display = "none";
+        });
       });
 
       carouselControllers.forEach((controller) => {

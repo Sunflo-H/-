@@ -730,9 +730,10 @@ select::-ms-expand {
   height: 20px;
   line-height: 20px;
   padding: 10px;
-  background-color: #fefefe;
   border-radius: 5px 5px 0 0;
   z-index: 2;
+  /* background-color: #fefefe; */
+  color: white;
 }
 
 .detail__header__back {
@@ -786,6 +787,7 @@ select::-ms-expand {
 }
 
 .carousel__controller {
+  display: none;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
