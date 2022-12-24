@@ -612,7 +612,9 @@ function createCardList(roomList = null) {
               <!-- agent-box에 hover하면 배경 검어지고, 이름과 전화번호 띄우기 -->
             </div>
             <div class="detail__realtor-description">
-              <pre>${agent.agent_intro}</pre>
+              <pre class="detail__realtor-description-message">${
+                agent.agent_intro
+              }</pre>
               <div class="view-more">더보기</div>
             </div>
           </div>`;
@@ -637,6 +639,33 @@ function createCardList(roomList = null) {
       optionCodeList.forEach((optionCode) => {
         let element = `<div class="detail__option-item">${options_obj[optionCode]}</div>`;
         detailOptionBox.insertAdjacentHTML("beforeend", element);
+      });
+
+      // 더보기 버튼
+      const descriptionMessage = document.querySelector(
+        ".detail__description-message"
+      );
+      const agentMessage = document.querySelector(
+        ".detail__realtor-description-message"
+      );
+      const descriptionViewMore = document.querySelector(
+        ".detail__description .view-more"
+      );
+      const agentViewMore = document.querySelector(
+        ".detail__realtor-description .view-more"
+      );
+      console.log(descriptionViewMore);
+      console.log(agentViewMore);
+      descriptionViewMore.addEventListener("click", (e) => {
+        descriptionMessage.style.maxHeight = "none";
+        descriptionMessage.style.whiteSpace = "pre-wrap";
+        descriptionViewMore.style.display = "none";
+      });
+
+      agentViewMore.addEventListener("click", (e) => {
+        agentMessage.style.maxHeight = "none";
+        agentMessage.style.whiteSpace = "pre-wrap";
+        agentViewMore.style.display = "none";
       });
 
       // 이미지 박스 요소에 carousel 기능 적용

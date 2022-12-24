@@ -998,7 +998,7 @@ select::-ms-expand {
   padding-bottom: 20px;
 }
 
-.detail__realtor-description pre {
+.detail__realtor-description-message {
   max-height: 100px;
   font-size: 0.9rem;
   overflow: hidden;
