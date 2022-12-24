@@ -146,48 +146,12 @@ const hyperLocalMarkerList = [];
 
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기 +
 
-//* 카드 클릭시 디테일 정보 보여주기
+//* 카드 클릭시 디테일 정보 보여주기 +
 //  1. 디자인 생각해보기, 내용 생각해보기 ★
-
-//  기본 정보
-//  이미지 : images[]
-//  주소 : address
-//  월세/전세 : 월세금액/전세금액
-//  관리비 : manage_cost
-//  타이틀 : title
-//  평수 : 공급면적_m2   평수 계산함수
-//  복층형 원룸(욕실 1개) : room_type_code (bathroom_count)
-//  세대당 1대 가능 or 불가능 : parking
-//  3층/4층 : floor_string층 / floor_all
-//  즉시 입주 가능 : movein_date  => 처음사용하는 값임 어떤 값이 들어있는지 확인해야함
-
-//  관리비 정보
-//  관리비 : manage_cost
-//  포함 : manage_cost_inc
-//  별도 : manage_cost_not_inc
-
-//  옵션 정보
-//  options String타입 한번에 다 보여주되 대신 텍스트만 작게 보여주자
-
-//  상세 설명
-//  description  이 데이터를 어떻게 하면 그대로 html로 나타낼수 있는지 그것이 관건
-//  이거는 더보기 필요 => 더보기하면 이 칸을 늘려, 모달 만들지마
-
-//  공인중개사 정보
-//  사람사진과 중개사이름 : agent.owner.profile_url / agent.agent_title
-//  주소 추가? agent.agent_address
-//  설명 : agent.agent_intro
-//  이름 : agent.owner.agent_name
-//  전화번호 : agent.owner.agent_phone
-//  얘도 더보기로 설명만 마저 볼 수 있게끔
 
 //* 각 페이지 별 기능 만들기
 //  1. 페이지별 직방 크롤링 모듈 만들기.
 //  2. 페이지별로 함수 만들기 ★
-
-//* 정렬 버튼 클릭했을때 스크롤이 제일 위로 가게
-
-//* 로그인 기능 ???
 
 // 지도 생성
 const map = new kakao.maps.Map(document.getElementById("map"), {
