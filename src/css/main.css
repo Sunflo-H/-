@@ -977,7 +977,6 @@ select::-ms-expand {
 }
 
 .agent__image-box {
-  /* width: 100px; */
   overflow: hidden;
   border-radius: 50%;
 }
@@ -987,6 +986,7 @@ select::-ms-expand {
 }
 
 .agent__realtor-name {
+  flex-basis: 180px;
   margin: auto;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -1,4 +1,4 @@
-import Oneroom from "../module/oneroomModule";
+import Oneroom from "../module/oneroomModule.js";
 import KakaoSearch from "../module/kakaoSearchModule.js";
 
 const filterCategories = document.querySelectorAll(".filter__category");
@@ -119,7 +119,7 @@ const hyperLocalMarkerList = [];
 //  1. 입력된 값으로 검색하기 +
 //  2. 검색한 내용을 마커로 표시하기 +
 //   2-1 마커를 꾸밀수 있나? 꾸밀수 있으면 마커로 +
-//   2-2 꾸밀수 없다면 꾸밀수 있는 무언가로 + 오버레이로 합시다.
+//   2-2 꾸밀수 없다면 꾸밀수 있는 무언가로 + 오버레이로 합시다. +
 //   2-3 어떻게 꾸미는게 좋을까 +
 //   2-4 마커 클릭하면 정보 띄우자 인포윈도우 +
 //   2-5 인포윈도우 꾸미기 +
@@ -131,7 +131,7 @@ const hyperLocalMarkerList = [];
 //  1. 필터 클릭시 활성화 +
 //  2. 필터 안에 버튼 두개 (금액옵션, 구조·면적옵션) +
 //  3. 필터 옵션창을 클릭했을때 필터가 비활성화됨 => 이벤트 위임을 막음 +
-//  4. 각 nav별로 기능 만들어두고 원룸 위주로 완성
+//  !4. 각 nav별로 기능 만들어두고 원룸 위주로 완성
 //  5. 필터가 적용되게끔 하기 +
 //  5-1 거래유형 버튼 : 버튼에 따라 보증금과 월세를 보여줌 +
 //  5-2 금액 최소~최대 기능 : 최소(대)만 입력되었을때, 최대가 최소보다 작을때 +
@@ -146,12 +146,9 @@ const hyperLocalMarkerList = [];
 
 //* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기 +
 
-//* 카드 클릭시 디테일 정보 보여주기 +
-//  1. 디자인 생각해보기, 내용 생각해보기 ★
-
 //* 각 페이지 별 기능 만들기
-//  1. 페이지별 직방 크롤링 모듈 만들기.
-//  2. 페이지별로 함수 만들기 ★
+// ! 1. 페이지별 직방 크롤링 모듈 만들기.
+// ! 2. 페이지별로 함수 만들기 ★
 
 // 지도 생성
 const map = new kakao.maps.Map(document.getElementById("map"), {
@@ -159,7 +156,7 @@ const map = new kakao.maps.Map(document.getElementById("map"), {
   level: 8,
   maxLevel: 12,
 });
-
+console.log("hi");
 function getUserLocation() {
   return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(resolve, reject); // succes, error
@@ -1539,21 +1536,11 @@ function createMarker(data) {
     position: new kakao.maps.LatLng(lat, lng),
   });
 
-  // let markerImage = new kakao.maps.MarkerImage(
-  //   "../../img/map/marker1.png",
-  //   new kakao.maps.Size(30, 30),
-  //   new kakao.maps.Point(15, 26)
-  // );
   let markerImage = new kakao.maps.MarkerImage(
-    "../../img/map/marker_bar.png",
-    new kakao.maps.Size(25, 25),
+    "../img/map/marker1.png",
+    new kakao.maps.Size(30, 30),
     new kakao.maps.Point(15, 26)
   );
-  // let markerImage = new kakao.maps.MarkerImage(
-  //   "../../img/map/marker_drink.png",
-  //   new kakao.maps.Size(25, 25),
-  //   new kakao.maps.Point(15, 26)
-  // );
   marker.setImage(markerImage);
 
   kakao.maps.event.addListener(marker, "click", function () {
@@ -2558,7 +2545,7 @@ function createHyperLocalMarker(data, markerImageName) {
   });
 
   let markerImage = new kakao.maps.MarkerImage(
-    `../../img/map/marker_${markerImageName}.png`,
+    `../img/map/marker_${markerImageName}.png`,
     new kakao.maps.Size(30, 30),
     new kakao.maps.Point(15, 26)
   );
