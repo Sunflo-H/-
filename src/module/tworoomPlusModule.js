@@ -90,6 +90,7 @@ class TworoomPlus {
     let data = await response.json();
     let oneroom_code = ["04", "05", "06"]; // 투룸, 쓰리룸, 포룸
 
+    console.log("hi");
     if (oneroom_code.includes(data.item.room_type_code)) {
       return data;
     }
@@ -134,4 +135,4 @@ class TworoomPlus {
   }
 }
 
-export default Oneroom;
+export default TworoomPlus;

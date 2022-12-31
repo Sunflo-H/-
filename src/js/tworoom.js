@@ -1,4 +1,4 @@
-import Oneroom from "../module/oneroomModule.js";
+import TworoomPlus from "../module/tworoomPlusModule.js";
 import KakaoSearch from "../module/kakaoSearchModule.js";
 
 const filterCategories = document.querySelectorAll(".filter__category");
@@ -17,7 +17,7 @@ const navbox = document.querySelector(".nav__item-box");
 const navItems = nav.querySelectorAll(".nav__item");
 
 const CRITERIA_MAP_LEVEL = 7;
-const oneroom = new Oneroom();
+const tworoomPlus = new TworoomPlus();
 const kakaoSearch = new KakaoSearch();
 /**
  * * id :
@@ -160,7 +160,7 @@ const map = new kakao.maps.Map(document.getElementById("map"), {
   level: 8,
   maxLevel: 12,
 });
-console.log("hi");
+
 function getUserLocation() {
   return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(resolve, reject); // succes, error
@@ -305,17 +305,17 @@ modalController.forEach((controller) => {
 async function createOneRoomCluster(subway) {
   loading(true);
 
-  let oneroomList = await oneroom.getRoomData(subway); // 프로미스 배열이 있음, await 안쓰면 프로미스 안에 프로미스배열이 있음
+  let roomList = await tworoomPlus.getRoomData(subway); // 프로미스 배열이 있음, await 안쓰면 프로미스 안에 프로미스배열이 있음
 
-  Promise.all(oneroomList).then((oneroomList) => {
-    createCluster(oneroomList);
+  Promise.all(roomList).then((roomList) => {
+    createCluster(roomList);
     loading(false);
   });
 }
 
 /**
  * ^ 방 정보를 받아 cardList를 생성하고, 생성된 card들에 기능들을 적용한다.
- * @param {*} oneroomList [{원룸 정보}, {원룸 정보} ...]
+ * @param {*} roomList [{방 정보}, {방 정보} ...]
  */
 function createCardList(roomList = null) {
   const cardBox = document.querySelector(".card-box");
@@ -1201,7 +1201,7 @@ function createOverlay_local(local) {
  * ^ 지도 레벨에따라 지도에 올려진다./삭제된다.
  */
 async function createOverlay_subway() {
-  let subwayList = await oneroom.getSubwayInfo_all();
+  let subwayList = await tworoomPlus.getSubwayInfo_all();
   subwayList.forEach((data) => {
     let content = `<div class="customOverlay customOverlay--subway" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`;
 
@@ -1880,6 +1880,8 @@ function applyBtnHandler_oneroom() {
   removeCluster();
   createCluster(result);
   createCardList();
+
+  filterTitle_price.innerText = "하이";
 }
 
 // 모든 filter__category 클릭시 필터옵션창을 여는 이벤트
