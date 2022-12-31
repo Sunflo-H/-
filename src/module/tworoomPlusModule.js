@@ -1,4 +1,4 @@
-class Oneroom {
+class TworoomPlus {
   SUBWAY_LIST_URL = "https://apis.zigbang.com/property/biglab/subway/all?";
   local = [
     "서울특별시",
@@ -81,14 +81,14 @@ class Oneroom {
   }
 
   /**
-   * 해당 id의 매물의 room_type_code가 [01,02,03](원룸)일때 매물의 자세한 정보를 리턴하는 함수
+   * 해당 id의 매물의 room_type_code가 [04,05,06](투룸이상)일때 매물의 자세한 정보를 리턴하는 함수
    * @param {*} roomId
    * @returns 원룸이면 방정보, 원룸이 아니면 undefined
    */
   async getRoomInfo(roomId) {
     let response = await fetch(`https://apis.zigbang.com/v2/items/${roomId}`);
     let data = await response.json();
-    let oneroom_code = ["01", "02", "03"]; // 분리형, 오픈형, 복층형
+    let oneroom_code = ["04", "05", "06"]; // 투룸, 쓰리룸, 포룸
 
     if (oneroom_code.includes(data.item.room_type_code)) {
       return data;
