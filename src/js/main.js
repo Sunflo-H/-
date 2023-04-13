@@ -1,5 +1,6 @@
 import Oneroom from "../module/oneroomModule.js";
 import KakaoSearch from "../module/kakaoSearchModule.js";
+import modal from "../module/modal.js";
 
 const filterCategories = document.querySelectorAll(".filter__category");
 const filterCategory_price = filterCategories[0];
@@ -114,45 +115,6 @@ const hyperLocalMarkerList = [];
  * 반경 250m, 500m, 1km
  */
 
-//! 할것
-//* 검색기능 +
-//  1. 입력된 값으로 검색하기 +
-//  2. 검색한 내용을 마커로 표시하기 +
-//   2-1 마커를 꾸밀수 있나? 꾸밀수 있으면 마커로 +
-//   2-2 꾸밀수 없다면 꾸밀수 있는 무언가로 + 오버레이로 합시다. +
-//   2-3 어떻게 꾸미는게 좋을까 +
-//   2-4 마커 클릭하면 정보 띄우자 인포윈도우 +
-//   2-5 인포윈도우 꾸미기 +
-//  3. 자동완성 +
-//  4. 자동완성 클릭, 엔터 이벤트 +
-//  6. 검색중 위 아래키 입력 +
-
-//* 필터 만들기 +
-//  1. 필터 클릭시 활성화 +
-//  2. 필터 안에 버튼 두개 (금액옵션, 구조·면적옵션) +
-//  3. 필터 옵션창을 클릭했을때 필터가 비활성화됨 => 이벤트 위임을 막음 +
-//  !4. 각 nav별로 기능 만들어두고 원룸 위주로 완성
-//  5. 필터가 적용되게끔 하기 +
-//  5-1 거래유형 버튼 : 버튼에 따라 보증금과 월세를 보여줌 +
-//  5-2 금액 최소~최대 기능 : 최소(대)만 입력되었을때, 최대가 최소보다 작을때 +
-//  5-3 적용 버튼 클릭 : 모든 필터 옵션들이 적용 +
-//  5-4 초기화 버튼 클릭: 모든 필터 옵션 초기화 +
-//  6 구조 면적 필터도 만들기 +
-
-//* 세권 만들기 +
-//매물 클러스터 클릭하고 세권 필터를 눌러서 적용한경우 세권 생성!
-//  1. 세권 클릭이벤트 등록 +
-//  2. 적용시 마커 생성 +
-
-// 초기화 버튼 누르면 원도 초기화해줘
-
-//* 처음에 자기 위치 받아와서 바로 지하철로 보이게 만들기 +
-
-//* 각 페이지 별 기능 만들기
-// ! 1. 페이지별 직방 크롤링 모듈 만들기.
-// ! 2. 페이지별로 함수 만들기 ★
-
-//* 디테일 페이지에서 문의하기 버튼 같은걸 만들어야해
 // 지도 생성
 const map = new kakao.maps.Map(document.getElementById("map"), {
   center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392), //필수 옵션이라서 아무 좌표를 줬습니다.
@@ -165,136 +127,6 @@ function getUserLocation() {
     navigator.geolocation.getCurrentPosition(resolve, reject); // success, error
   });
 }
-
-//* ============================== Modal 관련 코드
-const modalCloseBtn = document.querySelector(".modal__close-btn");
-const modalController = document.querySelectorAll(
-  ".modal__carousel-controller"
-);
-
-let currentIndex = 0;
-let translate = 0;
-const speedTime = 500;
-
-function openModal() {
-  const modal = document.querySelector(".modal-box");
-  modal.style.display = "block";
-}
-
-function closeModal() {
-  const modal = document.querySelector(".modal-box");
-  modal.style.display = "none";
-}
-
-/**
- * ^ Modal 의 carousel 을 동적으로 생성하는 함수
- * @param {*} images
- * @param {*} index
- */
-function createModalCarousel(images, index) {
-  const screen = document.querySelector(".modal__carousel-screen");
-  const carousel = document.querySelector(".modal__carousel");
-  const count = document.querySelector(".modal__carousel-count");
-  const total = document.querySelector(".modal__carousel-total-count");
-  const imageWidth = screen.clientWidth;
-
-  // carousel의 너비 설정
-  carousel.style.width = `${images.length * imageWidth}px`;
-
-  // 기존의 carousel 이미지들을 삭제하고 새 이미지들로 채운다.
-  while (carousel.firstChild) carousel.removeChild(carousel.firstChild);
-  images.forEach((image) => {
-    let element = `
-          <li>
-            <img class="modal__carousel__image" src=${image}?w=700&h=500&q=70&a=1 />
-          </li>`;
-    carousel.insertAdjacentHTML("beforeend", element);
-  });
-
-  // 첫번째 이미지와 마지막 이미지를 맨 뒤, 맨 앞에 놓아 무한carousel을 만들 준비
-  let firstImageClone = carousel.firstElementChild.cloneNode(true);
-  let lastImageClone = carousel.lastElementChild.cloneNode(true);
-
-  carousel.insertAdjacentElement("afterbegin", lastImageClone);
-  carousel.insertAdjacentElement("beforeend", firstImageClone);
-
-  // 현재이미지인덱스 / 총 이미지수 설정
-  count.innerText = index;
-  total.innerText = images.length;
-
-  // 생성된 이미지들에 width, transision, transform 설정
-  const imageList = document.querySelectorAll(".modal__carousel__image");
-  imageList.forEach((image) => {
-    image.style.width = `${imageWidth}px`;
-  });
-  currentIndex = index;
-  translate = -(currentIndex * imageWidth);
-  carousel.style.transition = "none";
-  carousel.style.transform = `translate(${translate}px)`;
-}
-
-/**
- * ^ carousel 이미지를 이동하는 함수
- * @param {*} direction
- */
-function move(direction) {
-  const carousel = document.querySelector(".modal__carousel");
-  const imageWidth = carousel.firstElementChild.clientWidth;
-
-  direction === "next" ? currentIndex++ : currentIndex--;
-  translate = -(imageWidth * currentIndex);
-  carousel.style.transform = `translate(${translate}px)`;
-  carousel.style.transition = `all ${speedTime}ms ease`;
-}
-
-/**
- * ^ 클릭한 컨트롤러에 따라 carousel을 앞 뒤로 이동시키는 함수
- * @param {*} e
- */
-function modalCarouselControllerHandler(e) {
-  const carousel = document.querySelector(".modal__carousel");
-  const imageList = carousel.querySelectorAll("img");
-  const imageWidth = carousel.firstElementChild.clientWidth;
-  const carouselCount = document.querySelector(".modal__carousel-count");
-  const target = e.currentTarget;
-
-  if (target.classList.contains("carousel__controller--next")) {
-    move("next");
-    carouselCount.innerText = currentIndex;
-
-    if (currentIndex === imageList.length - 1) {
-      // target.style.pointerEvents = "none";
-      carouselCount.innerText = 1;
-      setTimeout(() => {
-        currentIndex = 1;
-        translate = -(imageWidth * currentIndex);
-        carousel.style.transition = `none`;
-        carousel.style.transform = `translate(${translate}px)`;
-        // target.style.pointerEvents = "auto";
-      }, speedTime);
-    }
-  } else {
-    move("prev");
-    carouselCount.innerText = currentIndex;
-
-    if (currentIndex === 0) {
-      // target.style.pointerEvents = "none";
-      carouselCount.innerText = imageList.length - 2;
-      setTimeout(() => {
-        currentIndex = imageList.length - 2;
-        translate = -(imageWidth * currentIndex);
-        carousel.style.transition = `none`;
-        carousel.style.transform = `translate(${translate}px)`;
-        // target.style.pointerEvents = "auto";
-      }, speedTime);
-    }
-  }
-}
-
-modalCloseBtn.addEventListener("click", closeModal);
-modalController.forEach((controller) => {
-  controller.addEventListener("click", modalCarouselControllerHandler);
-});
 
 //* ============================== 방 정보, 방 클러스터 관련 코드들 =================================
 /**
@@ -778,8 +610,8 @@ function createCardList(roomList = null) {
 
       carousel.addEventListener("click", (e) => {
         if (e.target.classList.contains("carousel__image")) {
-          openModal();
-          createModalCarousel(images, currentIndex);
+          modal.openModal();
+          modal.createCarousel(images, currentIndex);
         }
       });
 
