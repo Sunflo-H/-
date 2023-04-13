@@ -153,17 +153,16 @@ const hyperLocalMarkerList = [];
 // ! 2. 페이지별로 함수 만들기 ★
 
 //* 디테일 페이지에서 문의하기 버튼 같은걸 만들어야해
-
 // 지도 생성
 const map = new kakao.maps.Map(document.getElementById("map"), {
-  center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392),
+  center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392), //필수 옵션이라서 아무 좌표를 줬습니다.
   level: 8,
   maxLevel: 12,
 });
-console.log("hi");
+
 function getUserLocation() {
   return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(resolve, reject); // succes, error
+    navigator.geolocation.getCurrentPosition(resolve, reject); // success, error
   });
 }
 
@@ -422,9 +421,6 @@ function createCardList(roomList = null) {
       const room = roomList[index].item;
       const agent = roomList[index].agent;
 
-      console.log(room);
-      console.log(agent);
-
       const {
         address,
         jibunAddress,
@@ -619,8 +615,7 @@ function createCardList(roomList = null) {
       const agentViewMore = document.querySelector(
         ".detail__realtor-description .view-more"
       );
-      console.log(descriptionViewMore);
-      console.log(agentViewMore);
+
       descriptionViewMore.addEventListener("click", (e) => {
         descriptionMessage.style.maxHeight = "none";
         descriptionMessage.style.whiteSpace = "pre-wrap";
@@ -1398,7 +1393,6 @@ function enterKey() {
   kakaoSearch.search(searchInput.value, lat, lng).then((data) => {
     const addressSearchData = data[0];
     const keywordSearchData = data[1];
-    console.log(data);
 
     // 주소검색 결과가 있다면 주소검색 결과만 다룬다.
     if (addressSearchData.length !== 0) {
@@ -2408,7 +2402,9 @@ resetBtn_size.addEventListener("click", (e) => {
 
   parkable.checked = false;
 });
+
 applyBtn_size.addEventListener("click", applyBtnHandler_oneroom);
+
 //* ========================================== 세권 관련 코드들 =================================================
 const resetBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--reset");
 const applyBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--apply");
@@ -2606,8 +2602,6 @@ navItems.forEach((item, index) => {
 //* ========================================== kakao Map 관련 코드들 ================================================
 
 kakao.maps.event.addListener(map, "click", function (mouseEvent) {
-  console.log(map.getLevel());
-  console.log(roomCluster);
   removeInfoWindow();
 });
 

@@ -69,11 +69,14 @@ class Oneroom {
    * @returns [id, id, id ...]
    */
   async getRoomIdList(subwayId) {
+    console.log(subwayId);
+    // `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`
     let response = await fetch(
-      `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`
+      `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&domain=zigbang&detail=false`
     );
+    console.log(response);
     let data = await response.json();
-
+    console.log(data);
     let roomIdList = data.list_items.map((room) => {
       let roomInfo = room.simple_item || undefined;
       if (roomInfo !== undefined) {
@@ -104,6 +107,7 @@ class Oneroom {
    * @returns
    */
   async getRoomData(subway) {
+    console.log(subway);
     let subwayId = await this.getSubwayId(subway);
 
     let roomIdList = await this.getRoomIdList(subwayId);

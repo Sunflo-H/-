@@ -13,17 +13,9 @@ class Oneroom {
     "경상남도",
     "부산광역시",
     "울산광역시",
-    //"null"
   ];
 
-  area = [
-    "수도권",
-    "광주",
-    "대구",
-    "대전",
-    "부산",
-    //"null"
-  ];
+  area = ["수도권", "광주", "대구", "대전", "부산"];
 
   /**
    * 지하철역의 id 값을 리턴하는 함수
@@ -67,10 +59,11 @@ class Oneroom {
    */
   async getRoomIdList(subwayId) {
     let response = await fetch(
-      `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%7Crooftop%7Csemibase&domain=zigbang&detail=false`
+      // `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}&radius=1&sales_type=&deposit_s=0&rent_s=0&floor=1~%&domain=zigbang&detail=false`
+      `https://apis.zigbang.com/v3/items/ad/${subwayId}?subway_id=${subwayId}`
     );
-    let data = await response.json();
 
+    let data = await response.json();
     let roomIdList = data.list_items.map((room) => {
       let roomInfo = room.simple_item || undefined;
       if (roomInfo !== undefined) {
