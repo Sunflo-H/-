@@ -240,9 +240,9 @@ function localOverlayClickHandler(event) {
 }
 
 /**
- * ^ 지역, 지하철 overlay들에게 클릭이벤트를 등록하는 함수
+ * ^ overlay(지역, 지하철)에 클릭이벤트를 등록하는 함수
  */
-function overlaySetEvent() {
+function setEventOnOverlay() {
   const localOverlay = document.querySelectorAll(
     ".customOverlay.customOverlay--local"
   );
@@ -263,22 +263,22 @@ function overlaySetEvent() {
 }
 
 /**
- * ^ 클릭한 지하철오버레이를 중심으로 지도를 확대하는 이벤트 핸들러
+ * ^ 지하철 오버레이를 클릭시 발생하는 기능들에 대한 핸들러
  *
  * @param {*} event
  */
 function subwayOverlayClickHandler(event) {
-  console.log("지하철");
+  console.log("클릭 핸들러 작동");
   let overlay = event.target;
 
   displayLocalOverlay(false);
   displaySubwayOverlay(false);
 
   // 방 클러스터가 있음을 알리는 상태
-  roomClusterState = true;
+  setRoomClusterState(true);
 
   // 이미 방에 대한 마커가 있다면 삭제, 삭제하지 않으면 계속 중첩된다.
-  removeCluster();
+  removeRoomCluster();
 
   // 방 정보를 요청하여 방클러스터 생성
   createOneRoomCluster(overlay.dataset.name);
@@ -295,23 +295,18 @@ function subwayOverlayClickHandler(event) {
   );
 }
 
-function removeCluster() {
+function setRoomClusterState(boolean) {
+  roomClusterState = boolean;
+}
+
+function getRoomClusterState() {
+  return roomClusterState;
+}
+
+function removeRoomCluster() {
   if (roomCluster) roomCluster.clear();
 }
 
-// /**
-//  * ^ 지역 오버레이와 지하철 오버레이를 보이게 할지 안보이게 할지 정하는 함수
-//  * * map : 지도에 보이게한다.
-//  * * null : 안보이게 한다.
-//  * @param {*} localState map, null
-//  * @param {*} subwayState map, null
-//  */
-// function displayOverlay_local_subway(localState, subwayState) {
-//   localOverlayList.forEach((localOverlay) => localOverlay.setMap(localState));
-//   subwayOverlayList.forEach((subwayOverlay) =>
-//     subwayOverlay.setMap(subwayState)
-//   );
-// }
 /**
  * ^ 지역 오버레이를 나타낸다.
  */
@@ -358,13 +353,56 @@ async function createOverlay_subway() {
  */
 async function createOneRoomCluster(subway) {
   etc.loading(true);
+  let oneroomList = await oneroom.getRoomData(subway); // 프로미스 배열을 반환
+  createCluster(oneroomList);
+  etc.loading(false);
+  // Promise.all(oneroomList).then((oneroomList) => {
+  //   console.log(oneroomList);
+  //   createCluster(oneroomList);
+  //   etc.loading(false);
+  // });
+}
 
-  let oneroomList = await oneroom.getRoomData(subway); // 프로미스 배열이 있음, await 안쓰면 프로미스 안에 프로미스배열이 있음
-
-  Promise.all(oneroomList).then((oneroomList) => {
-    createCluster(oneroomList);
-    etc.loading(false);
-  });
+/**
+ * ^ 클러스터의 CSS(setStyle())에 변화를 줘서 클러스터를 보이게, 안보이게 하는 함수
+ * @param {*} boolean
+ */
+function displayRoomCluster(boolean) {
+  let style = [];
+  if (boolean) {
+    style = [
+      {
+        width: "40px",
+        height: "40px",
+        background: "#3c5cff",
+        color: "#fff",
+        textAlign: "center",
+        lineHeight: "40px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+      {
+        width: "53px",
+        height: "52px",
+        background: "#3c5cff",
+        color: "#fff",
+        textAlign: "center",
+        lineHeight: "54px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+    ];
+  } else {
+    style = [
+      {
+        display: "none",
+      },
+    ];
+  }
+  // kakao 에서 제공하는 cluster style 변경 함수
+  if (roomCluster) roomCluster.setStyles(style);
 }
 
 export default {
@@ -373,8 +411,8 @@ export default {
   displayLocalOverlay,
   displaySubwayOverlay,
   createOverlay_subway,
-  overlaySetEvent,
-  removeCluster,
+  setEventOnOverlay,
   roomCluster,
-  roomClusterState,
+  getRoomClusterState,
+  displayRoomCluster,
 };
