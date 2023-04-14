@@ -2,6 +2,7 @@ import Oneroom from "../module/oneroomModule.js";
 import KakaoSearch from "../module/kakaoSearchModule.js";
 import modal from "../module/modal.js";
 import kakaoMap_localAndSubwayCluster from "../module/kakaoMap_localAndSubwayCluster.js";
+import kakaoMap from "../module/kakaoMap.js";
 
 const filterCategories = document.querySelectorAll(".filter__category");
 const filterCategory_price = filterCategories[0];
@@ -18,7 +19,7 @@ const nav = document.querySelector(".nav");
 const navbox = document.querySelector(".nav__item-box");
 const navItems = nav.querySelectorAll(".nav__item");
 
-const CRITERIA_MAP_LEVEL = 7;
+// const CRITERIA_MAP_LEVEL = 7;
 const oneroom = new Oneroom();
 const kakaoSearch = new KakaoSearch();
 /**
@@ -45,7 +46,7 @@ const local = [
  * 지역 오버레이 배열
  * * 지역 오버레이를 '보여질때', '안보여질때'를 적용하기위해 사용한다.
  */
-const localOverlayList = [];
+// const localOverlayList = [];
 /**
  * 지하철 오버레이 배열
  * * 지하철 오버레이를 '보여질때', '안보여질때'를 적용하기위해 사용한다.
@@ -116,12 +117,17 @@ const hyperLocalMarkerList = [];
  * 반경 250m, 500m, 1km
  */
 
+/**
+ * 로컬과 지하철 클러스터를 먼저 보여줘야해
+ */
+
 // 지도 생성
-const map = new kakao.maps.Map(document.getElementById("map"), {
-  center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392), //필수 옵션이라서 아무 좌표를 줬습니다.
-  level: 8,
-  maxLevel: 12,
-});
+// const map = new kakao.maps.Map(document.getElementById("map"), {
+//   center: new kakao.maps.LatLng(37.53886742395844, 126.98678427911392), //필수 옵션이라서 아무 좌표를 줬습니다.
+//   level: 8,
+//   maxLevel: 12,
+// });
+const map = kakaoMap.map;
 
 function getUserLocation() {
   return new Promise((resolve, reject) => {
@@ -656,155 +662,155 @@ function createCardList(roomList = null) {
     originalOneroomList = [...roomList];
 }
 
-/**
- * ^ 좌표 리스트를 받아 클러스터를 생성하는 함수
- *
- * @param {*} coords
- */
-function createCluster(roomList) {
-  roomCluster = new kakao.maps.MarkerClusterer({
-    map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
-    averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
-    minLevel: 1, // 클러스터 할 최소 지도 레벨
-    gridSize: 60,
-    minClusterSize: 1, // Number : 클러스터링 할 최소 마커 수 (default: 2)
-    disableClickZoom: true,
-    styles: [
-      {
-        width: "40px",
-        height: "40px",
-        background: "#3c5cff",
-        color: "#fff",
-        textAlign: "center",
-        lineHeight: "40px",
-        borderRadius: "50%",
-        border: "1px solid #4c3aff",
-        opacity: "0.85",
-      },
-      {
-        width: "53px",
-        height: "52px",
-        background: "#3c5cff",
-        color: "#fff",
-        textAlign: "center",
-        lineHeight: "54px",
-        borderRadius: "50%",
-        border: "1px solid #4c3aff",
-        opacity: "0.85",
-      },
-    ],
-    calculator: [10],
-  });
+// /**
+//  * ^ 좌표 리스트를 받아 클러스터를 생성하는 함수
+//  *
+//  * @param {*} coords
+//  */
+// function createCluster(roomList) {
+//   roomCluster = new kakao.maps.MarkerClusterer({
+//     map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
+//     averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+//     minLevel: 1, // 클러스터 할 최소 지도 레벨
+//     gridSize: 60,
+//     minClusterSize: 1, // Number : 클러스터링 할 최소 마커 수 (default: 2)
+//     disableClickZoom: true,
+//     styles: [
+//       {
+//         width: "40px",
+//         height: "40px",
+//         background: "#3c5cff",
+//         color: "#fff",
+//         textAlign: "center",
+//         lineHeight: "40px",
+//         borderRadius: "50%",
+//         border: "1px solid #4c3aff",
+//         opacity: "0.85",
+//       },
+//       {
+//         width: "53px",
+//         height: "52px",
+//         background: "#3c5cff",
+//         color: "#fff",
+//         textAlign: "center",
+//         lineHeight: "54px",
+//         borderRadius: "50%",
+//         border: "1px solid #4c3aff",
+//         opacity: "0.85",
+//       },
+//     ],
+//     calculator: [10],
+//   });
 
-  roomAndMarker = [];
+//   roomAndMarker = [];
 
-  let markers = roomList.map(function (room, i) {
-    let position = room.item.random_location.split(",");
-    let marker = new kakao.maps.Marker({
-      position: new kakao.maps.LatLng(position[0], position[1]),
-    });
+//   let markers = roomList.map(function (room, i) {
+//     let position = room.item.random_location.split(",");
+//     let marker = new kakao.maps.Marker({
+//       position: new kakao.maps.LatLng(position[0], position[1]),
+//     });
 
-    // 방 정보와 마커를 매핑
-    roomAndMarker.push({ roomData: room, marker: marker });
-    return marker;
-  });
+//     // 방 정보와 마커를 매핑
+//     roomAndMarker.push({ roomData: room, marker: marker });
+//     return marker;
+//   });
 
-  // 새 지하철역을 클릭했을때 originalRoomAndMarker는 초기화된다.
-  // 초기화된 original에 새 값을 저장
-  if (originalRoomAndMarker.length === 0)
-    originalRoomAndMarker = [...roomAndMarker];
+//   // 새 지하철역을 클릭했을때 originalRoomAndMarker는 초기화된다.
+//   // 초기화된 original에 새 값을 저장
+//   if (originalRoomAndMarker.length === 0)
+//     originalRoomAndMarker = [...roomAndMarker];
 
-  roomCluster.setTexts((size) => {
-    let text = "";
+//   roomCluster.setTexts((size) => {
+//     let text = "";
 
-    if (size > 100) text = "100+";
-    else text = size;
+//     if (size > 100) text = "100+";
+//     else text = size;
 
-    return text;
-  });
+//     return text;
+//   });
 
-  roomCluster.addMarkers(markers); // 클러스터 생성
+//   roomCluster.addMarkers(markers); // 클러스터 생성
 
-  // 처음 생성된 클러스터의 엘리먼트들에 적용하는 css변화 이벤트 (clustered 이벤트핸들러와 기능은 같다.)
-  roomCluster._clusters.forEach((cluster) => {
-    let overlay = cluster.getClusterMarker().getContent();
+//   // 처음 생성된 클러스터의 엘리먼트들에 적용하는 css변화 이벤트 (clustered 이벤트핸들러와 기능은 같다.)
+//   roomCluster._clusters.forEach((cluster) => {
+//     let overlay = cluster.getClusterMarker().getContent();
 
-    overlay.addEventListener("mouseover", function (e) {
-      if (!this.classList.contains("cluster-over")) {
-        this.classList.add("cluster-over");
-      }
-    });
+//     overlay.addEventListener("mouseover", function (e) {
+//       if (!this.classList.contains("cluster-over")) {
+//         this.classList.add("cluster-over");
+//       }
+//     });
 
-    overlay.addEventListener("mouseout", function (e) {
-      if (this.classList.contains("cluster-over")) {
-        this.classList.remove("cluster-over");
-      }
-    });
-  });
+//     overlay.addEventListener("mouseout", function (e) {
+//       if (this.classList.contains("cluster-over")) {
+//         this.classList.remove("cluster-over");
+//       }
+//     });
+//   });
 
-  // 처음 생성된 이후 zoomIn, out, 지도이동으로 생기는 클러스터의 엘리먼트들에게 적용
-  kakao.maps.event.addListener(roomCluster, "clustered", function (clusters) {
-    for (let i = 0; i < clusters.length; i++) {
-      let cluster = clusters[i];
-      let overlay = cluster.getClusterMarker().getContent();
+//   // 처음 생성된 이후 zoomIn, out, 지도이동으로 생기는 클러스터의 엘리먼트들에게 적용
+//   kakao.maps.event.addListener(roomCluster, "clustered", function (clusters) {
+//     for (let i = 0; i < clusters.length; i++) {
+//       let cluster = clusters[i];
+//       let overlay = cluster.getClusterMarker().getContent();
 
-      overlay.addEventListener("mouseover", function () {
-        if (!this.classList.contains("cluster-over")) {
-          this.classList.add("cluster-over");
-        }
-      });
+//       overlay.addEventListener("mouseover", function () {
+//         if (!this.classList.contains("cluster-over")) {
+//           this.classList.add("cluster-over");
+//         }
+//       });
 
-      overlay.addEventListener("mouseout", function () {
-        if (this.classList.contains("cluster-over")) {
-          this.classList.remove("cluster-over");
-        }
-      });
-    }
-  });
+//       overlay.addEventListener("mouseout", function () {
+//         if (this.classList.contains("cluster-over")) {
+//           this.classList.remove("cluster-over");
+//         }
+//       });
+//     }
+//   });
 
-  kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
-    let overlay = cluster.getClusterMarker().getContent();
+//   kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
+//     let overlay = cluster.getClusterMarker().getContent();
 
-    // 클릭한 클러스터의 "cluster-click" 클래스 토글
-    overlay.classList.toggle("cluster-click");
+//     // 클릭한 클러스터의 "cluster-click" 클래스 토글
+//     overlay.classList.toggle("cluster-click");
 
-    // 나머지 클러스터의 "cluster-click" 클래스 삭제
-    roomCluster._clusters.forEach((innerCluster) => {
-      if (innerCluster === cluster) return;
-      innerCluster
-        .getClusterMarker()
-        .getContent()
-        .classList.remove("cluster-click");
-    });
+//     // 나머지 클러스터의 "cluster-click" 클래스 삭제
+//     roomCluster._clusters.forEach((innerCluster) => {
+//       if (innerCluster === cluster) return;
+//       innerCluster
+//         .getClusterMarker()
+//         .getContent()
+//         .classList.remove("cluster-click");
+//     });
 
-    // "cluster-click"가 있다면
-    if (overlay.classList.contains("cluster-click")) {
-      let roomList = cluster
-        .getMarkers()
-        .map(
-          (marker) =>
-            roomAndMarker.find((item) => marker === item.marker).roomData
-        );
-      createCardList(roomList);
-      ableHyperLocalBtn();
-      ableSortBtn();
-    }
-    // "cluster-click"가 없다면
-    else {
-      createCardList(null);
-      disableHyperLocalBtn();
-      disableSortBtn();
-    }
+//     // "cluster-click"가 있다면
+//     if (overlay.classList.contains("cluster-click")) {
+//       let roomList = cluster
+//         .getMarkers()
+//         .map(
+//           (marker) =>
+//             roomAndMarker.find((item) => marker === item.marker).roomData
+//         );
+//       createCardList(roomList);
+//       ableHyperLocalBtn();
+//       ableSortBtn();
+//     }
+//     // "cluster-click"가 없다면
+//     else {
+//       createCardList(null);
+//       disableHyperLocalBtn();
+//       disableSortBtn();
+//     }
 
-    sortBtns.forEach((btn) => {
-      const up = btn.querySelector(".fa-sort-up");
-      const down = btn.querySelector(".fa-sort-down");
-      btn.dataset.state = "basic";
-      up.classList.add("active");
-      down.classList.add("active");
-    });
-  });
-}
+//     sortBtns.forEach((btn) => {
+//       const up = btn.querySelector(".fa-sort-up");
+//       const down = btn.querySelector(".fa-sort-down");
+//       btn.dataset.state = "basic";
+//       up.classList.add("active");
+//       down.classList.add("active");
+//     });
+//   });
+// }
 
 function removeCluster() {
   if (roomCluster) roomCluster.clear();
@@ -999,116 +1005,116 @@ layoutBtns.forEach((btn) => {
  * ^ 지도 레벨에따라 지도에 올려진다./삭제된다.
  * @param {*} local [{id:대구광역시,name:대구,lat,lng},{}...]
  */
-function createOverlay_local(local) {
-  local.forEach((data) => {
-    let content =
-      data.id === "수도권"
-        ? `<div class="customOverlay customOverlay--local customOverlay--capital" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`
-        : `<div class="customOverlay customOverlay--local" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`;
-    let customOverlay = new kakao.maps.CustomOverlay({
-      map: map,
-      content: content,
-      clickable: true,
-      position: new kakao.maps.LatLng(data.lat, data.lng),
-      xAnchor: 0.5,
-      yAnchor: 1,
-    });
-    localOverlayList.push(customOverlay);
-  });
+// function createOverlay_local(local) {
+//   local.forEach((data) => {
+//     let content =
+//       data.id === "수도권"
+//         ? `<div class="customOverlay customOverlay--local customOverlay--capital" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`
+//         : `<div class="customOverlay customOverlay--local" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`;
+//     let customOverlay = new kakao.maps.CustomOverlay({
+//       map: map,
+//       content: content,
+//       clickable: true,
+//       position: new kakao.maps.LatLng(data.lat, data.lng),
+//       xAnchor: 0.5,
+//       yAnchor: 1,
+//     });
+//     localOverlayList.push(customOverlay);
+//   });
 
-  const overlayList = document.querySelectorAll(".customOverlay");
+//   const overlayList = document.querySelectorAll(".customOverlay");
 
-  overlayList.forEach((overlay) => {
-    overlay.addEventListener("click", localOverlayClickHandler);
-  });
-}
+//   overlayList.forEach((overlay) => {
+//     overlay.addEventListener("click", localOverlayClickHandler);
+//   });
+// }
 
 /**
  * ^ 모든 지하철역에 대한 overlay객체를 생성하고, 배열에 저장하는 함수.
  * ^ overlay 배열을 순회해서 setMap(map)/setMap(null)을 적용한다.
  * ^ 지도 레벨에따라 지도에 올려진다./삭제된다.
  */
-async function createOverlay_subway() {
-  let subwayList = await oneroom.getSubwayInfo_all();
-  subwayList.forEach((data) => {
-    let content = `<div class="customOverlay customOverlay--subway" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`;
+// async function createOverlay_subway() {
+//   let subwayList = await oneroom.getSubwayInfo_all();
+//   subwayList.forEach((data) => {
+//     let content = `<div class="customOverlay customOverlay--subway" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`;
 
-    let customOverlay = new kakao.maps.CustomOverlay({
-      content: content,
-      clickable: true,
-      position: new kakao.maps.LatLng(data.lat, data.lng),
-      xAnchor: 0.5,
-      yAnchor: 1,
-    });
-    subwayOverlayList.push(customOverlay);
-  });
-}
+//     let customOverlay = new kakao.maps.CustomOverlay({
+//       content: content,
+//       clickable: true,
+//       position: new kakao.maps.LatLng(data.lat, data.lng),
+//       xAnchor: 0.5,
+//       yAnchor: 1,
+//     });
+//     subwayOverlayList.push(customOverlay);
+//   });
+// }
 
 /**
  * ^ 클릭한 지역오버레이를 중심으로 지도를 확대하는 이벤트 핸들러
  * @param {*} event 클릭한 오버레이 정보
  */
-function localOverlayClickHandler(event) {
-  let overlay = event.target;
-  map.setLevel(CRITERIA_MAP_LEVEL - 1);
-  map.setCenter(
-    new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng)
-  );
-}
+// function localOverlayClickHandler(event) {
+//   let overlay = event.target;
+//   map.setLevel(CRITERIA_MAP_LEVEL - 1);
+//   map.setCenter(
+//     new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng)
+//   );
+// }
 
-/**
- * ^ 클릭한 지하철오버레이를 중심으로 지도를 확대하는 이벤트 핸들러
- *
- * @param {*} event
- */
-function subwayOverlayClickHandler(event) {
-  let overlay = event.target;
+// /**
+//  * ^ 클릭한 지하철오버레이를 중심으로 지도를 확대하는 이벤트 핸들러
+//  *
+//  * @param {*} event
+//  */
+// function subwayOverlayClickHandler(event) {
+//   let overlay = event.target;
 
-  displayOverlay_local_subway(null, null);
+//   kakaoMap.displayOverlay_local_subway(null, null);
 
-  // 방 클러스터가 있음을 알리는 상태
-  roomClusterState = true;
+//   // 방 클러스터가 있음을 알리는 상태
+//   roomClusterState = true;
 
-  // 이미 방에 대한 마커가 있다면 삭제, 삭제하지 않으면 계속 중첩된다.
-  removeCluster();
+//   // 이미 방에 대한 마커가 있다면 삭제, 삭제하지 않으면 계속 중첩된다.
+//   removeCluster();
 
-  // 방 정보를 요청하여 방클러스터 생성
-  createOneRoomCluster(overlay.dataset.name);
+//   // 방 정보를 요청하여 방클러스터 생성
+//   createOneRoomCluster(overlay.dataset.name);
 
-  // 새로운 지하철로 매물을 검색했으니 필터용 오리지널 방 정보를 초기화
-  originalRoomAndMarker.length = 0;
+//   // 새로운 지하철로 매물을 검색했으니 필터용 오리지널 방 정보를 초기화
+//   originalRoomAndMarker.length = 0;
 
-  // 필터 버튼 활성화
-  ableFilterBtn();
+//   // 필터 버튼 활성화
+//   ableFilterBtn();
 
-  map.setLevel(5);
-  map.setCenter(
-    new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng)
-  );
-}
+//   map.setLevel(5);
+//   map.setCenter(
+//     new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng)
+//   );
+// }
 
 /**
  * ^ 지역, 지하철 overlay들에게 클릭이벤트를 등록하는 함수
  */
-function overlaySetEvent() {
-  const localOverlay = document.querySelectorAll(
-    ".customOverlay.customOverlay--local"
-  );
-  localOverlay.forEach((overlay) => {
-    overlay.addEventListener("click", localOverlayClickHandler);
-  });
+// function overlaySetEvent() {
+//   const localOverlay = document.querySelectorAll(
+//     ".customOverlay.customOverlay--local"
+//   );
+//   localOverlay.forEach((overlay) => {
+//     overlay.addEventListener("click", localOverlayClickHandler);
+//   });
 
-  // 지하철 오버레이는 많아서 모든 오버레이를 선택할수 있게 살짝 지연시켰다.
-  setTimeout(() => {
-    const subwayOverlay = document.querySelectorAll(
-      ".customOverlay.customOverlay--subway"
-    );
+//   // 지하철 오버레이는 많아서 모든 오버레이를 선택할수 있게 살짝 지연시켰다.
+//   setTimeout(() => {
+//     const subwayOverlay = document.querySelectorAll(
+//       ".customOverlay.customOverlay--subway"
+//     );
 
-    subwayOverlay.forEach((overlay) => {
-      overlay.addEventListener("click", subwayOverlayClickHandler);
-    });
-  }, 500);
-}
+//     subwayOverlay.forEach((overlay) => {
+//       overlay.addEventListener("click", subwayOverlayClickHandler);
+//     });
+//   }, 500);
+// }
 
 /**
  * ^ 로딩바가 보이게 하는 함수
@@ -1136,12 +1142,12 @@ function getPyeong(size) {
  * @param {*} localState map, null
  * @param {*} subwayState map, null
  */
-function displayOverlay_local_subway(localState, subwayState) {
-  localOverlayList.forEach((localOverlay) => localOverlay.setMap(localState));
-  subwayOverlayList.forEach((subwayOverlay) =>
-    subwayOverlay.setMap(subwayState)
-  );
-}
+// function displayOverlay_local_subway(localState, subwayState) {
+//   localOverlayList.forEach((localOverlay) => localOverlay.setMap(localState));
+//   subwayOverlayList.forEach((subwayOverlay) =>
+//     subwayOverlay.setMap(subwayState)
+//   );
+// }
 
 //* ============================================== 검색 기능 관련 코드들 ========================================================
 
@@ -2440,7 +2446,7 @@ kakao.maps.event.addListener(map, "click", function (mouseEvent) {
 
 // 지도의 드래그가 끝났을때 화면에 보여지는 오버레이에 이벤트 등록
 kakao.maps.event.addListener(map, "dragend", function () {
-  overlaySetEvent();
+  kakaoMap.overlaySetEvent();
 });
 
 // 지도 레벨에 따라 지역, 지하철, 방을 보여준다.
@@ -2449,7 +2455,7 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   // 5이하 : 매물, 6~8 : 지하철, 9이상 : 지역
   // 지하철 오버레이를 띄워야할때
   if (5 < map.getLevel() && map.getLevel() < 8) {
-    displayOverlay_local_subway(null, map);
+    kakaoMap.displayOverlay_local_subway(null, map);
 
     displayRoomCluster(false);
     createCardList(null);
@@ -2463,25 +2469,25 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
     if (roomClusterState) {
       displayRoomCluster(true);
       createCardList();
-      displayOverlay_local_subway(null, null);
+      kakaoMap.displayOverlay_local_subway(null, null);
       ableFilterBtn();
     }
     // console.log("줌이 바뀌었는데 방정보 없을때");
     else {
-      displayOverlay_local_subway(null, map);
+      kakaoMap.displayOverlay_local_subway(null, map);
       disableFilterBtn();
     }
   }
   // 로컬 오버레이를 띄워야할때
   else {
-    displayOverlay_local_subway(map, null);
+    kakaoMap.displayOverlay_local_subway(map, null);
     createCardList(null);
     disableFilterBtn();
     disableHyperLocalBtn();
     disableSortBtn();
   }
 
-  overlaySetEvent();
+  kakaoMap.overlaySetEvent();
 });
 
 /**
@@ -2498,9 +2504,9 @@ function panTo(lat, lng) {
  * ^ 처음부터 실행되어야할 함수들을 모았다.
  */
 function init() {
-  createOverlay_subway();
-  createOverlay_local(local);
   createCardList(null);
+  kakaoMap.createOverlay_subway();
+  kakaoMap.createOverlay_local(local);
   createFilterOptionContent_price("전체");
   getUserLocation().then((data) => {
     map.setCenter(
@@ -2508,11 +2514,13 @@ function init() {
     );
     map.setLevel(6);
     setTimeout(() => {
-      displayOverlay_local_subway(null, map);
+      kakaoMap.displayOverlay_local_subway(null, map);
     }, 200);
+    // kakaoMap_localAndSubwayCluster.createOverlay_subway();
+    // kakaoMap_localAndSubwayCluster.createOverlay_local(local);
   });
 }
 
 init();
-
-export default { map, oneroom };
+const test = "하이";
+export default { map, oneroom, test };

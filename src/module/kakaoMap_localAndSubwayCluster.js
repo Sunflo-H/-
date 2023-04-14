@@ -25,7 +25,6 @@ function createOverlay_local(local) {
       data.id === "수도권"
         ? `<div class="customOverlay customOverlay--local customOverlay--capital" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`
         : `<div class="customOverlay customOverlay--local" data-id="${data.id}" data-name="${data.name}" data-lat="${data.lat}" data-lng="${data.lng}">${data.name}</div>`;
-
     let customOverlay = new kakao.maps.CustomOverlay({
       map: main.map,
       content: content,
