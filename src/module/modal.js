@@ -20,7 +20,7 @@ function closeModal() {
 /**
  * ^ Modal 의 carousel 을 동적으로 생성하는 함수
  * @param {*} images
- * @param {*} index
+ * @param {*} index 사용자가 클릭한 이미지의 인덱스, 모달에서 이 이미지가 바로 나타난다.
  */
 function createCarousel(images, index) {
   const screen = document.querySelector(".modal__carousel-screen");
@@ -42,22 +42,24 @@ function createCarousel(images, index) {
     carousel.insertAdjacentHTML("beforeend", element);
   });
 
-  // 첫번째 이미지와 마지막 이미지를 맨 뒤, 맨 앞에 놓아 무한carousel을 만들 준비
+  // 첫번째 이미지와 마지막 이미지를 맨 뒤, 맨 앞에 놓아 무한 Carousel을 만들 준비
   let firstImageClone = carousel.firstElementChild.cloneNode(true);
   let lastImageClone = carousel.lastElementChild.cloneNode(true);
 
   carousel.insertAdjacentElement("afterbegin", lastImageClone);
   carousel.insertAdjacentElement("beforeend", firstImageClone);
 
-  // 현재이미지인덱스 / 총 이미지수 설정
+  // 현재이미지인덱스와 총 이미지수 설정
   count.innerText = index;
   total.innerText = images.length;
 
-  // 생성된 이미지들에 width, transision, transform 설정
+  // 생성된 이미지들에 width 설정
   const imageList = document.querySelectorAll(".modal__carousel__image");
   imageList.forEach((image) => {
     image.style.width = `${imageWidth}px`;
   });
+
+  // 클릭하여 모달을 연 이미지가 바로 보이게끔 Carousel의 transision, transform 조절
   currentIndex = index;
   translate = -(currentIndex * imageWidth);
   carousel.style.transition = "none";
@@ -93,7 +95,9 @@ function carouselController(e) {
     slideMove("next");
     carouselCount.innerText = currentIndex;
 
+    // 마지막 slide라면 잠시 transition을 끄고 첫번째 slide로 이동시킨다.
     if (currentIndex === imageList.length - 1) {
+      console.log("1");
       carouselCount.innerText = 1;
       setTimeout(() => {
         currentIndex = 1;
@@ -106,6 +110,7 @@ function carouselController(e) {
     slideMove("prev");
     carouselCount.innerText = currentIndex;
 
+    // 첫번째 slide라면 잠시 transition을 끄고 마지막 slide로 이동시킨다.
     if (currentIndex === 0) {
       carouselCount.innerText = imageList.length - 2;
       setTimeout(() => {

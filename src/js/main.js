@@ -1,6 +1,7 @@
 import Oneroom from "../module/oneroomModule.js";
 import KakaoSearch from "../module/kakaoSearchModule.js";
 import modal from "../module/modal.js";
+import kakaoMap_localAndSubwayCluster from "../module/kakaoMap_localAndSubwayCluster.js";
 
 const filterCategories = document.querySelectorAll(".filter__category");
 const filterCategory_price = filterCategories[0];
@@ -2513,3 +2514,5 @@ function init() {
 }
 
 init();
+
+export default { map, oneroom };
