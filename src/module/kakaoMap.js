@@ -268,9 +268,11 @@ function overlaySetEvent() {
  * @param {*} event
  */
 function subwayOverlayClickHandler(event) {
+  console.log("지하철");
   let overlay = event.target;
 
-  displayOverlay_local_subway(null, null);
+  displayLocalOverlay(false);
+  displaySubwayOverlay(false);
 
   // 방 클러스터가 있음을 알리는 상태
   roomClusterState = true;
@@ -297,18 +299,35 @@ function removeCluster() {
   if (roomCluster) roomCluster.clear();
 }
 
+// /**
+//  * ^ 지역 오버레이와 지하철 오버레이를 보이게 할지 안보이게 할지 정하는 함수
+//  * * map : 지도에 보이게한다.
+//  * * null : 안보이게 한다.
+//  * @param {*} localState map, null
+//  * @param {*} subwayState map, null
+//  */
+// function displayOverlay_local_subway(localState, subwayState) {
+//   localOverlayList.forEach((localOverlay) => localOverlay.setMap(localState));
+//   subwayOverlayList.forEach((subwayOverlay) =>
+//     subwayOverlay.setMap(subwayState)
+//   );
+// }
 /**
- * ^ 지역 오버레이와 지하철 오버레이를 보이게 할지 안보이게 할지 정하는 함수
- * * map : 지도에 보이게한다.
- * * null : 안보이게 한다.
- * @param {*} localState map, null
- * @param {*} subwayState map, null
+ * ^ 지역 오버레이를 나타낸다.
  */
-function displayOverlay_local_subway(localState, subwayState) {
-  localOverlayList.forEach((localOverlay) => localOverlay.setMap(localState));
-  subwayOverlayList.forEach((subwayOverlay) =>
-    subwayOverlay.setMap(subwayState)
-  );
+function displayLocalOverlay(boolean) {
+  boolean
+    ? localOverlayList.forEach((localOverlay) => localOverlay.setMap(map))
+    : localOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
+}
+
+/**
+ * ^ 지하철 오버레이를 나타낸다.
+ */
+function displaySubwayOverlay(boolean) {
+  boolean
+    ? subwayOverlayList.forEach((localOverlay) => localOverlay.setMap(map))
+    : subwayOverlayList.forEach((localOverlay) => localOverlay.setMap(null));
 }
 
 /**
@@ -351,7 +370,8 @@ async function createOneRoomCluster(subway) {
 export default {
   map,
   createOverlay_local,
-  displayOverlay_local_subway,
+  displayLocalOverlay,
+  displaySubwayOverlay,
   createOverlay_subway,
   overlaySetEvent,
   removeCluster,

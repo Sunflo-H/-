@@ -1129,20 +1129,6 @@ function getPyeong(size) {
   return Math.floor(Math.round(Number(size)) / 3);
 }
 
-/**
- * ^ 지역 오버레이와 지하철 오버레이를 보이게 할지 안보이게 할지 정하는 함수
- * * map : 지도에 보이게한다.
- * * null : 안보이게 한다.
- * @param {*} localState map, null
- * @param {*} subwayState map, null
- */
-// function displayOverlay_local_subway(localState, subwayState) {
-//   localOverlayList.forEach((localOverlay) => localOverlay.setMap(localState));
-//   subwayOverlayList.forEach((subwayOverlay) =>
-//     subwayOverlay.setMap(subwayState)
-//   );
-// }
-
 //* ============================================== 검색 기능 관련 코드들 ========================================================
 
 /**
@@ -2449,7 +2435,9 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   // 5이하 : 매물, 6~8 : 지하철, 9이상 : 지역
   // 지하철 오버레이를 띄워야할때
   if (5 < map.getLevel() && map.getLevel() < 8) {
-    kakaoMap.displayOverlay_local_subway(null, map);
+    kakaoMap.displayLocalOverlay(false);
+    kakaoMap.displaySubwayOverlay(true);
+    // kakaoMap.displayOverlay_local_subway(null, map);
 
     displayRoomCluster(false);
     createCardList(null);
@@ -2463,18 +2451,24 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
     if (kakaoMap.roomClusterState) {
       displayRoomCluster(true);
       createCardList();
-      kakaoMap.displayOverlay_local_subway(null, null);
+      kakaoMap.displayLocalOverlay(false);
+      kakaoMap.displaySubwayOverlay(false);
+      // kakaoMap.displayOverlay_local_subway(null, null);
       ableFilterBtn();
     }
     // console.log("줌이 바뀌었는데 방정보 없을때");
     else {
-      kakaoMap.displayOverlay_local_subway(null, map);
+      kakaoMap.displayLocalOverlay(false);
+      kakaoMap.displaySubwayOverlay(true);
+      // kakaoMap.displayOverlay_local_subway(null, map);
       filter.disableFilterBtn();
     }
   }
   // 로컬 오버레이를 띄워야할때
   else {
-    kakaoMap.displayOverlay_local_subway(map, null);
+    kakaoMap.displayLocalOverlay(true);
+    kakaoMap.displaySubwayOverlay(false);
+    // kakaoMap.displayOverlay_local_subway(map, null);
     createCardList(null);
     filter.disableFilterBtn();
     disableHyperLocalBtn();
@@ -2508,10 +2502,9 @@ function init() {
     );
     map.setLevel(6);
     setTimeout(() => {
-      kakaoMap.displayOverlay_local_subway(null, map);
+      kakaoMap.displayLocalOverlay(false);
+      kakaoMap.displaySubwayOverlay(true);
     }, 200);
-    // kakaoMap_localAndSubwayCluster.createOverlay_subway();
-    // kakaoMap_localAndSubwayCluster.createOverlay_local(local);
   });
 }
 
