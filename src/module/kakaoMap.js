@@ -1,7 +1,19 @@
 import Oneroom from "./oneroomModule.js";
+import filter from "./filter.js";
+import etc from "./etc.js";
 
 const oneroom = new Oneroom();
 const DEFAULT_MAP_LEVEL = 7;
+
+/**
+ * 클러스터를 생성할때 마커와 방정보를 함께 매핑한 배열
+ */
+let roomAndMarker = null;
+
+/**
+ * filter 하기 전 원본 배열
+ */
+let originalRoomAndMarker = [];
 
 // 지도 생성
 const map = new kakao.maps.Map(document.getElementById("map"), {
@@ -163,15 +175,27 @@ function createCluster(roomList) {
 //* =============================== 지역 / 지하철 오버레이 관련 코드들 ===============================
 
 /**
+ * 생성된 클러스터 객체 : _clusters, _markers 등의 여러 정보를 가지고있다.
+ */
+let roomCluster = null;
+
+/**
  * 지역 오버레이 배열
  * * 지역 오버레이를 '보여질때', '안보여질때'를 적용하기위해 사용한다.
  */
 const localOverlayList = [];
+
 /**
  * 지하철 오버레이 배열
  * * 지하철 오버레이를 '보여질때', '안보여질때'를 적용하기위해 사용한다.
  */
 const subwayOverlayList = [];
+
+/**
+ * roomCluster 존재여부를 확인하는 변수,
+ * roomCluster는 promise데이터로 만들기때문에 지연되는 시간차를 막고자 따로 만들었다.
+ */
+let roomClusterState = false;
 
 /**
  *^ 서울, 경기, 부산 등 지역정보를 보여주는 오버레이를 생성하고, 배열에 저장하는 함수
@@ -246,7 +270,7 @@ function overlaySetEvent() {
 function subwayOverlayClickHandler(event) {
   let overlay = event.target;
 
-  kakaoMap.displayOverlay_local_subway(null, null);
+  displayOverlay_local_subway(null, null);
 
   // 방 클러스터가 있음을 알리는 상태
   roomClusterState = true;
@@ -261,12 +285,16 @@ function subwayOverlayClickHandler(event) {
   originalRoomAndMarker.length = 0;
 
   // 필터 버튼 활성화
-  ableFilterBtn();
+  filter.ableFilterBtn();
 
   map.setLevel(5);
   map.setCenter(
     new kakao.maps.LatLng(overlay.dataset.lat, overlay.dataset.lng)
   );
+}
+
+function removeCluster() {
+  if (roomCluster) roomCluster.clear();
 }
 
 /**
@@ -303,10 +331,30 @@ async function createOverlay_subway() {
     subwayOverlayList.push(customOverlay);
   });
 }
+
+//* ============================== 방 정보, 방 클러스터 관련 코드들 =================================
+/**
+ *
+ * ^ 역 주변 방정보를 요청하여 클러스터를 생성한다..
+ */
+async function createOneRoomCluster(subway) {
+  etc.loading(true);
+
+  let oneroomList = await oneroom.getRoomData(subway); // 프로미스 배열이 있음, await 안쓰면 프로미스 안에 프로미스배열이 있음
+
+  Promise.all(oneroomList).then((oneroomList) => {
+    createCluster(oneroomList);
+    etc.loading(false);
+  });
+}
+
 export default {
   map,
   createOverlay_local,
   displayOverlay_local_subway,
   createOverlay_subway,
   overlaySetEvent,
+  removeCluster,
+  roomCluster,
+  roomClusterState,
 };
