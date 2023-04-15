@@ -1,19 +1,16 @@
-import Oneroom from "../module/oneroomModule.js";
-import KakaoSearch from "../module/kakaoSearchModule.js";
+/**
+ * 발견된 문제점들
+ * ! 유형.금액 필터의 초기화 버튼 미적용
+ * ! 월세 정렬 기능 미적용 -> 전세랑 월세가 섞여있으니 금액으로 퉁치자
+ */
+
+import Oneroom from "../module/oneroom.js";
+import KakaoSearch from "../module/kakaoSearch.js";
 import modal from "../module/modal.js";
-// import kakaoMap_localAndSubwayCluster from "../module/kakaoMap_localAndSubwayCluster.js";
 import kakaoMap from "../module/kakaoMap.js";
 import filter from "../module/filter.js";
 import createCardList from "../module/room.js";
 import { ableSortBtn, disableSortBtn } from "../module/sort.js";
-
-const filterCategories = document.querySelectorAll(".filter__category");
-// const filterCategory_price = filterCategories[0];
-// const filterCategory_size = filterCategories[1];
-const hyperLocal = filterCategories[2];
-
-const sortBtns = document.querySelectorAll(".sort-btn");
-// const layoutBtns = document.querySelectorAll(".layout-btn");
 
 const search = document.querySelector(".search");
 const searchInput = search.querySelector(".search__input");
@@ -22,7 +19,6 @@ const nav = document.querySelector(".nav");
 const navbox = document.querySelector(".nav__item-box");
 const navItems = nav.querySelectorAll(".nav__item");
 
-// const CRITERIA_MAP_LEVEL = 7;
 const oneroom = new Oneroom();
 const kakaoSearch = new KakaoSearch();
 /**
@@ -423,47 +419,47 @@ searchInput.addEventListener("keydown", (e) => {
 
 // //* ========================================== 필터 관련 코드들 ================================================
 
-//* ========================================== 세권 관련 코드들 =================================================
-const resetBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--reset");
-const applyBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--apply");
-const chips = hyperLocal.querySelectorAll(".filter__option-chips");
+// //* ========================================== 세권 관련 코드들 =================================================
+// const resetBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--reset");
+// const applyBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--apply");
+// const chips = hyperLocal.querySelectorAll(".filter__option-chips");
 
-chips.forEach((chip) => {
-  chip.addEventListener("click", (e) => {
-    e.currentTarget.classList.toggle("active");
-  });
-});
+// chips.forEach((chip) => {
+//   chip.addEventListener("click", (e) => {
+//     e.currentTarget.classList.toggle("active");
+//   });
+// });
 
-resetBtn_hyperLocal.addEventListener("click", (e) =>
-  chips.forEach((chip) => chip.classList.remove("active"))
-);
+// resetBtn_hyperLocal.addEventListener("click", (e) =>
+//   chips.forEach((chip) => chip.classList.remove("active"))
+// );
 
-applyBtn_hyperLocal.addEventListener("click", (e) => {
-  removeHyperLocalMarker();
+// applyBtn_hyperLocal.addEventListener("click", (e) => {
+//   removeHyperLocalMarker();
 
-  let clickedCluster = kakaoMap.roomCluster._clusters.filter((cluster) =>
-    cluster.getClusterMarker().getContent().classList.contains("cluster-click")
-  )[0];
+//   let clickedCluster = kakaoMap.roomCluster._clusters.filter((cluster) =>
+//     cluster.getClusterMarker().getContent().classList.contains("cluster-click")
+//   )[0];
 
-  // 클러스터의 중심좌표
-  const lat = clickedCluster.getCenter().Ma;
-  const lng = clickedCluster.getCenter().La;
+//   // 클러스터의 중심좌표
+//   const lat = clickedCluster.getCenter().Ma;
+//   const lng = clickedCluster.getCenter().La;
 
-  chips.forEach((chip) => {
-    if (chip.classList.contains("active")) {
-      // 검색할 키워드
-      const keyword = chip.dataset.keyword;
-      const markerImageName = chip.dataset.marker;
+//   chips.forEach((chip) => {
+//     if (chip.classList.contains("active")) {
+//       // 검색할 키워드
+//       const keyword = chip.dataset.keyword;
+//       const markerImageName = chip.dataset.marker;
 
-      kakaoSearch
-        .search_hyperLocal(keyword, lat, lng)
-        .then((data) =>
-          data.forEach((item) => createHyperLocalMarker(item, markerImageName))
-        );
-    }
-  });
-  createRange(clickedCluster);
-});
+//       kakaoSearch
+//         .search_hyperLocal(keyword, lat, lng)
+//         .then((data) =>
+//           data.forEach((item) => createHyperLocalMarker(item, markerImageName))
+//         );
+//     }
+//   });
+//   createRange(clickedCluster);
+// });
 
 // /**
 //  * ^ 세권 버튼을 클릭 가능한 상태로 만드는 함수
@@ -705,5 +701,4 @@ function init() {
 }
 
 init();
-const test = "하이";
-export default { map, oneroom, test, sortBtns };
+// export default { map, oneroom};
