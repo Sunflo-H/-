@@ -1,9 +1,13 @@
 import Oneroom from "./oneroomModule.js";
 import filter from "./filter.js";
-import etc from "./etc.js";
+import { loading } from "./etc.js";
+import createCardList from "./room.js";
+import { ableSortBtn, disableSortBtn } from "./sort.js";
 
 const oneroom = new Oneroom();
 const DEFAULT_MAP_LEVEL = 7;
+const filterCategories = document.querySelectorAll(".filter__category");
+const hyperLocal = filterCategories[2];
 
 /**
  * 클러스터를 생성할때 마커와 방정보를 함께 매핑한 배열
@@ -129,6 +133,7 @@ function createCluster(roomList) {
   });
 
   kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
+    const sortBtns = document.querySelectorAll(".sort-btn");
     let overlay = cluster.getClusterMarker().getContent();
 
     // 클릭한 클러스터의 "cluster-click" 클래스 토글
@@ -170,6 +175,19 @@ function createCluster(roomList) {
       down.classList.add("active");
     });
   });
+}
+
+/**
+ * ^ 세권 버튼을 클릭 가능한 상태로 만드는 함수
+ */
+function ableHyperLocalBtn() {
+  hyperLocal.classList.remove("disable");
+}
+/**
+ * ^ 세권 버튼을 클릭 불가능한 상태로 만드는 함수
+ */
+function disableHyperLocalBtn() {
+  hyperLocal.classList.add("disable");
 }
 
 //* =============================== 지역 / 지하철 오버레이 관련 코드들 ===============================
@@ -349,17 +367,17 @@ async function createOverlay_subway() {
 //* ============================== 방 정보, 방 클러스터 관련 코드들 =================================
 /**
  *
- * ^ 역 주변 방정보를 요청하여 클러스터를 생성한다..
+ * ^ 역 주변 방정보를 요청하여 클러스터를 생성한다
  */
 async function createOneRoomCluster(subway) {
-  etc.loading(true);
+  loading(true);
   let oneroomList = await oneroom.getRoomData(subway); // 프로미스 배열을 반환
   createCluster(oneroomList);
-  etc.loading(false);
+  loading(false);
   // Promise.all(oneroomList).then((oneroomList) => {
   //   console.log(oneroomList);
   //   createCluster(oneroomList);
-  //   etc.loading(false);
+  //   loading(false);
   // });
 }
 
@@ -415,4 +433,8 @@ export default {
   roomCluster,
   getRoomClusterState,
   displayRoomCluster,
+  // createCardList,
+  disableHyperLocalBtn,
 };
+
+// ! createCarList는 여기가 아닌거 같아.
