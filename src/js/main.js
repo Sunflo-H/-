@@ -4,13 +4,13 @@
  * ! 월세 정렬 기능 미적용 -> 전세랑 월세가 섞여있으니 금액으로 퉁치자
  */
 
-import Oneroom from "../module/oneroom.js";
-import KakaoSearch from "../module/kakaoSearch.js";
+import Oneroom from "../module/crawling_oneroom.js";
 import modal from "../module/modal.js";
 import kakaoMap from "../module/kakaoMap.js";
 import filter from "../module/filter.js";
-import createCardList from "../module/room.js";
+import createCardList from "../module/oneroom.js";
 import { ableSortBtn, disableSortBtn } from "../module/sort.js";
+import kakaoSearch from "../module/kakaoSearch2.js";
 
 const search = document.querySelector(".search");
 const searchInput = search.querySelector(".search__input");
@@ -20,24 +20,6 @@ const navbox = document.querySelector(".nav__item-box");
 const navItems = nav.querySelectorAll(".nav__item");
 
 const oneroom = new Oneroom();
-const kakaoSearch = new KakaoSearch();
-/**
- * * id :
- * * name : 오버레이에 보여질 이름
- * * lat, lng : 좌표
- */
-const local = [
-  { id: "강원도", name: "강원도", lat: "37.555837", lng: "128.209315" },
-  { id: "충청남도", name: "충청남도", lat: "36.557229", lng: "126.779757" },
-  { id: "광주광역시", name: "광주", lat: "35.126033", lng: "126.831302" },
-  { id: "대구광역시", name: "대구", lat: "35.798838", lng: "128.583052" },
-  { id: "대전광역시", name: "대전", lat: "36.321655", lng: "127.378953" },
-  { id: "경상북도", name: "경상북도", lat: "36.248647", lng: "128.664734" },
-  { id: "경상남도", name: "경상남도", lat: "35.259787", lng: "128.664734 " },
-  { id: "부산광역시", name: "부산", lat: "35.198362", lng: "129.053922" },
-  { id: "울산광역시", name: "울산", lat: "35.519301", lng: "129.239078" },
-  { id: "수도권", name: "수도권", lat: "37.5642135", lng: "127.0016985" },
-];
 
 /**
  * 검색 결과 정보와 마커를 담은 배열
@@ -631,6 +613,7 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   // 5이하 : 매물, 6~8 : 지하철, 9이상 : 로컬
   // 지하철 오버레이를 띄워야할때
   if (5 < map.getLevel() && map.getLevel() < 8) {
+    console.log("지하철이 보여야한다.");
     kakaoMap.displayLocalOverlay(false);
     kakaoMap.displaySubwayOverlay(true);
 
@@ -642,6 +625,7 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   }
   // 매물 클러스터를 띄워야 할때
   else if (map.getLevel() <= 5) {
+    console.log("매물이 보여야 한다.");
     // console.log("줌이 바뀌었는데 방정보 있을때");
     if (kakaoMap.getRoomClusterState()) {
       kakaoMap.displayRoomCluster(true);
@@ -659,6 +643,7 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   }
   // 로컬 오버레이를 띄워야할때
   else {
+    console.log("지역이 보여야 한다.");
     kakaoMap.displayLocalOverlay(true);
     kakaoMap.displaySubwayOverlay(false);
     createCardList(null);
@@ -684,9 +669,9 @@ function panTo(lat, lng) {
  * ^ 처음부터 실행되어야할 함수들을 모았다.
  */
 function init() {
-  createCardList(null);
-  kakaoMap.createOverlay_subway();
-  kakaoMap.createOverlay_local(local);
+  // createCardList(null);
+  kakaoMap.createLocalOverlay();
+  kakaoMap.createSubwayOverlay();
   filter.createFilterOptionContent_price("전체");
   getUserLocation().then((data) => {
     map.setCenter(
@@ -699,6 +684,8 @@ function init() {
     }, 200);
   });
 }
+
+// * 리팩토링
 
 init();
 // export default { map, oneroom};
