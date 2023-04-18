@@ -14,6 +14,9 @@ const oneroom = new Oneroom();
 const DEFAULT_MAP_LEVEL = 7;
 const filterCategories = document.querySelectorAll(".filter__category");
 const hyperLocal = filterCategories[2];
+const markerList = [];
+const hyperLocalMarkerList = [];
+let infoWindow = null;
 
 /**
  * 클러스터를 생성할때 마커와 방정보를 함께 매핑한 배열
@@ -98,12 +101,6 @@ function createLocalOverlay() {
     });
     localOverlayList.push(customOverlay);
   });
-
-  // const overlayList = document.querySelectorAll(".customOverlay");
-
-  // overlayList.forEach((overlay) => {
-  //   overlay.addEventListener("click", localOverlayClickHandler);
-  // });
 }
 
 // ! 확인
@@ -457,6 +454,225 @@ function disableHyperLocalBtn() {
   hyperLocal.classList.add("disable");
 }
 
+function getRoomCluster() {
+  return roomCluster;
+}
+
+/**
+ * ^ 장소 data를 받아 마커를 생성하고 이벤트를 적용하는 함수
+ * @param {*} data
+ */
+function createMarker(data) {
+  let address = data.address_name || null;
+  // let roadAddress = data.road_address_name || null;
+  let place = data.place_name || null;
+  let category = data.category_group_name; //주소, 장소, 음식점-카페 등등
+  let lat = data.y;
+  let lng = data.x;
+
+  let content = "";
+  place === null
+    ? (content = `<div class="infoWindow__content">
+                    <div class="infoWindow__address infoWindow__address-data">${address}</div>
+                  </div>`)
+    : (content = `<div class="infoWindow__content">
+                    <div class="infoWindow__place">${place}</div>
+                    <div class="infoWindow__category">${category}</div>
+                    <div class="infoWindow__address">${address}</div>
+                  </div>`);
+
+  let marker = new kakao.maps.Marker({
+    map: map,
+    position: new kakao.maps.LatLng(lat, lng),
+  });
+
+  let markerImage = new kakao.maps.MarkerImage(
+    "../img/map/marker1.png",
+    new kakao.maps.Size(30, 30),
+    new kakao.maps.Point(15, 26)
+  );
+  marker.setImage(markerImage);
+
+  kakao.maps.event.addListener(marker, "click", function () {
+    if (infoWindow) infoWindow.close();
+    infoWindow = new kakao.maps.InfoWindow({
+      position: new kakao.maps.LatLng(lat, lng),
+      content: content,
+    });
+    let infoWindowBox = infoWindow.a;
+    let infoWindowArrow = infoWindow.a.firstElementChild;
+    let infoWindowContentBox = infoWindow.Uf;
+    infoWindowBox.classList.add("infoWindow-box");
+    infoWindowArrow.classList.add("infoWindow__arrow");
+    infoWindowContentBox.classList.add("infoWindow__content-box");
+    infoWindow.open(map, marker);
+  });
+
+  let marekrObj = {
+    marker: marker,
+    info: data,
+  };
+
+  markerList.push(marekrObj);
+}
+
+/**
+ * 세권 마커를 생성한다.
+ * @param {*} data 마커에 대한 정보
+ * @param {*} markerImageName 마커의 이미지 이름
+ */
+function createHyperLocalMarker(data, markerImageName) {
+  console.log(data);
+  let address = data.address_name || null;
+  // let roadAddress = data.road_address_name || null;
+  let place = data.place_name || null;
+  let category = data.category_group_name; //주소, 장소, 음식점-카페 등등
+  let lat = data.y;
+  let lng = data.x;
+
+  let content = "";
+  place === null
+    ? (content = `<div class="infoWindow__content">
+                    <div class="infoWindow__address infoWindow__address-data">${address}</div>
+                  </div>`)
+    : (content = `<div class="infoWindow__content">
+                    <div class="infoWindow__place">${place}</div>
+                    <div class="infoWindow__category">${category}</div>
+                    <div class="infoWindow__address">${address}</div>
+                  </div>`);
+
+  let marker = new kakao.maps.Marker({
+    map: map,
+    position: new kakao.maps.LatLng(lat, lng),
+  });
+
+  let markerImage = new kakao.maps.MarkerImage(
+    `../img/map/marker_${markerImageName}.png`,
+    new kakao.maps.Size(30, 30),
+    new kakao.maps.Point(15, 26)
+  );
+
+  marker.setImage(markerImage);
+
+  // marker를 받아서 click 이벤트를 등록하고
+  //
+  kakao.maps.event.addListener(marker, "click", function () {
+    // console.log(infoWindow);
+    if (infoWindow) infoWindow.close();
+    infoWindow = new kakao.maps.InfoWindow({
+      position: new kakao.maps.LatLng(lat, lng),
+      content: content,
+    });
+    let infoWindowBox = infoWindow.a;
+    let infoWindowArrow = infoWindow.a.firstElementChild;
+    let infoWindowContentBox = infoWindow.Uf;
+    infoWindowBox.classList.add("infoWindow-box");
+    infoWindowArrow.classList.add("infoWindow__arrow");
+    infoWindowContentBox.classList.add("infoWindow__content-box");
+    infoWindow.open(map, marker);
+  });
+
+  let marekrObj = {
+    marker: marker,
+    info: data,
+  };
+
+  hyperLocalMarkerList.push(marekrObj);
+}
+
+function removeMarker(markerList) {
+  markerList.forEach((obj) => {
+    obj.marker.setMap(null);
+  });
+  markerList.length = 0;
+}
+
+/**
+ * ^ 세권마커를 모두 삭제한다.
+ */
+function removeHyperLocalMarker() {
+  hyperLocalMarkerList.forEach((obj) => {
+    obj.marker.setMap(null);
+  });
+  hyperLocalMarkerList.length = 0;
+}
+
+/**
+ * ^ 인포윈도우를 닫는다.
+ */
+function removeInfoWindow() {
+  if (infoWindow) infoWindow.close();
+}
+
+kakao.maps.event.addListener(map, "click", function (mouseEvent) {
+  console.log(map.getLevel());
+  removeInfoWindow();
+});
+
+// 지도의 드래그가 끝났을때 화면에 보여지는 오버레이에 이벤트 등록
+kakao.maps.event.addListener(map, "dragend", function () {
+  setEventOnOverlay();
+});
+
+// 지도 레벨에 따라 로컬, 지하철, 방을 보여준다.
+// 보여지는 오버레이에 클릭이벤트를 등록한다.
+kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
+  // 5이하 : 매물, 6~8 : 지하철, 9이상 : 로컬
+  // 지하철 오버레이를 띄워야할때
+  if (5 < map.getLevel() && map.getLevel() < 8) {
+    displayLocalOverlay(false);
+    displaySubwayOverlay(true);
+
+    displayRoomCluster(false);
+    createRoomSection(null);
+    filter.disableFilterBtn();
+    disableHyperLocalBtn();
+    disableSortBtn();
+    activeDetailBox(false);
+  }
+  // 매물 클러스터를 띄워야 할때
+  else if (map.getLevel() <= 5) {
+    // console.log("줌이 바뀌었는데 방정보 있을때");
+    if (getRoomClusterState()) {
+      displayRoomCluster(true);
+      createRoomSection(null);
+      displayLocalOverlay(false);
+      displaySubwayOverlay(false);
+      filter.ableFilterBtn();
+    }
+    // console.log("줌이 바뀌었는데 방정보 없을때");
+    else {
+      displayLocalOverlay(false);
+      displaySubwayOverlay(true);
+      filter.disableFilterBtn();
+    }
+  }
+  // 로컬 오버레이를 띄워야할때
+  else {
+    displayLocalOverlay(true);
+    displaySubwayOverlay(false);
+    createRoomSection(null);
+    filter.disableFilterBtn();
+    disableHyperLocalBtn();
+    disableSortBtn();
+  }
+
+  setEventOnOverlay();
+});
+
+/**
+ * 지도를 해당 좌표로 부드럽게 이동시킨다.
+ * @param {*} lat
+ * @param {*} lng
+ */
+function panTo(lat, lng) {
+  map.panTo(new kakao.maps.LatLng(lat, lng));
+}
+
+function getOriginalRoomAndMarker() {
+  return originalRoomAndMarker;
+}
+
 export default {
   map,
   createLocalOverlay,
@@ -467,4 +683,12 @@ export default {
   displayRoomCluster,
   disableHyperLocalBtn,
   setEventOnOverlay,
+  getRoomCluster,
+  createMarker,
+  createHyperLocalMarker,
+  removeMarker,
+  removeInfoWindow,
+  removeHyperLocalMarker,
+  getOriginalRoomAndMarker,
+  createRoomCluster,
 };
