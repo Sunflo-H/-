@@ -421,3 +421,157 @@ function init() {
 }
 
 init();
+
+/**
+ * ^ 좌표 리스트를 받아 클러스터를 생성하는 함수
+ *
+ * @param {*} coords
+ */
+function createCluster(roomList) {
+  roomCluster = new kakao.maps.MarkerClusterer({
+    map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
+    averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+    minLevel: 1, // 클러스터 할 최소 지도 레벨
+    gridSize: 60,
+    minClusterSize: 1, // Number : 클러스터링 할 최소 마커 수 (default: 2)
+    disableClickZoom: true,
+    styles: [
+      {
+        width: "40px",
+        height: "40px",
+        background: "#3c5cff",
+        color: "#fff",
+        textAlign: "center",
+        lineHeight: "40px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+      {
+        width: "53px",
+        height: "52px",
+        background: "#3c5cff",
+        color: "#fff",
+        textAlign: "center",
+        lineHeight: "54px",
+        borderRadius: "50%",
+        border: "1px solid #4c3aff",
+        opacity: "0.85",
+      },
+    ],
+    calculator: [10],
+  });
+
+  roomAndMarker = [];
+
+  let markers = roomList.map(function (room, i) {
+    let position = room.item.random_location.split(",");
+    let marker = new kakao.maps.Marker({
+      position: new kakao.maps.LatLng(position[0], position[1]),
+    });
+
+    // 방 정보와 마커를 매핑
+    roomAndMarker.push({ roomData: room, marker: marker });
+    return marker;
+  });
+
+  // 새 지하철역을 클릭했을때 originalRoomAndMarker는 초기화된다.
+  // 초기화된 original에 새 값을 저장
+  if (originalRoomAndMarker.length === 0)
+    originalRoomAndMarker = [...roomAndMarker];
+
+  roomCluster.setTexts((size) => {
+    let text = "";
+
+    if (size > 100) text = "100+";
+    else text = size;
+
+    return text;
+  });
+
+  roomCluster.addMarkers(markers); // 클러스터 생성
+
+  // 처음 생성된 클러스터의 엘리먼트들에 적용하는 css변화 이벤트 (clustered 이벤트핸들러와 기능은 같다.)
+  roomCluster._clusters.forEach((cluster) => {
+    let overlay = cluster.getClusterMarker().getContent();
+
+    overlay.addEventListener("mouseover", function (e) {
+      if (!this.classList.contains("cluster-over")) {
+        this.classList.add("cluster-over");
+      }
+    });
+
+    overlay.addEventListener("mouseout", function (e) {
+      if (this.classList.contains("cluster-over")) {
+        this.classList.remove("cluster-over");
+      }
+    });
+  });
+
+  // 처음 생성된 이후 zoomIn, out, 지도이동으로 생기는 클러스터의 엘리먼트들에게 적용
+  kakao.maps.event.addListener(roomCluster, "clustered", function (clusters) {
+    for (let i = 0; i < clusters.length; i++) {
+      let cluster = clusters[i];
+      let overlay = cluster.getClusterMarker().getContent();
+
+      overlay.addEventListener("mouseover", function () {
+        if (!this.classList.contains("cluster-over")) {
+          this.classList.add("cluster-over");
+        }
+      });
+
+      overlay.addEventListener("mouseout", function () {
+        if (this.classList.contains("cluster-over")) {
+          this.classList.remove("cluster-over");
+        }
+      });
+    }
+  });
+
+  kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
+    let overlay = cluster.getClusterMarker().getContent();
+
+    // 클릭한 클러스터의 "cluster-click" 클래스 토글
+    overlay.classList.toggle("cluster-click");
+
+    // 나머지 클러스터의 "cluster-click" 클래스 삭제
+    roomCluster._clusters.forEach((innerCluster) => {
+      if (innerCluster === cluster) return;
+      innerCluster
+        .getClusterMarker()
+        .getContent()
+        .classList.remove("cluster-click");
+    });
+
+    // "cluster-click"가 있다면
+    if (overlay.classList.contains("cluster-click")) {
+      let roomList = cluster
+        .getMarkers()
+        .map(
+          (marker) =>
+            roomAndMarker.find((item) => marker === item.marker).roomData
+        );
+      createCardList(roomList);
+      ableHyperLocalBtn();
+      ableSortBtn();
+    }
+    // "cluster-click"가 없다면
+    else {
+      createCardList(null);
+      disableHyperLocalBtn();
+      disableSortBtn();
+    }
+
+    sortBtns.forEach((btn) => {
+      const up = btn.querySelector(".fa-sort-up");
+      const down = btn.querySelector(".fa-sort-down");
+      btn.dataset.state = "basic";
+      up.classList.add("active");
+      down.classList.add("active");
+    });
+  });
+}
+
+function removeCluster() {
+  if (roomCluster) roomCluster.clear();
+}
