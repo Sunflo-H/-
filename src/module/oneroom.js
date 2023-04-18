@@ -6,21 +6,21 @@ const priceBtn = sortBtns[0];
 const sizeBtn = sortBtns[1];
 const layoutBtns = document.querySelectorAll(".layout-btn");
 /**
- * cardList의 현재 layout상태에 대한 변수
+ * - cardList의 현재 layout상태에 대한 변수
  */
 let cardListLayout = "card";
 
 /**
- * - originalOneroomList는 전역에서 사용가능한 roomList이며, 정렬되지 않은 데이터, 크롤링한 데이터 원본을 의미한다.
+ * - originalRoomList는 전역에서 사용가능한 roomList이며, 정렬되지 않은 데이터, 크롤링한 데이터 원본을 의미한다.
  */
-let originalOneroomList = [];
+let originalRoomList = [];
 
 /**
  * - 전역에서 현재 카드리스트에 사용되는 방 정보들을 가지고있는 배열이다.
  * - 레이아웃이 바뀔때 createRoomSection() 함수를 호출하기때문에 방 정보가 필요하다. 이때 사용된다.
  * - 정렬되었다면 정렬된 그 방 정보들을 그대로 card or list layout으로 보여줘야 하므로 필요한 배열이다.
  */
-let currentOneroomList = [];
+let roomListForChangeLayout = [];
 
 /**
  * - 방의 디테일 정보들을 보여주는 element를 생성한다.
@@ -230,7 +230,8 @@ function createDetailElement(roomData) {
 }
 
 function setEventOnDetailElement() {
-  // 더보기 버튼
+  const detailBox = document.querySelector(".detail-box");
+
   const descriptionMessage = document.querySelector(
     ".detail__description-message"
   );
@@ -244,20 +245,168 @@ function setEventOnDetailElement() {
     ".detail__realtor-description .view-more"
   );
 
+  const closeBtn = document.querySelector(".detail__header__back");
+
+  // 상세정보 더보기 버튼 클릭
   descriptionViewMore.addEventListener("click", (e) => {
     descriptionMessage.style.maxHeight = "none";
     descriptionMessage.style.whiteSpace = "pre-wrap";
     descriptionViewMore.style.display = "none";
   });
 
+  // 공인중개사 더보기 버튼 클릭
   agentViewMore.addEventListener("click", (e) => {
     agentMessage.style.maxHeight = "none";
     agentMessage.style.whiteSpace = "pre-wrap";
     agentViewMore.style.display = "none";
   });
+
+  closeBtn.addEventListener("click", (e) => {
+    activeDetailBox(false);
+  });
+
+  // 스크롤을 내렸을때 헤더에 CSS 변화를 주는 이벤트
+  detailBox.addEventListener("scroll", (e) => {
+    const header = document.querySelector(".detail__header");
+    const text = header.querySelector(".detail__header__text");
+
+    let currentScrollTop = e.target.scrollTop;
+
+    if (currentScrollTop === 0) {
+      header.style.backgroundColor = "transparent";
+      header.style.color = "#fefefe";
+      text.style.display = "none";
+    } else {
+      header.style.backgroundColor = "#fefefe";
+      header.style.color = "black";
+      text.style.display = "block";
+    }
+  });
 }
 
-function setCarousel() {}
+function setCarousel(roomData) {
+  // 이미지 박스 요소에 carousel 기능 적용
+  const imageBox = document.querySelector(".detail__image-box");
+  const carousel = document.querySelector(".carousel");
+  const carouselControllers = document.querySelectorAll(
+    ".carousel__controller"
+  );
+
+  let currentIndex = 0;
+  let translate = 0;
+  const speedTime = 500;
+
+  // 캐러셀 생성
+  createCarousel(roomData.item.images);
+
+  // 이벤트 적용
+  carousel.addEventListener("click", (e) => {
+    if (e.target.classList.contains("carousel__image")) {
+      modal.openModal();
+      modal.createCarousel(roomData.item.images, currentIndex);
+    }
+  });
+
+  imageBox.addEventListener("mouseenter", (e) => {
+    carouselControllers.forEach((controller) => {
+      controller.style.display = "block";
+    });
+  });
+
+  imageBox.addEventListener("mouseleave", (e) => {
+    carouselControllers.forEach((controller) => {
+      controller.style.display = "none";
+    });
+  });
+
+  carouselControllers.forEach((controller) => {
+    controller.addEventListener("click", carouselControllerHandler);
+  });
+
+  // * 이 아래는 함수 선언 부분입니다.
+
+  /**
+   * ^ 디테일창의 이미지슬라이더 Element를 만드는 함수
+   * @param {*} images
+   */
+  function createCarousel(images) {
+    const detailBox = document.querySelector(".detail-box");
+    const imageWidth = detailBox.clientWidth; // 285px
+
+    carousel.style.width = `${images.length * imageWidth}px`;
+
+    images.forEach((image) => {
+      let element = `
+      <li>
+        <img class="carousel__image" src=${image}?w=400&h=300&q=70&a=1 />
+      </li>`;
+      carousel.insertAdjacentHTML("beforeend", element);
+    });
+
+    let firstImageClone = carousel.firstElementChild.cloneNode(true);
+    let lastImageClone = carousel.lastElementChild.cloneNode(true);
+
+    carousel.insertAdjacentElement("afterbegin", lastImageClone);
+    carousel.insertAdjacentElement("beforeend", firstImageClone);
+
+    currentIndex = 1;
+    translate -= imageWidth;
+    carousel.style.transform = `translate(${translate}px)`;
+  }
+
+  /**
+   * ^ carousel 이미지를 이동하는 함수
+   * @param {*} direction
+   */
+  function move(direction) {
+    const imageWidth = carousel.firstElementChild.clientWidth;
+
+    direction === "next" ? currentIndex++ : currentIndex--;
+    translate = -(imageWidth * currentIndex);
+    carousel.style.transform = `translate(${translate}px)`;
+    carousel.style.transition = `all ${speedTime}ms ease`;
+  }
+
+  /**
+   * ^ 클릭한 컨트롤러에 따라 carousel을 앞 뒤로 이동시키는 함수
+   * @param {*} e
+   */
+  function carouselControllerHandler(e) {
+    const carousel = document.querySelector(".carousel");
+    const imageList = carousel.querySelectorAll("img");
+    const imageWidth = carousel.firstElementChild.clientWidth;
+    const carouselCount = document.querySelector(".carousel__count");
+    const target = e.currentTarget;
+
+    if (target.classList.contains("carousel__controller--next")) {
+      move("next");
+      carouselCount.innerText = currentIndex;
+
+      if (currentIndex === imageList.length - 1) {
+        carouselCount.innerText = 1;
+        setTimeout(() => {
+          currentIndex = 1;
+          translate = -(imageWidth * currentIndex);
+          carousel.style.transition = `none`;
+          carousel.style.transform = `translate(${translate}px)`;
+        }, speedTime);
+      }
+    } else {
+      move("prev");
+      carouselCount.innerText = currentIndex;
+
+      if (currentIndex === 0) {
+        carouselCount.innerText = imageList.length - 2;
+        setTimeout(() => {
+          currentIndex = imageList.length - 2;
+          translate = -(imageWidth * currentIndex);
+          carousel.style.transition = `none`;
+          carousel.style.transform = `translate(${translate}px)`;
+        }, speedTime);
+      }
+    }
+  }
+}
 
 function createCardElement(roomData) {
   // 방 정보들로 카드를 생성한다.
@@ -340,7 +489,7 @@ function createRoomSection(roomList) {
     return;
   }
 
-  currentOneroomList = [...roomList];
+  roomListForChangeLayout = [...roomList];
 
   // 방 정보들로 카드를 생성한다.
   roomList.forEach((room) => {
@@ -349,16 +498,16 @@ function createRoomSection(roomList) {
 
   /**
    * 정렬을 하면 sortOneroomList로 createRoomSection(sortOneroomList)가 실행된다.
-   * 따라서 originalOneroomList = roomList가 실제론 originalOneroomList = sortOneroomList 로 작동한다.
-   * originalOneroomList는 꼭 크롤링 데이터 원본이어야 한다.
-   * 따라서 원본이 아닌 데이터가 originalOneroomList에 저장되는 걸 막기 위해서
-   * roomList가 매물 클러스터를 클릭해서 얻은 원본 데이터일때만 originalOneroomList = roomList를 실행하도록 한다.
+   * 따라서 originalRoomList = roomList가 실제론 originalRoomList = sortOneroomList 로 작동한다.
+   * originalRoomList는 꼭 크롤링 데이터 원본이어야 한다.
+   * 따라서 원본이 아닌 데이터가 originalRoomList에 저장되는 걸 막기 위해서
+   * roomList가 매물 클러스터를 클릭해서 얻은 원본 데이터일때만 originalRoomList = roomList를 실행하도록 한다.
    *
-   * originalOneroomList는 전역에서 사용가능한 roomList이며, 정렬되지 않은 크롤링한 데이터 원본을 의미한다.
+   * originalRoomList는 전역에서 사용가능한 roomList이며, 정렬되지 않은 크롤링한 데이터 원본을 의미한다.
    */
-  // originalOneroomList와 roomlist가 일치하는게 없다면 실행한다.
-  if (!originalOneroomList.find((item) => item === roomList[0])) {
-    originalOneroomList = [...roomList];
+  // originalRoomList와 roomlist가 일치하는게 없다면 실행한다.
+  if (!originalRoomList.find((item) => item === roomList[0])) {
+    originalRoomList = [...roomList];
   }
 
   // 카드들이 생성되었고, 이제 DOM 선택자로 선택이 가능하다.
@@ -368,7 +517,6 @@ function createRoomSection(roomList) {
   cardList.forEach((card, index) => {
     card.addEventListener("click", (e) => {
       const detailBox = document.querySelector(".detail-box");
-      const detailBoxWidth = detailBox.clientWidth;
 
       // 기존의 디테일 엘리먼트 삭제.
       while (detailBox.firstChild) detailBox.removeChild(detailBox.firstChild);
@@ -382,231 +530,60 @@ function createRoomSection(roomList) {
       // * 생성된 디테일 엘리먼트에 기능들을 등록합니다.
       setEventOnDetailElement();
 
+      activeDetailBox(true);
+      createStaticMap(roomList[index].item.random_location);
+      setCarousel(roomList[index]);
+
       // 새 디테일창을 열면 스크롤을 맨 위로
       setTimeout(() => {
         detailBox.scrollTop = 0;
       }, 0);
-
-      // // 더보기 버튼
-      // const descriptionMessage = document.querySelector(
-      //   ".detail__description-message"
-      // );
-      // const agentMessage = document.querySelector(
-      //   ".detail__realtor-description-message"
-      // );
-      // const descriptionViewMore = document.querySelector(
-      //   ".detail__description .view-more"
-      // );
-      // const agentViewMore = document.querySelector(
-      //   ".detail__realtor-description .view-more"
-      // );
-
-      // descriptionViewMore.addEventListener("click", (e) => {
-      //   descriptionMessage.style.maxHeight = "none";
-      //   descriptionMessage.style.whiteSpace = "pre-wrap";
-      //   descriptionViewMore.style.display = "none";
-      // });
-
-      // agentViewMore.addEventListener("click", (e) => {
-      //   agentMessage.style.maxHeight = "none";
-      //   agentMessage.style.whiteSpace = "pre-wrap";
-      //   agentViewMore.style.display = "none";
-      // });
-
-      // 이미지 박스 요소에 carousel 기능 적용
-      const imageBox = document.querySelector(".detail__image-box");
-      const closeBtn = document.querySelector(".detail__header__back");
-      const carousel = document.querySelector(".carousel");
-      const carouselControllers = document.querySelectorAll(
-        ".carousel__controller"
-      );
-
-      let currentIndex = 0;
-      let translate = 0;
-      const speedTime = 500;
-
-      // 기능 적용
-      activeDetailBox(true);
-      createCarousel(roomList[index].item.images);
-      createStaticMap(roomList[index].item.random_location);
-
-      closeBtn.addEventListener("click", (e) => {
-        activeDetailBox(false);
-      });
-
-      carousel.addEventListener("click", (e) => {
-        if (e.target.classList.contains("carousel__image")) {
-          modal.openModal();
-          modal.createCarousel(roomList[index].item.images, currentIndex);
-        }
-      });
-
-      imageBox.addEventListener("mouseenter", (e) => {
-        carouselControllers.forEach((controller) => {
-          controller.style.display = "block";
-        });
-      });
-
-      imageBox.addEventListener("mouseleave", (e) => {
-        carouselControllers.forEach((controller) => {
-          controller.style.display = "none";
-        });
-      });
-
-      carouselControllers.forEach((controller) => {
-        controller.addEventListener("click", carouselControllerHandler);
-      });
-
-      detailBox.addEventListener("scroll", (e) => {
-        const header = document.querySelector(".detail__header");
-        const text = header.querySelector(".detail__header__text");
-
-        let currentScrollTop = e.target.scrollTop;
-
-        if (currentScrollTop === 0) {
-          header.style.backgroundColor = "transparent";
-          header.style.color = "#fefefe";
-          text.style.display = "none";
-        } else {
-          header.style.backgroundColor = "#fefefe";
-          header.style.color = "black";
-          text.style.display = "block";
-        }
-      });
-
-      // * 이 아래는 함수 선언 부분입니다.
-      /**
-       * ^ 디테일창을 보이게 or 안보이게 하는 함수
-       * @param {*} isTrue
-       */
-      function activeDetailBox(isTrue) {
-        const cardBox = document.querySelector("ul.cards");
-        if (isTrue) {
-          detailBox.classList.add("open");
-          cardBox.style.display = "none";
-        } else {
-          detailBox.classList.remove("open");
-          cardBox.style.display = "block";
-        }
-      }
-
-      /**
-       * ^ 디테일창의 '위치' 항목에서 보일 정적 지도 이미지 생성 함수
-       * @param {*} random_location
-       */
-      function createStaticMap(random_location) {
-        var markerPosition = new kakao.maps.LatLng(
-          Number(random_location.split(",")[0]),
-          Number(random_location.split(",")[1])
-        );
-
-        var marker = {
-          position: markerPosition,
-        };
-
-        var staticMapContainer = document.getElementById("detail__staticMap"), // 이미지 지도를 표시할 div
-          staticMapOption = {
-            center: new kakao.maps.LatLng(
-              Number(random_location.split(",")[0]),
-              Number(random_location.split(",")[1])
-            ),
-            level: 3,
-            marker: marker,
-          };
-
-        // 이미지 지도를 생성합니다
-        var staticMap = new kakao.maps.StaticMap(
-          staticMapContainer,
-          staticMapOption
-        );
-      }
-
-      /**
-       * ^ 디테일창의 이미지슬라이더 Element를 만드는 함수
-       * @param {*} images
-       */
-      function createCarousel(images) {
-        const imageWidth = detailBox.clientWidth; // 285px
-
-        carousel.style.width = `${images.length * imageWidth}px`;
-
-        images.forEach((image) => {
-          let element = `
-          <li>
-            <img class="carousel__image" src=${image}?w=400&h=300&q=70&a=1 />
-          </li>`;
-          carousel.insertAdjacentHTML("beforeend", element);
-        });
-
-        let firstImageClone = carousel.firstElementChild.cloneNode(true);
-        let lastImageClone = carousel.lastElementChild.cloneNode(true);
-
-        carousel.insertAdjacentElement("afterbegin", lastImageClone);
-        carousel.insertAdjacentElement("beforeend", firstImageClone);
-
-        currentIndex = 1;
-        translate -= imageWidth;
-        carousel.style.transform = `translate(${translate}px)`;
-      }
-
-      /**
-       * ^ carousel 이미지를 이동하는 함수
-       * @param {*} direction
-       */
-      function move(direction) {
-        const imageWidth = carousel.firstElementChild.clientWidth;
-
-        direction === "next" ? currentIndex++ : currentIndex--;
-        translate = -(imageWidth * currentIndex);
-        carousel.style.transform = `translate(${translate}px)`;
-        carousel.style.transition = `all ${speedTime}ms ease`;
-      }
-
-      /**
-       * ^ 클릭한 컨트롤러에 따라 carousel을 앞 뒤로 이동시키는 함수
-       * @param {*} e
-       */
-      function carouselControllerHandler(e) {
-        const carousel = document.querySelector(".carousel");
-        const imageList = carousel.querySelectorAll("img");
-        const imageWidth = carousel.firstElementChild.clientWidth;
-        const carouselCount = document.querySelector(".carousel__count");
-        const target = e.currentTarget;
-
-        if (target.classList.contains("carousel__controller--next")) {
-          move("next");
-          carouselCount.innerText = currentIndex;
-
-          if (currentIndex === imageList.length - 1) {
-            // target.style.pointerEvents = "none";
-            carouselCount.innerText = 1;
-            setTimeout(() => {
-              currentIndex = 1;
-              translate = -(imageWidth * currentIndex);
-              carousel.style.transition = `none`;
-              carousel.style.transform = `translate(${translate}px)`;
-              // target.style.pointerEvents = "auto";
-            }, speedTime);
-          }
-        } else {
-          move("prev");
-          carouselCount.innerText = currentIndex;
-
-          if (currentIndex === 0) {
-            // target.style.pointerEvents = "none";
-            carouselCount.innerText = imageList.length - 2;
-            setTimeout(() => {
-              currentIndex = imageList.length - 2;
-              translate = -(imageWidth * currentIndex);
-              carousel.style.transition = `none`;
-              carousel.style.transform = `translate(${translate}px)`;
-              // target.style.pointerEvents = "auto";
-            }, speedTime);
-          }
-        }
-      }
     });
   });
+}
+
+/**
+ * ^ 디테일창을 보이게 or 안보이게 하는 함수
+ * @param {*} isTrue
+ */
+function activeDetailBox(isTrue) {
+  const detailBox = document.querySelector(".detail-box");
+  const cardBox = document.querySelector("ul.cards");
+  if (isTrue) {
+    detailBox.classList.add("open");
+    cardBox.style.display = "none";
+  } else {
+    detailBox.classList.remove("open");
+    cardBox.style.display = "block";
+  }
+}
+
+/**
+ * ^ 디테일창의 '위치' 항목에서 보일 정적 지도 이미지 생성 함수
+ * @param {*} random_location
+ */
+function createStaticMap(random_location) {
+  var markerPosition = new kakao.maps.LatLng(
+    Number(random_location.split(",")[0]),
+    Number(random_location.split(",")[1])
+  );
+
+  var marker = {
+    position: markerPosition,
+  };
+
+  var staticMapContainer = document.getElementById("detail__staticMap"), // 이미지 지도를 표시할 div
+    staticMapOption = {
+      center: new kakao.maps.LatLng(
+        Number(random_location.split(",")[0]),
+        Number(random_location.split(",")[1])
+      ),
+      level: 3,
+      marker: marker,
+    };
+
+  // 이미지 지도를 생성합니다
+  let staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
 }
 
 /**
@@ -626,7 +603,7 @@ function sortBtnClick(event, sort1, sort2) {
   /**
    * 원래값을 바꾸지 않고, 정렬한 배열
    */
-  let sortOneroomList = [...originalOneroomList];
+  let sortOneroomList = [...originalRoomList];
 
   if (state === "basic") state = "down";
   else if (state === "down") state = "up";
@@ -637,7 +614,7 @@ function sortBtnClick(event, sort1, sort2) {
       btn.dataset.state = "basic";
       up.classList.add("active");
       down.classList.add("active");
-      createRoomSection(originalOneroomList);
+      createRoomSection(originalRoomList);
 
       break;
 
@@ -668,7 +645,6 @@ function sortBtnClick(event, sort1, sort2) {
 
       // * 여기서 sortOneroomList가 roomList로 createRoomSection 함수를 실행시킨다. (이 파일의 중요 포인트)
       createRoomSection(sortOneroomList);
-      // sortOneroomList = [...originalOneroomList];
 
       break;
 
@@ -686,7 +662,6 @@ function sortBtnClick(event, sort1, sort2) {
           );
 
       createRoomSection(sortOneroomList);
-      // sortOneroomList = [...originalOneroomList];
 
       break;
   }
@@ -705,7 +680,7 @@ function layoutBtnClick(e) {
   layoutBtns[1].classList.remove("active");
   btn.classList.add("active");
 
-  createRoomSection(currentOneroomList);
+  createRoomSection(roomListForChangeLayout);
 }
 
 sortBtns.forEach((btn) => {
