@@ -5,10 +5,9 @@
  */
 
 import Oneroom from "../module/crawling_oneroom.js";
-import modal from "../module/modal.js";
 import kakaoMap from "../module/kakaoMap.js";
 import filter from "../module/filter.js";
-import createCardList from "../module/oneroom.js";
+import createRoomSection from "../module/oneroom.js";
 import { ableSortBtn, disableSortBtn } from "../module/sort.js";
 import kakaoSearch from "../module/kakaoSearch2.js";
 
@@ -613,12 +612,11 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   // 5이하 : 매물, 6~8 : 지하철, 9이상 : 로컬
   // 지하철 오버레이를 띄워야할때
   if (5 < map.getLevel() && map.getLevel() < 8) {
-    console.log("지하철이 보여야한다.");
     kakaoMap.displayLocalOverlay(false);
     kakaoMap.displaySubwayOverlay(true);
 
     kakaoMap.displayRoomCluster(false);
-    createCardList(null);
+    createRoomSection(null);
     filter.disableFilterBtn();
     kakaoMap.disableHyperLocalBtn();
     disableSortBtn();
@@ -629,7 +627,7 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
     // console.log("줌이 바뀌었는데 방정보 있을때");
     if (kakaoMap.getRoomClusterState()) {
       kakaoMap.displayRoomCluster(true);
-      createCardList();
+      createRoomSection(null);
       kakaoMap.displayLocalOverlay(false);
       kakaoMap.displaySubwayOverlay(false);
       filter.ableFilterBtn();
@@ -646,7 +644,7 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
     console.log("지역이 보여야 한다.");
     kakaoMap.displayLocalOverlay(true);
     kakaoMap.displaySubwayOverlay(false);
-    createCardList(null);
+    createRoomSection(null);
     filter.disableFilterBtn();
     kakaoMap.disableHyperLocalBtn();
     disableSortBtn();
@@ -669,7 +667,7 @@ function panTo(lat, lng) {
  * ^ 처음부터 실행되어야할 함수들을 모았다.
  */
 function init() {
-  // createCardList(null);
+  createRoomSection(null);
   kakaoMap.createLocalOverlay();
   kakaoMap.createSubwayOverlay();
   filter.createFilterOptionContent_price("전체");
