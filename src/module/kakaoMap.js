@@ -1,7 +1,7 @@
 import Oneroom from "./crawling_oneroom.js";
 import filter from "./filter.js";
 import { loading } from "./etc.js";
-import createCardList from "./oneroom.js";
+import createRoomSection from "./oneroom.js";
 import { ableSortBtn, disableSortBtn } from "./sort.js";
 
 /** 목차
@@ -375,13 +375,13 @@ async function createRoomCluster(subway) {
             roomAndMarker.find((item) => marker === item.marker).roomData
         );
 
-      createCardList(roomList);
+      createRoomSection(roomList);
       ableHyperLocalBtn();
       ableSortBtn();
     }
     // "cluster-click"가 없다면
     else {
-      createCardList(null);
+      createRoomSection(null);
       disableHyperLocalBtn();
       disableSortBtn();
     }
