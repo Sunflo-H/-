@@ -1,7 +1,7 @@
 import Oneroom from "./crawling_oneroom.js";
 import filter from "./filter.js";
 import { loading } from "./etc.js";
-import createRoomSection from "./oneroom.js";
+import { activeDetailBox, createRoomSection } from "./oneroom.js";
 import { ableSortBtn, disableSortBtn } from "./sort.js";
 
 /** 목차
@@ -353,6 +353,9 @@ async function createRoomCluster(subway) {
   kakao.maps.event.addListener(roomCluster, "clusterclick", function (cluster) {
     const sortBtns = document.querySelectorAll(".sort-btn");
     let clusterElement = cluster.getClusterMarker().getContent();
+
+    // 매물 클러스터를 클릭한다 = 다른 매물클러스터를 눌렀다 or 현재 매물클러스터를 껐다. -> 디테일창을 비활성화 해야한다.
+    activeDetailBox(false);
 
     // 클릭한 클러스터의 "cluster-click" 클래스 토글
     clusterElement.classList.toggle("cluster-click");

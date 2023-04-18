@@ -7,9 +7,9 @@
 import Oneroom from "../module/crawling_oneroom.js";
 import kakaoMap from "../module/kakaoMap.js";
 import filter from "../module/filter.js";
-import createRoomSection from "../module/oneroom.js";
+import { activeDetailBox, createRoomSection } from "../module/oneroom.js";
 import { ableSortBtn, disableSortBtn } from "../module/sort.js";
-import kakaoSearch from "../module/kakaoSearch2.js";
+import kakaoSearch from "../module/kakaoSearch.js";
 
 const search = document.querySelector(".search");
 const searchInput = search.querySelector(".search__input");
@@ -620,10 +620,10 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
     filter.disableFilterBtn();
     kakaoMap.disableHyperLocalBtn();
     disableSortBtn();
+    activeDetailBox(false);
   }
   // 매물 클러스터를 띄워야 할때
   else if (map.getLevel() <= 5) {
-    console.log("매물이 보여야 한다.");
     // console.log("줌이 바뀌었는데 방정보 있을때");
     if (kakaoMap.getRoomClusterState()) {
       kakaoMap.displayRoomCluster(true);
@@ -641,7 +641,6 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   }
   // 로컬 오버레이를 띄워야할때
   else {
-    console.log("지역이 보여야 한다.");
     kakaoMap.displayLocalOverlay(true);
     kakaoMap.displaySubwayOverlay(false);
     createRoomSection(null);

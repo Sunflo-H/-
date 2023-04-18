@@ -229,6 +229,9 @@ function createDetailElement(roomData) {
   return element;
 }
 
+/**
+ * 생성된 디테일 엘리먼트에 이벤트들을 등록합니다.
+ */
 function setEventOnDetailElement() {
   const detailBox = document.querySelector(".detail-box");
 
@@ -475,7 +478,7 @@ function noRoomElement() {
  * - 방 정보가 null이라면 매물이 없습니다. 장소를 클릭해주세요를 보여줍니다.
  * @param {*} oneroomList [{원룸 정보}, {원룸 정보} ...]
  */
-function createRoomSection(roomList) {
+export function createRoomSection(roomList) {
   // * CardList 생성
   const cardBox = document.querySelector("ul.cards");
 
@@ -491,11 +494,6 @@ function createRoomSection(roomList) {
 
   roomListForChangeLayout = [...roomList];
 
-  // 방 정보들로 카드를 생성한다.
-  roomList.forEach((room) => {
-    cardBox.insertAdjacentHTML("beforeend", createCardElement(room));
-  });
-
   /**
    * 정렬을 하면 sortOneroomList로 createRoomSection(sortOneroomList)가 실행된다.
    * 따라서 originalRoomList = roomList가 실제론 originalRoomList = sortOneroomList 로 작동한다.
@@ -509,6 +507,11 @@ function createRoomSection(roomList) {
   if (!originalRoomList.find((item) => item === roomList[0])) {
     originalRoomList = [...roomList];
   }
+
+  // 방 정보들로 카드를 생성한다.
+  roomList.forEach((room) => {
+    cardBox.insertAdjacentHTML("beforeend", createCardElement(room));
+  });
 
   // 카드들이 생성되었고, 이제 DOM 선택자로 선택이 가능하다.
   const cardList = document.querySelectorAll("li.card");
@@ -527,12 +530,10 @@ function createRoomSection(roomList) {
         createDetailElement(roomList[index])
       );
 
-      // * 생성된 디테일 엘리먼트에 기능들을 등록합니다.
       setEventOnDetailElement();
-
+      setCarousel(roomList[index]);
       activeDetailBox(true);
       createStaticMap(roomList[index].item.random_location);
-      setCarousel(roomList[index]);
 
       // 새 디테일창을 열면 스크롤을 맨 위로
       setTimeout(() => {
@@ -546,7 +547,7 @@ function createRoomSection(roomList) {
  * ^ 디테일창을 보이게 or 안보이게 하는 함수
  * @param {*} isTrue
  */
-function activeDetailBox(isTrue) {
+export function activeDetailBox(isTrue) {
   const detailBox = document.querySelector(".detail-box");
   const cardBox = document.querySelector("ul.cards");
   if (isTrue) {
@@ -692,5 +693,3 @@ sortBtns.forEach((btn) => {
 layoutBtns.forEach((btn) => {
   btn.addEventListener("click", layoutBtnClick);
 });
-
-export default createRoomSection;
