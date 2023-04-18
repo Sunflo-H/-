@@ -11,15 +11,17 @@ const layoutBtns = document.querySelectorAll(".layout-btn");
 let cardListLayout = "card";
 
 /**
- * sort()하기 전 원본 배열 -> 이건 아닌 것 같아
- * 매물 클러스터를 클릭하였는지를 체크 하는 변수?
+ * - originalOneroomList는 전역에서 사용가능한 roomList이며, 정렬되지 않은 데이터, 크롤링한 데이터 원본을 의미한다.
  */
-let prevRoomList = [];
+let originalOneroomList = [];
 
 /**
- * 현재 카드리스트에 사용되는 방 정보를 저장한 배열,
+ * - 전역에서 현재 카드리스트에 사용되는 방 정보들을 가지고있는 배열이다.
+ * - 레이아웃이 바뀔때 createRoomSection() 함수를 호출하기때문에 방 정보가 필요하다. 이때 사용된다.
+ * - 정렬되었다면 정렬된 그 방 정보들을 그대로 card or list layout으로 보여줘야 하므로 필요한 배열이다.
  */
-let currentOneroomList = null;
+let currentOneroomList = [];
+
 /**
  * - 방의 디테일 정보들을 보여주는 element를 생성한다.
  * @param {*} roomData
@@ -81,11 +83,9 @@ function createDetailElement(roomData) {
     floor_string,
     floor_all,
     movein_date,
-    random_location, // static map에서 쓰이나?
+    random_location,
     options,
   } = room;
-  console.log(random_location);
-  console.log(options);
 
   let roomTypeCode = room_type_obj[room_type_code];
   let floorString = `${floor_string}층`;
@@ -125,7 +125,7 @@ function createDetailElement(roomData) {
       .join(", ");
   }
 
-  let optionCodeList = options.split(";").slice(0, -1);
+  let optionCodeList = options !== null ? options?.split(";").slice(0, -1) : [];
   let optionListElement = "";
   optionCodeList.forEach((optionCode) => {
     optionListElement += `<div class="detail__option-item">${options_obj[optionCode]}</div>`;
@@ -229,7 +229,35 @@ function createDetailElement(roomData) {
   return element;
 }
 
-function setEventOnCard() {}
+function setEventOnDetailElement() {
+  // 더보기 버튼
+  const descriptionMessage = document.querySelector(
+    ".detail__description-message"
+  );
+  const agentMessage = document.querySelector(
+    ".detail__realtor-description-message"
+  );
+  const descriptionViewMore = document.querySelector(
+    ".detail__description .view-more"
+  );
+  const agentViewMore = document.querySelector(
+    ".detail__realtor-description .view-more"
+  );
+
+  descriptionViewMore.addEventListener("click", (e) => {
+    descriptionMessage.style.maxHeight = "none";
+    descriptionMessage.style.whiteSpace = "pre-wrap";
+    descriptionViewMore.style.display = "none";
+  });
+
+  agentViewMore.addEventListener("click", (e) => {
+    agentMessage.style.maxHeight = "none";
+    agentMessage.style.whiteSpace = "pre-wrap";
+    agentViewMore.style.display = "none";
+  });
+}
+
+function setCarousel() {}
 
 function createCardElement(roomData) {
   // 방 정보들로 카드를 생성한다.
@@ -299,9 +327,6 @@ function noRoomElement() {
  * @param {*} oneroomList [{원룸 정보}, {원룸 정보} ...]
  */
 function createRoomSection(roomList) {
-  // roomList에 아무것도 없을때는 null이된다. -> find를 못쓴다는 에러가 나타나
-  // ! originalOneroomList와 currentOneroomList의 차이를 확인해야해
-
   // * CardList 생성
   const cardBox = document.querySelector("ul.cards");
 
@@ -315,20 +340,31 @@ function createRoomSection(roomList) {
     return;
   }
 
-  currentOneroomList = roomList;
-  console.log("오리지날", prevRoomList);
-  console.log("현재", currentOneroomList);
+  currentOneroomList = [...roomList];
 
   // 방 정보들로 카드를 생성한다.
   roomList.forEach((room) => {
     cardBox.insertAdjacentHTML("beforeend", createCardElement(room));
   });
 
+  /**
+   * 정렬을 하면 sortOneroomList로 createRoomSection(sortOneroomList)가 실행된다.
+   * 따라서 originalOneroomList = roomList가 실제론 originalOneroomList = sortOneroomList 로 작동한다.
+   * originalOneroomList는 꼭 크롤링 데이터 원본이어야 한다.
+   * 따라서 원본이 아닌 데이터가 originalOneroomList에 저장되는 걸 막기 위해서
+   * roomList가 매물 클러스터를 클릭해서 얻은 원본 데이터일때만 originalOneroomList = roomList를 실행하도록 한다.
+   *
+   * originalOneroomList는 전역에서 사용가능한 roomList이며, 정렬되지 않은 크롤링한 데이터 원본을 의미한다.
+   */
+  // originalOneroomList와 roomlist가 일치하는게 없다면 실행한다.
+  if (!originalOneroomList.find((item) => item === roomList[0])) {
+    originalOneroomList = [...roomList];
+  }
+
   // 카드들이 생성되었고, 이제 DOM 선택자로 선택이 가능하다.
   const cardList = document.querySelectorAll("li.card");
 
-  // 생성된 카드들에 클릭이벤트 등록 -> 클릭시 방 정보(디테일)를 보여준다.
-  // 카드를 클릭했을때 Detail 창이 열리도록 클릭이벤트 등록
+  // 생성된 카드들에 클릭이벤트 등록 -> 클릭시 디테일 엘리먼트를 생성하고, 이벤트를 등록한다.
   cardList.forEach((card, index) => {
     card.addEventListener("click", (e) => {
       const detailBox = document.querySelector(".detail-box");
@@ -342,45 +378,40 @@ function createRoomSection(roomList) {
         "beforeend",
         createDetailElement(roomList[index])
       );
-      // * 생성된 방 정보 Element에 동적으로 생성되야하는 정보들을 기입한다.
+
+      // * 생성된 디테일 엘리먼트에 기능들을 등록합니다.
+      setEventOnDetailElement();
 
       // 새 디테일창을 열면 스크롤을 맨 위로
       setTimeout(() => {
         detailBox.scrollTop = 0;
       }, 0);
 
-      /**
-       *  * 방 정보 Element에 기능을 부여한다.
-       *  - 더보기
-       *  - Carousel
-       *  -
-       */
+      // // 더보기 버튼
+      // const descriptionMessage = document.querySelector(
+      //   ".detail__description-message"
+      // );
+      // const agentMessage = document.querySelector(
+      //   ".detail__realtor-description-message"
+      // );
+      // const descriptionViewMore = document.querySelector(
+      //   ".detail__description .view-more"
+      // );
+      // const agentViewMore = document.querySelector(
+      //   ".detail__realtor-description .view-more"
+      // );
 
-      // 더보기 버튼
-      const descriptionMessage = document.querySelector(
-        ".detail__description-message"
-      );
-      const agentMessage = document.querySelector(
-        ".detail__realtor-description-message"
-      );
-      const descriptionViewMore = document.querySelector(
-        ".detail__description .view-more"
-      );
-      const agentViewMore = document.querySelector(
-        ".detail__realtor-description .view-more"
-      );
+      // descriptionViewMore.addEventListener("click", (e) => {
+      //   descriptionMessage.style.maxHeight = "none";
+      //   descriptionMessage.style.whiteSpace = "pre-wrap";
+      //   descriptionViewMore.style.display = "none";
+      // });
 
-      descriptionViewMore.addEventListener("click", (e) => {
-        descriptionMessage.style.maxHeight = "none";
-        descriptionMessage.style.whiteSpace = "pre-wrap";
-        descriptionViewMore.style.display = "none";
-      });
-
-      agentViewMore.addEventListener("click", (e) => {
-        agentMessage.style.maxHeight = "none";
-        agentMessage.style.whiteSpace = "pre-wrap";
-        agentViewMore.style.display = "none";
-      });
+      // agentViewMore.addEventListener("click", (e) => {
+      //   agentMessage.style.maxHeight = "none";
+      //   agentMessage.style.whiteSpace = "pre-wrap";
+      //   agentViewMore.style.display = "none";
+      // });
 
       // 이미지 박스 요소에 carousel 기능 적용
       const imageBox = document.querySelector(".detail__image-box");
@@ -399,6 +430,51 @@ function createRoomSection(roomList) {
       createCarousel(roomList[index].item.images);
       createStaticMap(roomList[index].item.random_location);
 
+      closeBtn.addEventListener("click", (e) => {
+        activeDetailBox(false);
+      });
+
+      carousel.addEventListener("click", (e) => {
+        if (e.target.classList.contains("carousel__image")) {
+          modal.openModal();
+          modal.createCarousel(roomList[index].item.images, currentIndex);
+        }
+      });
+
+      imageBox.addEventListener("mouseenter", (e) => {
+        carouselControllers.forEach((controller) => {
+          controller.style.display = "block";
+        });
+      });
+
+      imageBox.addEventListener("mouseleave", (e) => {
+        carouselControllers.forEach((controller) => {
+          controller.style.display = "none";
+        });
+      });
+
+      carouselControllers.forEach((controller) => {
+        controller.addEventListener("click", carouselControllerHandler);
+      });
+
+      detailBox.addEventListener("scroll", (e) => {
+        const header = document.querySelector(".detail__header");
+        const text = header.querySelector(".detail__header__text");
+
+        let currentScrollTop = e.target.scrollTop;
+
+        if (currentScrollTop === 0) {
+          header.style.backgroundColor = "transparent";
+          header.style.color = "#fefefe";
+          text.style.display = "none";
+        } else {
+          header.style.backgroundColor = "#fefefe";
+          header.style.color = "black";
+          text.style.display = "block";
+        }
+      });
+
+      // * 이 아래는 함수 선언 부분입니다.
       /**
        * ^ 디테일창을 보이게 or 안보이게 하는 함수
        * @param {*} isTrue
@@ -416,6 +492,7 @@ function createRoomSection(roomList) {
 
       /**
        * ^ 디테일창의 '위치' 항목에서 보일 정적 지도 이미지 생성 함수
+       * @param {*} random_location
        */
       function createStaticMap(random_location) {
         var markerPosition = new kakao.maps.LatLng(
@@ -446,6 +523,7 @@ function createRoomSection(roomList) {
 
       /**
        * ^ 디테일창의 이미지슬라이더 Element를 만드는 함수
+       * @param {*} images
        */
       function createCarousel(images) {
         const imageWidth = detailBox.clientWidth; // 285px
@@ -527,61 +605,8 @@ function createRoomSection(roomList) {
           }
         }
       }
-
-      closeBtn.addEventListener("click", (e) => {
-        activeDetailBox(false);
-      });
-
-      carousel.addEventListener("click", (e) => {
-        if (e.target.classList.contains("carousel__image")) {
-          modal.openModal();
-          modal.createCarousel(roomList[index].item.images, currentIndex);
-        }
-      });
-
-      imageBox.addEventListener("mouseenter", (e) => {
-        carouselControllers.forEach((controller) => {
-          controller.style.display = "block";
-        });
-      });
-
-      imageBox.addEventListener("mouseleave", (e) => {
-        carouselControllers.forEach((controller) => {
-          controller.style.display = "none";
-        });
-      });
-
-      carouselControllers.forEach((controller) => {
-        controller.addEventListener("click", carouselControllerHandler);
-      });
-
-      detailBox.addEventListener("scroll", (e) => {
-        const header = document.querySelector(".detail__header");
-        const text = header.querySelector(".detail__header__text");
-
-        let currentScrollTop = e.target.scrollTop;
-
-        if (currentScrollTop === 0) {
-          header.style.backgroundColor = "transparent";
-          header.style.color = "#fefefe";
-          text.style.display = "none";
-        } else {
-          header.style.backgroundColor = "#fefefe";
-          header.style.color = "black";
-          text.style.display = "block";
-        }
-      });
     });
   });
-  console.log(prevRoomList);
-  console.log(roomList);
-  if (!prevRoomList.find((item) => item === roomList[0])) {
-    // originalOneroomList에 값이 없거나,
-    // 다른 매물 클러스터의 카드리스트를 보여주는지 체크하고,
-    // 그렇다면 현재 방 리스트로 카드리스트를 변경한다.
-    prevRoomList = [...roomList];
-    console.log(prevRoomList);
-  }
 }
 
 /**
@@ -592,11 +617,6 @@ function createRoomSection(roomList) {
  * @returns
  */
 function sortBtnClick(event, sort1, sort2) {
-  // if (!currentOneroomList) {
-  //   alert("먼저 장소를 눌러 매물정보를 확인해주세요");
-  //   return;
-  // }
-
   let btn = event.currentTarget;
   let state = btn.dataset.state;
 
@@ -604,11 +624,10 @@ function sortBtnClick(event, sort1, sort2) {
   const down = btn.querySelector(".fa-sort-down");
 
   /**
-   * 원래값을 바꾸지 않기위해 사용하는 변수
+   * 원래값을 바꾸지 않고, 정렬한 배열
    */
-  console.log(currentOneroomList);
-  let sortOneroomList = [...currentOneroomList];
-  // console.log(sortOneroomList);
+  let sortOneroomList = [...originalOneroomList];
+
   if (state === "basic") state = "down";
   else if (state === "down") state = "up";
   else if (state === "up") state = "basic";
@@ -618,7 +637,8 @@ function sortBtnClick(event, sort1, sort2) {
       btn.dataset.state = "basic";
       up.classList.add("active");
       down.classList.add("active");
-      createRoomSection(prevRoomList);
+      createRoomSection(originalOneroomList);
+
       break;
 
     case "down": //오름차순
@@ -646,11 +666,14 @@ function sortBtnClick(event, sort1, sort2) {
             (a, b) => Number(a.item[sort2]) - Number(b.item[sort2])
           );
 
+      // * 여기서 sortOneroomList가 roomList로 createRoomSection 함수를 실행시킨다. (이 파일의 중요 포인트)
       createRoomSection(sortOneroomList);
-      sortOneroomList = [...prevRoomList];
+      // sortOneroomList = [...originalOneroomList];
+
       break;
 
     case "up": // 내림차순
+      console.log("내림차순");
       btn.dataset.state = "up";
       up.classList.add("active");
       down.classList.remove("active");
@@ -663,41 +686,36 @@ function sortBtnClick(event, sort1, sort2) {
           );
 
       createRoomSection(sortOneroomList);
-      sortOneroomList = [...prevRoomList];
+      // sortOneroomList = [...originalOneroomList];
+
       break;
   }
 }
 
+function layoutBtnClick(e) {
+  const btn = e.currentTarget;
+  //이미 card레이아웃상태에서 또 card를 누르면 함수 종료
+  if (cardListLayout === "card" && btn === layoutBtns[0]) return;
+  if (cardListLayout === "short" && btn === layoutBtns[1]) return;
+
+  if (btn === layoutBtns[0]) cardListLayout = "card";
+  else cardListLayout = "short";
+
+  layoutBtns[0].classList.remove("active");
+  layoutBtns[1].classList.remove("active");
+  btn.classList.add("active");
+
+  createRoomSection(currentOneroomList);
+}
+
 sortBtns.forEach((btn) => {
   btn.addEventListener("click", (e) => {
-    sortBtnClick(e, "보증금액", "월세금액");
-    // 아파트 : 매매, 보증금액(전세)
-    // 빌라 : 매매, 보증금액(전세)
-    // 원룸 : 보증금액, 월세
-    // 오피스텔 : 보증금액, 월세
+    sortBtnClick(e, "보증금액", "전용면적_m2");
   });
 });
 
 layoutBtns.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    if (!currentOneroomList) {
-      alert("먼저 장소를 눌러 매물정보를 확인해주세요");
-      return;
-    }
-
-    //이미 card레이아웃상태에서 또 card를 누르면 함수 종료
-    if (cardListLayout === "card" && btn === layoutBtns[0]) return;
-    if (cardListLayout === "short" && btn === layoutBtns[1]) return;
-
-    if (btn === layoutBtns[0]) cardListLayout = "card";
-    else cardListLayout = "short";
-
-    layoutBtns[0].classList.remove("active");
-    layoutBtns[1].classList.remove("active");
-    btn.classList.add("active");
-
-    createRoomSection(currentOneroomList);
-  });
+  btn.addEventListener("click", layoutBtnClick);
 });
 
 export default createRoomSection;
