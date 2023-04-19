@@ -232,16 +232,13 @@ const subwayOverlayClickHandler = (event) => {
 };
 
 //* ============================== 매물 클러스터 관련 코드들 =================================
+
 /**
- * ! 확인
- * ^ 지하철 주변 방들의 좌표 리스트를 받아 클러스터를 생성하는 함수
+ * ^ 좌표 리스트를 받아 클러스터를 생성하는 함수
  *
  * @param {*} coords
  */
-async function createRoomCluster(subway) {
-  loading(true);
-  let roomList = await oneroom.getRoomData(subway); // 프로미스 배열을 반환
-  loading(false);
+function createCluster(roomList) {
   roomCluster = new kakao.maps.MarkerClusterer({
     map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
     averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
@@ -394,6 +391,23 @@ async function createRoomCluster(subway) {
       down.classList.add("active");
     });
   });
+}
+
+function removeCluster() {
+  if (roomCluster) roomCluster.clear();
+}
+
+/**
+ * ! 확인
+ * ^ 지하철 주변 방들의 좌표 리스트를 받아 클러스터를 생성하는 함수
+ *
+ * @param {*} coords
+ */
+async function createRoomCluster(subway) {
+  loading(true);
+  let roomList = await oneroom.getRoomData(subway); // 프로미스 배열을 반환
+  loading(false);
+  createCluster(roomList);
 }
 
 /**
@@ -691,4 +705,6 @@ export default {
   removeHyperLocalMarker,
   getOriginalRoomAndMarker,
   createRoomCluster,
+  createCluster,
+  removeCluster,
 };
