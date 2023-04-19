@@ -25,55 +25,28 @@ function disableFilterBtn() {
   filterCategory_size.classList.add("disable");
 }
 
-/**
- * ^ 필터 적용버튼 클릭 핸들러
- */
-function applyBtnHandler_oneroom() {
-  const filterTitle_price = filterCategory_price.querySelector(
-    ".filter__category-title"
-  );
-  const filterTitle_size = filterCategory_size.querySelector(
-    ".filter__category-title"
-  );
-
-  const title_price = [];
-  const title_size = [];
-
-  // * 유형 . 금액 변수들
+function applyBtnHandler_price() {
   // 보증금
-  const depositMin =
-    filterCategory_price.querySelector(".filter__input-deposit--min") || null;
-  const depositMax =
-    filterCategory_price.querySelector(".filter__input-deposit--max") || null;
+  const depositMin = filterCategory_price.querySelector(
+    ".filter__input-deposit--min"
+  );
+  const depositMax = filterCategory_price.querySelector(
+    ".filter__input-deposit--max"
+  );
 
   // 월세
-
-  const rentMin =
-    filterCategory_price.querySelector(".filter__input-rent--min") || null;
-  const rentMax =
-    filterCategory_price.querySelector(".filter__input-rent--max") || null;
+  const rentMin = filterCategory_price.querySelector(
+    ".filter__input-rent--min"
+  );
+  const rentMax = filterCategory_price.querySelector(
+    ".filter__input-rent--max"
+  );
 
   // 관리비 포함여부
   const manageCost = filterCategory_price.querySelector(
     ".filter__option--manage-cost .toggle"
   );
 
-  // * 구조 . 면적 변수들
-  const structureValue = filterCategory_size.querySelector(
-    ".filter__option--structure .filter__option-value"
-  );
-  const floorValue = filterCategory_size.querySelector(
-    ".filter__option--floor .filter__option-value"
-  );
-  const sizeValue = filterCategory_size.querySelector(
-    ".filter__option--size .filter__option-value"
-  );
-  // 주차가능 여부
-  const parkable = filterCategory_size.querySelector(
-    ".filter__option--parkable .toggle"
-  );
-
-  // * 거래유형 옵션 적용
   let salesType = salesTypeValue.dataset.value;
 
   let roomData = kakaoMap
@@ -158,6 +131,31 @@ function applyBtnHandler_oneroom() {
       });
     }
   }
+  result = result.filter((room) => {
+    if (parkable.checked) {
+      if (room.item.parking !== "불가능") return room;
+    } else return room;
+  });
+
+  kakaoMap.removeCluster();
+  kakaoMap.createCluster(result);
+  createRoomSection(null);
+}
+
+function applyBtnHandler_size() {
+  const structureValue = filterCategory_size.querySelector(
+    ".filter__option--structure .filter__option-value"
+  );
+  const floorValue = filterCategory_size.querySelector(
+    ".filter__option--floor .filter__option-value"
+  );
+  const sizeValue = filterCategory_size.querySelector(
+    ".filter__option--size .filter__option-value"
+  );
+  // 주차가능 여부
+  const parkable = filterCategory_size.querySelector(
+    ".filter__option--parkable .toggle"
+  );
 
   //* 구조 옵션 적용
   let arr = structureValue.innerText.split(", ");
@@ -237,11 +235,10 @@ function applyBtnHandler_oneroom() {
       if (room.item.parking !== "불가능") return room;
     } else return room;
   });
-  console.log(result);
 
-  // ! kakaoMap.removeCluster();
-  // kakaoMap.createRoomCluster(result);
-  // ! createRoomSection();
+  kakaoMap.removeCluster();
+  kakaoMap.createCluster(result);
+  createRoomSection(null);
 }
 
 // 모든 filter__category 클릭시 필터옵션창을 여는 이벤트
@@ -277,12 +274,20 @@ filterCategories.forEach((filterCategory, index) => {
 });
 
 //* 필터 : 유형·금액
+/**
+ * 거래유형(전체, 전세, 월세) 버튼
+ */
 const optionBtns_salesType = filterCategory_price.querySelectorAll(
   ".filter__option--price .filter__option-btn"
 );
+
+/**
+ * 거래유형 중 선택된 값
+ */
 const salesTypeValue = filterCategory_price.querySelector(
   ".filter__option--price .filter__option-value"
 );
+
 optionBtns_salesType.forEach((optionBtn) => {
   optionBtn.addEventListener("click", (e) => {
     // 옵션버튼들을 순회하면서 모든 active를 지움
@@ -293,6 +298,7 @@ optionBtns_salesType.forEach((optionBtn) => {
     // 클릭한 옵션버튼에 active 추가
     e.currentTarget.classList.add("active");
 
+    // 해당 버튼을 클릭했음을 상단에 값으로 알려준다.
     salesTypeValue.dataset.value = e.currentTarget.dataset.option;
     salesTypeValue.innerText = salesTypeValue.dataset.value;
     createFilterOptionContent_price(salesTypeValue.dataset.value);
@@ -310,7 +316,7 @@ function createFilterOptionContent_price(option) {
   while (filterOptionContent.firstChild) {
     filterOptionContent.removeChild(filterOptionContent.firstChild);
   }
-  // 엘리먼트 생성
+
   switch (option) {
     case "전체":
     case "월세":
@@ -374,7 +380,6 @@ function createFilterOptionContent_price(option) {
                           </label>
                         </div>
                       </div>`;
-      filterOptionContent.insertAdjacentHTML("beforeend", element);
       break;
 
     case "전세":
@@ -403,9 +408,10 @@ function createFilterOptionContent_price(option) {
                           />
                         </div>
                       </div>`;
-      filterOptionContent.insertAdjacentHTML("beforeend", element);
       break;
   }
+  filterOptionContent.insertAdjacentHTML("beforeend", element);
+
   element = `<div class="filter__btn-box">
                 <div class="filter__btn filter__btn--reset">초기화</div>
                 <div class="filter__btn filter__btn--apply">
@@ -419,91 +425,103 @@ function createFilterOptionContent_price(option) {
   const divDepositValue = filterCategory_price.querySelector(
     ".filter__option--deposit .filter__option-value"
   );
-  const depositMin =
-    filterCategory_price.querySelector(".filter__input-deposit--min") || null;
-  const depositMax =
-    filterCategory_price.querySelector(".filter__input-deposit--max") || null;
+
+  // ! null이 왜 필요했었지?
+  // const depositMin =
+  //   filterCategory_price.querySelector(".filter__input-deposit--min") || null;
+  // const depositMax =
+  //   filterCategory_price.querySelector(".filter__input-deposit--max") || null;
+  const depositMin = filterCategory_price.querySelector(
+    ".filter__input-deposit--min"
+  );
+  const depositMax = filterCategory_price.querySelector(
+    ".filter__input-deposit--max"
+  );
 
   // 월세
   const divRentValue = filterCategory_price.querySelector(
     ".filter__option--rent .filter__option-value"
   );
-  const rentMin =
-    filterCategory_price.querySelector(".filter__input-rent--min") || null;
-  const rentMax =
-    filterCategory_price.querySelector(".filter__input-rent--max") || null;
-
-  // 관리비 포함여부
-  const manageCost = filterCategory_price.querySelector(
-    ".filter__option--manage-cost .toggle"
+  // const rentMin =
+  //   filterCategory_price.querySelector(".filter__input-rent--min") || null;
+  // const rentMax =
+  //   filterCategory_price.querySelector(".filter__input-rent--max") || null;
+  const rentMin = filterCategory_price.querySelector(
+    ".filter__input-rent--min"
+  );
+  const rentMax = filterCategory_price.querySelector(
+    ".filter__input-rent--max"
   );
 
   // 초기화, 적용 버튼
-  const resetBtn = filterCategory_price.querySelector(".filter__btn--reset");
+  const resetBtn_price = filterCategory_price.querySelector(
+    ".filter__btn--reset"
+  );
   const applyBtn = filterCategory_price.querySelector(".filter__btn--apply");
 
-  if (depositMin) {
-    depositMin.addEventListener("change", (e) => {
-      // 최소금액이 존재하는 경우
-      if (depositMin.value) {
-        // 최대금액이 존재하는 경우
-        if (depositMax.value) {
-          if (Number(depositMin.value) >= Number(depositMax.value)) {
-            alert("최소금액은 최대금액보다 작아야합니다.");
-            depositMin.value = Number(depositMax.value) - 100;
-            if (depositMin.value < 0) depositMin.value = 0;
-          }
-          divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
-        }
-        // 최대금액이 존재하지 않는 경우
-        else {
-          divDepositValue.innerText = `${depositMin.value}부터`;
-        }
-      }
-      // 최소금액이 존재하지 않는 경우
-      else {
-        // 최대금액이 존재하는 경우
-        if (depositMax.value) {
-          divDepositValue.innerText = `${depositMax.value}까지`;
-        }
-        // 최대금액이 존재하지 않는 경우
-        else {
-          divDepositValue.innerText = "전체";
-        }
-      }
-    });
-  }
-
-  if (depositMax) {
-    depositMax.addEventListener("change", (e) => {
+  //! 조건문은 왜 있었지? null과 연관되는거 같은데
+  // if (depositMin) {
+  depositMin.addEventListener("change", (e) => {
+    // 최소금액이 존재하는 경우
+    if (depositMin.value) {
       // 최대금액이 존재하는 경우
       if (depositMax.value) {
-        // 최소금액이 존재하는 경우
-        if (depositMin.value) {
-          if (Number(depositMin.value) >= Number(depositMax.value)) {
-            alert("최대금액은 최소금액보다 커야합니다.");
-            depositMax.value = Number(depositMin.value) + 100;
-          }
-          divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
+        if (Number(depositMin.value) >= Number(depositMax.value)) {
+          alert("최소금액은 최대금액보다 작아야합니다.");
+          depositMin.value = Number(depositMax.value) - 100;
+          if (depositMin.value < 0) depositMin.value = 0;
         }
-        // 최소금액이 존재하지 않는 경우
-        else {
-          divDepositValue.innerText = `${depositMax.value}까지`;
-        }
+        divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
       }
       // 최대금액이 존재하지 않는 경우
       else {
-        // 최소금액이 존재하는경우
-        if (depositMin.value) {
-          divDepositValue.innerText = `${depositMin.value}부터`;
-        }
-        // 최소금액이 존재하지 않는 경우
-        else {
-          divDepositValue.innerText = "전체";
-        }
+        divDepositValue.innerText = `${depositMin.value}부터`;
       }
-    });
-  }
+    }
+    // 최소금액이 존재하지 않는 경우
+    else {
+      // 최대금액이 존재하는 경우
+      if (depositMax.value) {
+        divDepositValue.innerText = `${depositMax.value}까지`;
+      }
+      // 최대금액이 존재하지 않는 경우
+      else {
+        divDepositValue.innerText = "전체";
+      }
+    }
+  });
+  // }
+
+  // if (depositMax) {
+  depositMax.addEventListener("change", (e) => {
+    // 최대금액이 존재하는 경우
+    if (depositMax.value) {
+      // 최소금액이 존재하는 경우
+      if (depositMin.value) {
+        if (Number(depositMin.value) >= Number(depositMax.value)) {
+          alert("최대금액은 최소금액보다 커야합니다.");
+          depositMax.value = Number(depositMin.value) + 100;
+        }
+        divDepositValue.innerText = `${depositMin.value} ~ ${depositMax.value}`;
+      }
+      // 최소금액이 존재하지 않는 경우
+      else {
+        divDepositValue.innerText = `${depositMax.value}까지`;
+      }
+    }
+    // 최대금액이 존재하지 않는 경우
+    else {
+      // 최소금액이 존재하는경우
+      if (depositMin.value) {
+        divDepositValue.innerText = `${depositMin.value}부터`;
+      }
+      // 최소금액이 존재하지 않는 경우
+      else {
+        divDepositValue.innerText = "전체";
+      }
+    }
+  });
+  // }
 
   if (rentMin) {
     rentMin.addEventListener("change", (e) => {
@@ -569,16 +587,18 @@ function createFilterOptionContent_price(option) {
   }
 
   // * 초기화, 적용 버튼
-  const resetBtnHandler = () => {
+
+  resetBtn_price.addEventListener("click", (e) => {
+    // 모든 거래유형 버튼에 active 제거 후 '전체'만 활성화
     optionBtns_salesType.forEach((optionBtn) => {
       optionBtn.classList.remove("active");
       if (optionBtn.innerText === "전체") optionBtn.classList.add("active");
     });
+    salesTypeValue.innerText = "전체";
+    salesTypeValue.dataset.value = "전체";
     createFilterOptionContent_price("전체");
-  };
-
-  resetBtn.addEventListener("click", resetBtnHandler);
-  applyBtn.addEventListener("click", applyBtnHandler_oneroom);
+  });
+  applyBtn.addEventListener("click", applyBtnHandler_price);
 }
 
 //* 필터 : 구조·면적; (원룸, 빌라)
@@ -771,113 +791,7 @@ resetBtn_size.addEventListener("click", (e) => {
   parkable.checked = false;
 });
 
-applyBtn_size.addEventListener("click", applyBtnHandler_oneroom);
-
-//* ========================================== 세권 관련 코드들 =================================================
-const resetBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--reset");
-const applyBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--apply");
-const chips = hyperLocal.querySelectorAll(".filter__option-chips");
-/**
- * 세권의 범위를 표현하는데 사용하는 원의 배열
- */
-const circleList = [];
-
-chips.forEach((chip) => {
-  chip.addEventListener("click", (e) => {
-    e.currentTarget.classList.toggle("active");
-  });
-});
-
-resetBtn_hyperLocal.addEventListener("click", (e) =>
-  chips.forEach((chip) => chip.classList.remove("active"))
-);
-
-applyBtn_hyperLocal.addEventListener("click", (e) => {
-  kakaoMap.removeHyperLocalMarker();
-
-  let clickedCluster = kakaoMap
-    .getRoomCluster()
-    ._clusters.filter((cluster) =>
-      cluster
-        .getClusterMarker()
-        .getContent()
-        .classList.contains("cluster-click")
-    )[0];
-
-  // 클러스터의 중심좌표
-  const lat = clickedCluster.getCenter().Ma;
-  const lng = clickedCluster.getCenter().La;
-
-  chips.forEach((chip) => {
-    if (chip.classList.contains("active")) {
-      // 검색할 키워드
-      const keyword = chip.dataset.keyword;
-      const markerImageName = chip.dataset.marker;
-
-      kakaoSearch
-        .search_hyperLocal(keyword, lat, lng)
-        .then((data) =>
-          data.forEach((item) =>
-            kakaoMap.createHyperLocalMarker(item, markerImageName)
-          )
-        );
-    }
-  });
-  createRange(clickedCluster); //! 이걸 응용해서 Range가 사라지게 하면 된다.
-  // ! 클릭된 세권이 없다면 없다면 createRange를 없애
-});
-
-/**
- * ^ 클러스터를 인자로 받아 클러스터를 기준으로 원(세권의 범위)을 생성한다.
- * @param {*} cluster 원을 생성할 클러스터
- */
-function createRange(cluster) {
-  let circle250 = new kakao.maps.Circle({
-    center: cluster.getCenter(), // 원의 중심좌표 입니다
-    radius: 250, // 미터 단위의 원의 반지름입니다
-    strokeWeight: 2, // 선의 두께입니다
-    strokeColor: "#75B8FA", // 선의 색깔입니다
-    strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-    strokeStyle: "dashed", // 선의 스타일 입니다
-    fillColor: "#CFE7FF", // 채우기 색깔입니다
-    fillOpacity: 0.1, // 채우기 불투명도 입니다
-  });
-  let circle500 = new kakao.maps.Circle({
-    center: cluster.getCenter(), // 원의 중심좌표 입니다
-    radius: 500, // 미터 단위의 원의 반지름입니다
-    strokeWeight: 2, // 선의 두께입니다
-    strokeColor: "#75B8FA", // 선의 색깔입니다
-    strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-    strokeStyle: "dashed", // 선의 스타일 입니다
-    fillColor: "#CFE7FF", // 채우기 색깔입니다
-    fillOpacity: 0.1, // 채우기 불투명도 입니다
-  });
-  let circle1000 = new kakao.maps.Circle({
-    center: cluster.getCenter(), // 원의 중심좌표 입니다
-    radius: 1000, // 미터 단위의 원의 반지름입니다
-    strokeWeight: 2, // 선의 두께입니다
-    strokeColor: "#75B8FA", // 선의 색깔입니다
-    strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-    strokeStyle: "dashed", // 선의 스타일 입니다
-    fillColor: "#CFE7FF", // 채우기 색깔입니다
-    fillOpacity: 0.5, // 채우기 불투명도 입니다
-  });
-
-  if (circleList.length !== 0) {
-    circleList.forEach((circle) => {
-      circle.setMap(null);
-    });
-    circleList.length = 0;
-  }
-
-  circleList.push(circle1000);
-  circleList.push(circle500);
-  circleList.push(circle250);
-
-  circleList.forEach((circle) => {
-    circle.setMap(kakaoMap.map);
-  });
-}
+applyBtn_size.addEventListener("click", applyBtnHandler_size);
 
 export default {
   createFilterOptionContent_price,
