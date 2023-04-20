@@ -1,4 +1,8 @@
+import kakaoMap from "./kakaoMap.js";
+import kakaoSearch from "./kakaoSearch.js";
+
 //* ========================================== 세권 관련 코드들 =================================================
+const hyperLocal = document.querySelectorAll(".filter__category")[2];
 const resetBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--reset");
 const applyBtn_hyperLocal = hyperLocal.querySelector(".filter__btn--apply");
 const chips = hyperLocal.querySelectorAll(".filter__option-chips");
@@ -33,6 +37,9 @@ applyBtn_hyperLocal.addEventListener("click", (e) => {
   const lat = clickedCluster.getCenter().Ma;
   const lng = clickedCluster.getCenter().La;
 
+  // 활성화된 chip이 있는지 체크하여 circle을 생성할지 삭제할지 결정하는 변수
+  let isActive = false;
+  // 활성화된 chips 로 검색
   chips.forEach((chip) => {
     if (chip.classList.contains("active")) {
       // 검색할 키워드
@@ -46,10 +53,11 @@ applyBtn_hyperLocal.addEventListener("click", (e) => {
             kakaoMap.createHyperLocalMarker(item, markerImageName)
           )
         );
+      isActive = true;
     }
   });
-  createRange(clickedCluster); //! 이걸 응용해서 Range가 사라지게 하면 된다.
-  // ! 클릭된 세권이 없다면 없다면 createRange를 없애
+
+  isActive ? createRange(clickedCluster) : removeCircle();
 });
 
 /**
@@ -88,12 +96,8 @@ function createRange(cluster) {
     fillOpacity: 0.5, // 채우기 불투명도 입니다
   });
 
-  if (circleList.length !== 0) {
-    circleList.forEach((circle) => {
-      circle.setMap(null);
-    });
-    circleList.length = 0;
-  }
+  // 기존 원이 있다면 지운다.
+  removeCircle();
 
   circleList.push(circle1000);
   circleList.push(circle500);
@@ -102,4 +106,13 @@ function createRange(cluster) {
   circleList.forEach((circle) => {
     circle.setMap(kakaoMap.map);
   });
+}
+
+function removeCircle() {
+  if (circleList.length !== 0) {
+    circleList.forEach((circle) => {
+      circle.setMap(null);
+    });
+    circleList.length = 0;
+  }
 }

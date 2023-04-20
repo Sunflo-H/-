@@ -6,7 +6,6 @@ import { createRoomSection } from "./oneroom.js";
 const filterCategories = document.querySelectorAll(".filter__category");
 const filterCategory_price = filterCategories[0];
 const filterCategory_size = filterCategories[1];
-const hyperLocal = filterCategories[2];
 
 /**
  * 유형 · 금액, 구조 · 면적 필터를 동시에 사용하기 위해 필터한 roomData를 저장하는 객체
