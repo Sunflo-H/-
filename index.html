@@ -20,9 +20,7 @@
 
     <!-- Java Script -->
     <script src="./src/js/main.js" type="module"></script>
-    <script src="./src/module/oneroomModule.js" type="module"></script>
-    <script src="./src/module/kakaoSearchModule.js" type="module"></script>
-    <!-- <script src="./src/module/modal.js" type="module"></script> -->
+    <script src="./src/module/hyperLocal.js" type="module"></script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="./src/css/reset.css" />
@@ -38,6 +36,7 @@
     />
   </head>
   <body>
+    <!-- header -->
     <header class="header">
       <div class="logo">
         <div class="logo__cover">
@@ -73,12 +72,13 @@
       </div>
       <button style="opacity: 0; cursor: pointer; border: none">c</button>
     </header>
+
+    <!-- main -->
     <main>
       <div class="main-top">
         <!-- Filter -->
         <div class="filter-box">
           <div class="filter">
-            <!-- 원룸의 필터 -->
             <!-- 필터 - 유형·금액 -->
             <div class="filter__category disable">
               <div class="filter__category-title">유형·금액</div>
@@ -479,7 +479,7 @@
               </div>
             </div>
             <div class="sort-btn disable" data-state="basic">
-              <span>월세</span>
+              <span>면적</span>
               <div class="sort-btn__icon">
                 <i class="fa-solid fa-sort-up active"></i>
                 <i class="fa-solid fa-sort-down active"></i>
