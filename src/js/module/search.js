@@ -4,6 +4,7 @@ import kakaoMap from "./kakaoMap.js";
 const search = document.querySelector(".search");
 const searchInput = search.querySelector(".search__input");
 const searchList = search.querySelector(".search-list");
+const closeBtn = document.querySelector(".search__close-btn");
 
 /**
  * ^ up key에 대한 이벤트 핸들러, 자동완성 리스트에서 위쪽으로 한칸씩 이동한다.
@@ -153,8 +154,6 @@ function setAutoComplete(addressData, keywordData) {
     element = `<div class="search-list__item">${data}</div>`;
     searchList.insertAdjacentHTML("beforeend", element);
   });
-  console.log(addressData);
-  console.log(keywordData);
 
   // 만들어진 자동완성 단어들에게 이벤트 등록
   const searchListItem = document.querySelectorAll(".search-list__item");
@@ -203,6 +202,15 @@ function setAutoComplete(addressData, keywordData) {
   });
 }
 
+/**
+ * 검색중일 경우 X 버튼이 생기고, 이를 누르면 검색과, 검색 결과가 초기화된다.
+ */
+function displayCloseBtn(boolean) {
+  boolean
+    ? closeBtn.classList.add("active")
+    : closeBtn.classList.remove("active");
+}
+
 // 검색창을 클릭하면 검색창(search)에 active를 주고, searchInput에 focus를 준다.
 search.addEventListener("click", (e) => {
   search.classList.add("active");
@@ -226,6 +234,7 @@ document.addEventListener("click", (e) => {
  * 검색창에 값이 입력되면 검색창 아래에 리스트를 만들고 자동완성단어를 세팅한다.
  */
 searchInput.addEventListener("keyup", (e) => {
+  console.log(e.keyCode);
   // 엔터, 방향키 입력시
   if (e.keyCode === 13) {
     enterKey();
@@ -241,6 +250,7 @@ searchInput.addEventListener("keyup", (e) => {
   // 그 외 입력시
 
   displaySearchList(true);
+  displayCloseBtn(true);
 
   kakaoSearch.search_autoComplete(searchInput.value).then((data) => {
     // 주소명, 장소명만 뽑아 자동완성을 세팅한다.
@@ -255,6 +265,7 @@ searchInput.addEventListener("input", (e) => {
   if (searchInput.value === "") {
     // 검색어를 지우다가 value === "" 이 됐을때, 이코드는 input에 적용해야 제대로 작동한다.
     displaySearchList(false);
+    displayCloseBtn(false);
     return;
   }
 });
@@ -262,4 +273,12 @@ searchInput.addEventListener("input", (e) => {
 searchInput.addEventListener("keydown", (e) => {
   // 위,아래 입력시 커서가 이동하는걸 막음
   if (e.keyCode === 38 || e.keyCode === 40) e.preventDefault();
+});
+
+closeBtn.addEventListener("click", () => {
+  console.log("하이");
+  displaySearchList(false);
+  displayCloseBtn(false);
+  kakaoMap.removeMarker(kakaoMap.getMarkerList());
+  searchInput.value = "";
 });

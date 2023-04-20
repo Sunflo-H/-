@@ -1,9 +1,3 @@
-/**
- * 발견된 문제점들
- * ! 유형.금액 필터의 초기화 버튼 미적용
- * ! 월세 정렬 기능 미적용 -> 전세랑 월세가 섞여있으니 금액으로 퉁치자
- */
-
 import kakaoMap from "./module/kakaoMap.js";
 import filter from "./module/filter.js";
 import { createRoomSection } from "./module/oneroom.js";
@@ -22,22 +16,11 @@ import { createRoomSection } from "./module/oneroom.js";
  * 반경 250m, 500m, 1km
  */
 
-/**
- * 로컬과 지하철 클러스터를 먼저 보여줘야해
- */
-
-const map = kakaoMap.map;
-
 function getUserLocation() {
   return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(resolve, reject); // success, error
   });
 }
-
-//* ============================== 방 정보, 방 클러스터 관련 코드들 =================================
-//* ============================================== 검색 기능 관련 코드들 ========================================================
-
-//* ========================================== kakao Map 관련 코드들 ================================================
 
 /**
  * ^ 프로그램 시작시 실행되는 초기화 함수
@@ -49,10 +32,10 @@ function init() {
   kakaoMap.createSubwayOverlay();
   filter.createFilterOptionContent_price("전체");
   getUserLocation().then((data) => {
-    map.setCenter(
+    kakaoMap.map.setCenter(
       new kakao.maps.LatLng(data.coords.latitude, data.coords.longitude)
     );
-    map.setLevel(6);
+    kakaoMap.map.setLevel(6);
     setTimeout(() => {
       kakaoMap.displayLocalOverlay(false);
       kakaoMap.displaySubwayOverlay(true);

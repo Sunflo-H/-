@@ -159,7 +159,7 @@ a {
 }
 
 .search__input {
-  min-width: 90%;
+  min-width: 80%;
   height: 24px;
   font-size: 1.1rem;
   box-sizing: border-box;
@@ -172,6 +172,15 @@ a {
 .search__input::placeholder {
   color: var(--secondary);
   font-weight: normal;
+}
+
+.search__close-btn {
+  display: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.search__close-btn.active {
+  display: inline;
 }
 
 .search-list {
