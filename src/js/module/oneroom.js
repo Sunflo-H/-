@@ -531,9 +531,9 @@ export function createRoomSection(roomList) {
       );
 
       setEventOnDetailElement();
-      setCarousel(roomList[index]);
       activeDetailBox(true);
       createStaticMap(roomList[index].item.random_location);
+      setCarousel(roomList[index]);
 
       // 새 디테일창을 열면 스크롤을 맨 위로
       setTimeout(() => {
