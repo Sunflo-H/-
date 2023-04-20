@@ -27,6 +27,22 @@
 
 
 # 스크린샷
-![image](https://user-images.githubusercontent.com/70611956/233355371-326574fb-d1b9-4e2b-a731-1818cb11e06c.png)
+## HOME
+![image](https://user-images.githubusercontent.com/70611956/233365150-f2ecac82-0d46-48b3-8c98-09a3a2a67896.png)
+
+## 매물 클러스터
+![image](https://user-images.githubusercontent.com/70611956/233365326-21aa319f-32ce-4eef-aac8-6c1c3ac54055.png)
+
+## 매물 정보
+![image](https://user-images.githubusercontent.com/70611956/233365387-c569cfbb-d71e-4b31-882d-b6d804e83cac.png)
+
+## 필터
+![image](https://user-images.githubusercontent.com/70611956/233365521-c94293d1-d2c6-4504-90cf-7966323765fa.png)
+
+## 세권
+![image](https://user-images.githubusercontent.com/70611956/233365612-a55c1974-1896-4baa-a2ea-3c6bc6117c7c.png)
 
 # 어려웠던점
+1. 
+2.
+3.
