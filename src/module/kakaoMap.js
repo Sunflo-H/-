@@ -595,6 +595,7 @@ function createHyperLocalMarker(data, markerImageName) {
 }
 
 function removeMarker(markerList) {
+  console.log(markerList);
   markerList.forEach((obj) => {
     obj.marker.setMap(null);
   });
