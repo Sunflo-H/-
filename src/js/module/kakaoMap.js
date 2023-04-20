@@ -595,6 +595,8 @@ function createHyperLocalMarker(data, markerImageName) {
 }
 
 function removeMarker(markerList) {
+  console.log(markerList);
+  // main.js에서 사용하고 있는데 markerList를 안넣어서 에러남
   markerList.forEach((obj) => {
     obj.marker.setMap(null);
   });
@@ -687,6 +689,14 @@ function getOriginalRoomAndMarker() {
   return originalRoomAndMarker;
 }
 
+function getMarkerList() {
+  return markerList;
+}
+
+function getHyperLocalMarkerList() {
+  return hyperLocalMarkerList;
+}
+
 export default {
   map,
   createLocalOverlay,
@@ -707,4 +717,6 @@ export default {
   createRoomCluster,
   createCluster,
   removeCluster,
+  getMarkerList,
+  getHyperLocalMarkerList,
 };
