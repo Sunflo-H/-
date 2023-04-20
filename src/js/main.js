@@ -4,12 +4,12 @@
  * ! 월세 정렬 기능 미적용 -> 전세랑 월세가 섞여있으니 금액으로 퉁치자
  */
 
-import Oneroom from "../module/crawling_oneroom.js";
-import kakaoMap from "../module/kakaoMap.js";
-import filter from "../module/filter.js";
-import { activeDetailBox, createRoomSection } from "../module/oneroom.js";
-import { ableSortBtn, disableSortBtn } from "../module/sort.js";
-import kakaoSearch from "../module/kakaoSearch.js";
+import Oneroom from "./api/crawling_oneroom.js";
+import kakaoMap from "./module/kakaoMap.js";
+import filter from "./module/filter.js";
+import { activeDetailBox, createRoomSection } from "./module/oneroom.js";
+import { ableSortBtn, disableSortBtn } from "./module/sort.js";
+import kakaoSearch from "./api/kakaoSearch.js";
 
 const search = document.querySelector(".search");
 const searchInput = search.querySelector(".search__input");

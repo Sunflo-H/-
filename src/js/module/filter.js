@@ -1,6 +1,6 @@
 import { getPyeong } from "./etc.js";
 import kakaoMap from "./kakaoMap.js";
-import kakaoSearch from "./kakaoSearch.js";
+import kakaoSearch from "../api/kakaoSearch.js";
 import { createRoomSection } from "./oneroom.js";
 
 const filterCategories = document.querySelectorAll(".filter__category");

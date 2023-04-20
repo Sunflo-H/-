@@ -1,4 +1,4 @@
-import Oneroom from "./crawling_oneroom.js";
+import Oneroom from "../api/crawling_oneroom.js";
 import filter from "./filter.js";
 import { loading } from "./etc.js";
 import { activeDetailBox, createRoomSection } from "./oneroom.js";

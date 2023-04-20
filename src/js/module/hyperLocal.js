@@ -1,5 +1,5 @@
 import kakaoMap from "./kakaoMap.js";
-import kakaoSearch from "./kakaoSearch.js";
+import kakaoSearch from "../api/kakaoSearch.js";
 
 //* ========================================== 세권 관련 코드들 =================================================
 const hyperLocal = document.querySelectorAll(".filter__category")[2];
