@@ -536,9 +536,7 @@ function createMarker(data) {
  * @param {*} markerImageName 마커의 이미지 이름
  */
 function createHyperLocalMarker(data, markerImageName) {
-  console.log(data);
   let address = data.address_name || null;
-  // let roadAddress = data.road_address_name || null;
   let place = data.place_name || null;
   let category = data.category_group_name; //주소, 장소, 음식점-카페 등등
   let lat = data.y;
@@ -568,10 +566,7 @@ function createHyperLocalMarker(data, markerImageName) {
 
   marker.setImage(markerImage);
 
-  // marker를 받아서 click 이벤트를 등록하고
-  //
   kakao.maps.event.addListener(marker, "click", function () {
-    // console.log(infoWindow);
     if (infoWindow) infoWindow.close();
     infoWindow = new kakao.maps.InfoWindow({
       position: new kakao.maps.LatLng(lat, lng),
@@ -595,7 +590,6 @@ function createHyperLocalMarker(data, markerImageName) {
 }
 
 function removeMarker(markerList) {
-  console.log(markerList);
   // main.js에서 사용하고 있는데 markerList를 안넣어서 에러남
   markerList.forEach((obj) => {
     obj.marker.setMap(null);
@@ -621,7 +615,6 @@ function removeInfoWindow() {
 }
 
 kakao.maps.event.addListener(map, "click", function (mouseEvent) {
-  console.log(map.getLevel());
   removeInfoWindow();
 });
 
@@ -648,7 +641,7 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
   }
   // 매물 클러스터를 띄워야 할때
   else if (map.getLevel() <= 5) {
-    // console.log("줌이 바뀌었는데 방정보 있을때");
+    // 줌이 바뀌었는데 방정보 있을때
     if (getRoomClusterState()) {
       displayRoomCluster(true);
       createRoomSection(null);
@@ -656,7 +649,7 @@ kakao.maps.event.addListener(map, "zoom_changed", function (mouseEvent) {
       displaySubwayOverlay(false);
       filter.ableFilterBtn();
     }
-    // console.log("줌이 바뀌었는데 방정보 없을때");
+    // 줌이 바뀌었는데 방정보 없을때
     else {
       displayLocalOverlay(false);
       displaySubwayOverlay(true);

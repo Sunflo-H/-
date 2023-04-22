@@ -234,7 +234,6 @@ document.addEventListener("click", (e) => {
  * 검색창에 값이 입력되면 검색창 아래에 리스트를 만들고 자동완성단어를 세팅한다.
  */
 searchInput.addEventListener("keyup", (e) => {
-  console.log(e.keyCode);
   // 엔터, 방향키 입력시
   if (e.keyCode === 13) {
     enterKey();
@@ -276,7 +275,6 @@ searchInput.addEventListener("keydown", (e) => {
 });
 
 closeBtn.addEventListener("click", () => {
-  console.log("하이");
   displaySearchList(false);
   displayCloseBtn(false);
   kakaoMap.removeMarker(kakaoMap.getMarkerList());

@@ -72,7 +72,6 @@ function searchByKeyword(keyword, lat, lng) {
         resolve(result);
       }
     };
-    console.log(lng, lat);
     let option = {
       x: lng,
       y: lat,

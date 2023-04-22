@@ -243,7 +243,6 @@ function applyBtnHandler_structure() {
 
   //* 층 옵션 적용
   result = result.filter((room) => {
-    // console.log(room.item.floor, room.item.floor_string);
     if (floorValue.innerText === "전체") {
       return room;
     } else if (floorValue.innerText === "지상") {

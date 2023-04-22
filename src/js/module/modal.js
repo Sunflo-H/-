@@ -97,7 +97,6 @@ function carouselController(e) {
 
     // 마지막 slide라면 잠시 transition을 끄고 첫번째 slide로 이동시킨다.
     if (currentIndex === imageList.length - 1) {
-      console.log("1");
       carouselCount.innerText = 1;
       setTimeout(() => {
         currentIndex = 1;

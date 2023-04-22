@@ -650,7 +650,6 @@ function sortBtnClick(event, sort1, sort2) {
       break;
 
     case "up": // 내림차순
-      console.log("내림차순");
       btn.dataset.state = "up";
       up.classList.add("active");
       down.classList.remove("active");
