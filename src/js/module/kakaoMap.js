@@ -43,13 +43,13 @@ const map = new kakao.maps.Map(document.getElementById("map"), {
 let roomCluster = null;
 
 /**
- * ! 확인
+ *
  * 지역 오버레이 배열
  */
 const localOverlayList = [];
 
 /**
- * ! 확인
+ *
  * 지하철 오버레이 배열
  */
 const subwayOverlayList = [];
@@ -61,7 +61,7 @@ const subwayOverlayList = [];
 let roomClusterState = false;
 
 /**
- * ! 확인
+ *
  *^ 서울, 경기, 부산 등 지역정보를 보여주는 오버레이를 생성하고, 배열에 저장하는 함수
  *^ overlay 배열을 순회해서 setMap(map)/setMap(null)을 적용한다.
  * ^ 지도 레벨에따라 지도에 올려진다./삭제된다.
@@ -103,18 +103,18 @@ function createLocalOverlay() {
   });
 }
 
-// ! 확인
+//
 function setRoomClusterState(boolean) {
   roomClusterState = boolean;
 }
 
-// ! 확인
+//
 function getRoomClusterState() {
   return roomClusterState;
 }
 
 /**
- * ! 확인
+ *
  * ^ 지역 오버레이를 지도에 표시한다. or 없앤다.
  * @param {*} boolean
  */
@@ -125,7 +125,7 @@ function displayLocalOverlay(boolean) {
 }
 
 /**
- * ! 확인
+ *
  * ^ 지하철 오버레이를 지도에 표시한다. or 없앤다.
  * @param {*} boolean
  */
@@ -136,7 +136,7 @@ function displaySubwayOverlay(boolean) {
 }
 
 /**
- * ! 확인
+ *
  * ^ 모든 지하철역에 대한 overlay객체를 생성하고, 배열에 저장하는 함수.
  * ^ overlay 배열을 순회해서 setMap(map)/setMap(null)을 적용한다.
  * ^ 지도 레벨에따라 지도에 올려진다./삭제된다.
@@ -158,7 +158,7 @@ async function createSubwayOverlay() {
 }
 
 /**
- * ! 확인
+ *
  * ^ overlay(지역, 지하철)에 클릭이벤트를 등록하는 함수
  * - 드래그, 줌 등의 행위로 새 오버레이가 표시될때마다 이벤트를 등록해야 한다.
  */
@@ -186,7 +186,7 @@ function setEventOnOverlay() {
 }
 
 /**
- * ! 확인
+ *
  * setEventOnOverlay에서 사용되는 이벤트핸들러
  */
 const localOverlayClickHandler = (event) => {
@@ -198,7 +198,7 @@ const localOverlayClickHandler = (event) => {
 };
 
 /**
- * ! 확인
+ *
  * setEventOnOverlay에서 사용되는 이벤트핸들러
  */
 const subwayOverlayClickHandler = (event) => {
@@ -398,7 +398,7 @@ function removeCluster() {
 }
 
 /**
- * ! 확인
+ *
  * ^ 지하철 주변 방들의 좌표 리스트를 받아 클러스터를 생성하는 함수
  *
  * @param {*} coords
@@ -411,7 +411,7 @@ async function createRoomCluster(subway) {
 }
 
 /**
- * ! 확인
+ *
  * ^ 클러스터의 CSS(setStyle())에 변화를 줘서 클러스터를 보이게, 안보이게 하는 함수
  * @param {*} boolean
  */
@@ -454,14 +454,14 @@ function displayRoomCluster(boolean) {
 }
 
 /**
- * ! 확인
+ *
  * ^ 세권 버튼을 클릭 가능한 상태로 만드는 함수
  */
 function ableHyperLocalBtn() {
   hyperLocal.classList.remove("disable");
 }
 /**
- * ! 확인
+ *
  * ^ 세권 버튼을 클릭 불가능한 상태로 만드는 함수
  */
 function disableHyperLocalBtn() {
