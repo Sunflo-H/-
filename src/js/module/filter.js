@@ -192,7 +192,10 @@ function applyBtnHandler_price() {
     ? kakaoMap.createCluster(result)
     : kakaoMap.createCluster(filteredDataList);
 
+  // 필터를 적용하면 기존에 열려있던 클러스터의 매물 리스트를 닫는다.
   createRoomSection(null);
+  const detailBox = document.querySelector(".detail-box");
+  detailBox.classList.remove("open");
 }
 
 function applyBtnHandler_structure() {
@@ -308,6 +311,8 @@ function applyBtnHandler_structure() {
     : kakaoMap.createCluster(filteredDataList);
 
   createRoomSection(null);
+  const detailBox = document.querySelector(".detail-box");
+  detailBox.classList.remove("open");
 }
 /**
  * - 필터 중 거래유형(전체,월세, 전세)에 대한 보증금, 월세, 관리비 option-content element를 생성하고 이벤트를 등록하는 함수
