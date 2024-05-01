@@ -1,46 +1,55 @@
 import kakaoMap from "./module/kakaoMap.js";
-import filter from "./module/filter.js";
-import { createRoomSection } from "./module/oneroom.js";
 
 /**
- * !설명
- * 지역, 지하철은 customOverlay로 만들었다. 방은 cluster로 만들었다.
- *
- * !지도 이용 순서
- * 1. init()함수로 지역, 지하철 오버레이를 생성한다.
- * 2. 지하철 오버레이를 클릭하면 방 클러스터가 생성된다.
- * 3. 방을 리스트로 보여주며, 모든 방에 대해 필터적용, 각 방에 대한 세권찾기
- *
- *
- * 역세권 거리
- * 반경 250m, 500m, 1km
+ * - 사용자의 위치로 지도의 중앙값을 정하는 함수
  */
-
-function getUserLocation() {
-  return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(resolve, reject); // success, error
+function setCenterToUserLocation() {
+  navigator.geolocation.getCurrentPosition((pos) => {
+    kakaoMap.map.setCenter(
+      new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
+    );
+    kakaoMap.map.setLevel(6);
   });
+  // ! 리팩토링 전 코드
+  // return new Promise((resolve, reject) => {
+  //   navigator.geolocation.getCurrentPosition(resolve, reject); // success, error
+  //   // navigator.geolocation.getCurrentPosition((pos) => {
+  //   //   console.log(pos);
+  //   // }, reject); // success, error
+  // });
 }
 
 /**
- * ^ 프로그램 시작시 실행되는 초기화 함수
- * ^ 처음부터 실행되어야할 함수들을 모았다.
+ * - 프로그램 시작시 실행되는 초기화 함수
  */
 function init() {
-  createRoomSection(null);
   kakaoMap.createLocalOverlay();
-  kakaoMap.createSubwayOverlay();
-  filter.createFilterOptionContent_price("전체");
-  getUserLocation().then((data) => {
-    kakaoMap.map.setCenter(
-      new kakao.maps.LatLng(data.coords.latitude, data.coords.longitude)
-    );
-    kakaoMap.map.setLevel(6);
-    setTimeout(() => {
-      kakaoMap.displayLocalOverlay(false);
-      kakaoMap.displaySubwayOverlay(true);
-    }, 200);
+  kakaoMap.createSubwayOverlay().then(() => {
+    kakaoMap.displaySubwayOverlay(true);
   });
+  setCenterToUserLocation();
+  // createRoomSection(null);
+  //! 이게 지금 여기보다 더 적절한 곳에 있어야해
+  //! 이게 없으면 제일 처음 필터를 누를때 제대로 안나와 근데 이게 꼭 여기는 없어도 되니까 더 적절한 곳을 찾아봐
+  //! filter.createFilterOptionContent_price("전체");
+
+  // ! 리팩토링 전 코드
+  // getUserLocation().then((data) => {
+  //   console.log(data);
+  //   kakaoMap.map.setCenter(
+  //     new kakao.maps.LatLng(data.coords.latitude, data.coords.longitude)
+  //   );
+  //   kakaoMap.map.setLevel(6);
+
+  //   setTimeout(() => {
+  //     kakaoMap.displayLocalOverlay(false);
+  //     kakaoMap.displaySubwayOverlay(true);
+  //   }, 200);
+  // });
+  // setTimeout(() => {
+  //   kakaoMap.displayLocalOverlay(false);
+  //   kakaoMap.displaySubwayOverlay(true);
+  // }, 200);
 }
 
 init();
