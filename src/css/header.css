@@ -130,7 +130,7 @@ a {
 .search {
   position: absolute;
   top: 0;
-  left: 750px;
+  left: 100px;
   width: 600px;
   min-width: 300px;
   flex-grow: 1;
