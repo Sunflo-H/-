@@ -145,8 +145,6 @@ async function createSubwayOverlay() {
  * - 드래그, 줌 등의 행위로 새 오버레이가 표시될 때마다 이벤트를 등록해야 한다.
  */
 function setEventOnOverlay() {
-  // 이게 중첩해서 이벤트등록을 하고있어
-
   const localOverlay = document.querySelectorAll(
     ".customOverlay.customOverlay--local"
   );
@@ -169,6 +167,7 @@ function setEventOnOverlay() {
 
 /**
  * - setEventOnOverlay에서 사용되는 이벤트핸들러
+ * - 해당 localOverlay의 subwayOverlay가 보이게된다.
  */
 const localOverlayClickHandler = (event) => {
   let overlay = event.target;
@@ -180,6 +179,7 @@ const localOverlayClickHandler = (event) => {
 
 /**
  * - setEventOnOverlay에서 사용되는 이벤트핸들러
+ * - 지하철에 해당하는 매물들이 보이게된다.
  */
 const subwayOverlayClickHandler = (event) => {
   let overlay = event.target;
@@ -190,7 +190,7 @@ const subwayOverlayClickHandler = (event) => {
   // 방 클러스터가 있음을 알리는 상태
   setRoomClusterState(true);
 
-  // 이미 방에 대한 마커가 있다면 삭제, 삭제하지 않으면 계속 중첩된다.
+  // 이미 방에 대한 마커가 있다면 삭제한다. (삭제하지 않으면 계속 중첩된다.)
   if (roomCluster) {
     roomCluster.clear();
   }
@@ -213,8 +213,7 @@ const subwayOverlayClickHandler = (event) => {
 //* ============================== 매물 클러스터 관련 코드들 =================================
 
 /**
- * ^ 좌표 리스트를 받아 클러스터를 생성하는 함수
- *
+ * - 원룸들의 좌표 리스트를 받아 클러스터를 생성하는 함수
  * @param {*} coords
  */
 function createCluster(roomList) {
@@ -285,7 +284,8 @@ function createCluster(roomList) {
   // 마커를 클러스터에 담는다. -> 이제 마커들은 클러스터기능이 적용된다.
   roomCluster.addMarkers(markers); // 클러스터 생성
 
-  // 처음 생성된 클러스터의 엘리먼트들에 적용하는 css변화 이벤트 (clustered 이벤트핸들러와 기능은 같다.)
+  // 처음 생성된 클러스터의 엘리먼트들에 적용하는 css변화 이벤트
+  // (아래에 있는 clustered 이벤트핸들러와 기능은 같다.)
   roomCluster._clusters.forEach((cluster) => {
     let clusterElement = cluster.getClusterMarker().getContent();
 
@@ -342,7 +342,6 @@ function createCluster(roomList) {
         .classList.remove("cluster-click");
     });
 
-    // "cluster-click"가 있다면
     if (clusterElement.classList.contains("cluster-click")) {
       let roomList = cluster
         .getMarkers()
@@ -377,9 +376,7 @@ function removeCluster() {
 }
 
 /**
- *
- * ^ 지하철 주변 방들의 좌표 리스트를 받아 클러스터를 생성하는 함수
- *
+ * - 지하철 주변 방들의 좌표 리스트를 받아 클러스터를 생성하는 함수
  * @param {*} coords
  */
 async function createRoomCluster(subway) {
@@ -432,15 +429,13 @@ function displayRoomCluster(boolean) {
 }
 
 /**
- *
- * ^ 세권 버튼을 클릭 가능한 상태로 만드는 함수
+ * - 세권 버튼을 클릭 가능한 상태로 만드는 함수
  */
 function ableHyperLocalBtn() {
   hyperLocal.classList.remove("disable");
 }
 /**
- *
- * ^ 세권 버튼을 클릭 불가능한 상태로 만드는 함수
+ * - 세권 버튼을 클릭 불가능한 상태로 만드는 함수
  */
 function disableHyperLocalBtn() {
   hyperLocal.classList.add("disable");
@@ -451,10 +446,12 @@ function getRoomCluster() {
 }
 
 /**
- * ^ 장소 data를 받아 마커를 생성하고 이벤트를 적용하는 함수
+ * ! 이게 지금 사용처가 없다는 말이지?
+ * - 장소 data를 받아 마커를 생성하고 이벤트를 적용하는 함수
  * @param {*} data
  */
 function createMarker(data) {
+  console.log(1);
   let address = data.address_name || null;
   // let roadAddress = data.road_address_name || null;
   let place = data.place_name || null;
@@ -483,9 +480,11 @@ function createMarker(data) {
     new kakao.maps.Size(30, 30),
     new kakao.maps.Point(15, 26)
   );
+
   marker.setImage(markerImage);
 
   kakao.maps.event.addListener(marker, "click", function () {
+    console.log(2);
     if (infoWindow) infoWindow.close();
     infoWindow = new kakao.maps.InfoWindow({
       position: new kakao.maps.LatLng(lat, lng),
@@ -514,6 +513,7 @@ function createMarker(data) {
  * @param {*} markerImageName 마커의 이미지 이름
  */
 function createHyperLocalMarker(data, markerImageName) {
+  console.log(3);
   let address = data.address_name || null;
   let place = data.place_name || null;
   let category = data.category_group_name; //주소, 장소, 음식점-카페 등등
@@ -550,12 +550,12 @@ function createHyperLocalMarker(data, markerImageName) {
       position: new kakao.maps.LatLng(lat, lng),
       content: content,
     });
+
     let infoWindowBox = infoWindow.a;
     let infoWindowArrow = infoWindow.a.firstElementChild;
-    let infoWindowContentBox = infoWindow.Uf;
+    console.log(infoWindow);
     infoWindowBox.classList.add("infoWindow-box");
     infoWindowArrow.classList.add("infoWindow__arrow");
-    infoWindowContentBox.classList.add("infoWindow__content-box");
     infoWindow.open(map, marker);
   });
 
