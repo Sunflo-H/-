@@ -21,10 +21,6 @@ function init() {
     kakaoMap.displaySubwayOverlay(true);
   });
   setCenterToUserLocation();
-  // createRoomSection(null);
-  //! 이게 지금 여기보다 더 적절한 곳에 있어야해
-  //! 이게 없으면 제일 처음 필터를 누를때 제대로 안나와 근데 이게 꼭 여기는 없어도 되니까 더 적절한 곳을 찾아봐
-  //! filter.createFilterOptionContent_price("전체");
 }
 
 init();

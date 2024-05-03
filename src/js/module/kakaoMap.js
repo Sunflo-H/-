@@ -568,7 +568,6 @@ function createHyperLocalMarker(data, markerImageName) {
 }
 
 function removeMarker(markerList) {
-  // main.js에서 사용하고 있는데 markerList를 안넣어서 에러남
   markerList.forEach((obj) => {
     obj.marker.setMap(null);
   });
@@ -576,7 +575,7 @@ function removeMarker(markerList) {
 }
 
 /**
- * ^ 세권마커를 모두 삭제한다.
+ * - 세권마커를 모두 삭제한다.
  */
 function removeHyperLocalMarker() {
   hyperLocalMarkerList.forEach((obj) => {
@@ -586,7 +585,7 @@ function removeHyperLocalMarker() {
 }
 
 /**
- * ^ 인포윈도우를 닫는다.
+ * - 인포윈도우를 닫는다.
  */
 function removeInfoWindow() {
   if (infoWindow) infoWindow.close();
