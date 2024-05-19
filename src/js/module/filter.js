@@ -1,6 +1,5 @@
 import { getPyeong } from "./etc.js";
 import kakaoMap from "./kakaoMap.js";
-import kakaoSearch from "../api/kakaoSearch.js";
 import { createRoomSection } from "./oneroom.js";
 
 const filterCategories = document.querySelectorAll(".filter__category");
@@ -18,6 +17,13 @@ let filteredRoomData = { price: [], structure: [] };
  */
 const optionBtns_salesType = filterCategory_price.querySelectorAll(
   ".filter__option--price .filter__option-btn"
+);
+// 초기화, 적용 버튼
+const resetBtn_price = filterCategory_price.querySelector(
+  ".filter__btn--reset"
+);
+const applyBtn_price = filterCategory_price.querySelector(
+  ".filter__btn--apply"
 );
 
 /**
@@ -64,6 +70,7 @@ function disableFilterBtn() {
 }
 
 function applyBtnHandler_price() {
+  console.log(1);
   // 보증금
   const depositMin = filterCategory_price.querySelector(
     ".filter__input-deposit--min"
@@ -585,7 +592,7 @@ function createFilterOptionContent_price(option) {
     });
   }
 
-  // * 초기화, 적용 버튼
+  // * 새로 생성된 초기화, 적용 버튼에 이벤트 등록
 
   resetBtn_price.addEventListener("click", (e) => {
     // 모든 거래유형 버튼에 active 제거 후 '전체'만 활성화
@@ -599,6 +606,19 @@ function createFilterOptionContent_price(option) {
   });
   applyBtn_price.addEventListener("click", applyBtnHandler_price);
 }
+
+resetBtn_price.addEventListener("click", (e) => {
+  console.log("리셋");
+  // 모든 거래유형 버튼에 active 제거 후 '전체'만 활성화
+  optionBtns_salesType.forEach((optionBtn) => {
+    optionBtn.classList.remove("active");
+    if (optionBtn.innerText === "전체") optionBtn.classList.add("active");
+  });
+  salesTypeValue.innerText = "전체";
+  salesTypeValue.dataset.value = "전체";
+  createFilterOptionContent_price("전체");
+});
+applyBtn_price.addEventListener("click", applyBtnHandler_price);
 
 // 모든 filter__category 클릭시 필터옵션창을 여는 이벤트
 filterCategories.forEach((filterCategory, index) => {
